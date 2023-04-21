@@ -181,10 +181,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				Log.d(TAG, "onClick: btn_bank_link_add");
 //                NPayLibrary.getInstance().openWallet(Actions.ADD_LINK_BANK);
 				break;
-
-			case R.id.rl_info:
-				Log.d(TAG, "onClick: rl_info");
-				break;
 			case R.id.btn_eyes:
 				Log.d(TAG, "onClick: btn_eyes");
 				if (isShow) {
@@ -195,6 +191,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				isShow = !isShow;
 				break;
 			case R.id.layout_sdv:
+			case R.id.rl_info:
 				Log.d(TAG, "onClick: layout_sdv");
 				NPayLibrary.getInstance().openWallet(Actions.OPEN_WALLET);
 				break;

@@ -4,7 +4,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebStorage;
+import android.webkit.WebView;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -29,6 +31,7 @@ public class NPayLibrary {
 	public static final String PRODUCTION = "prod";
 	private static final String TAG = NPayLibrary.class.getSimpleName();
 	public static Flavor flavor;
+	public static boolean isKeyboardShowing = false;
 	private static NPayLibrary INSTANCE;
 	public SdkConfig sdkConfig;
 	public Activity activity;
@@ -40,6 +43,24 @@ public class NPayLibrary {
 			flavor = new Flavor();
 		}
 		return INSTANCE;
+	}
+
+	public static void showKeyboard(WebView webView) {
+		if (isKeyboardShowing) return;
+		webView.requestFocus();
+		InputMethodManager inputMethodManager = (InputMethodManager)
+				webView.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+		inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+	}
+
+	public static void hideSoftKeyboard(WebView webView) {
+		if (!isKeyboardShowing) return;
+		InputMethodManager inputMethodManager = (InputMethodManager)
+				webView.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+		inputMethodManager.hideSoftInputFromWindow(
+				webView.getWindowToken(),
+				0
+		);
 	}
 
 	public void init(Activity activity, SdkConfig sdkConfig, LibListener listener) {
@@ -88,7 +109,6 @@ public class NPayLibrary {
 		getInfoTask.execute();
 	}
 
-
 	private void refreshToken(String deviceId, String UID) {
 		RefreshTokenTask refreshTokenTask = new RefreshTokenTask(activity, deviceId, UID, new RefreshTokenTask.OnRefreshListener() {
 			@Override
@@ -126,7 +146,9 @@ public class NPayLibrary {
 		header.put("Merchant-Uid", sdkConfig.getUid());
 		header.put("env", sdkConfig.getEnv());
 		header.put("App-Type", "SDK");
-		header.put("Device-Name", DeviceUtils.getDevice());
+		header.put("brand_color",  String.valueOf(SdkConfig.getBrandColor()));
+		header.put("platform", "android");
+		header.put("device", DeviceUtils.getDevice());
 		return header;
 	}
 
@@ -144,5 +166,4 @@ public class NPayLibrary {
 		JSONObject obj = new JSONObject(data);
 		return obj.toString();
 	}
-
 }

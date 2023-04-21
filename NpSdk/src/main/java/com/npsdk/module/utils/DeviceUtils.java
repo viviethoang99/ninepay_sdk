@@ -19,7 +19,7 @@ public final class DeviceUtils {
 	}
 
 	public static String getDevice() {
-		String deviceModel = ""+ Build.MODEL;
+		String deviceModel = Build.BRAND +"-"+ Build.MODEL;
 		deviceModel = removeAccent(deviceModel);
 		return deviceModel;
 	}

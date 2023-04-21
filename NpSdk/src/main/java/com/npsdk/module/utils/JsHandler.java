@@ -51,6 +51,9 @@ public class JsHandler {
 			Log.i(TAG, "executeFunctionP: command = " + command + "; params = " + params);
 			JSONObject paramJson = new JSONObject(params);
 			switch (switchCommandJS.valueOf(command)) {
+				case showKeyboard:
+					NPayLibrary.showKeyboard(NPayActivity.webView);
+					break;
 				case open9PayApp:
 					String appPackageName = "vn.ninepay.ewallet";
 					Intent intent = activity.getPackageManager().getLaunchIntentForPackage(appPackageName);
@@ -88,7 +91,7 @@ public class JsHandler {
 					break;
 				case call:
 					Intent callIntent = new Intent(Intent.ACTION_DIAL);
-					callIntent.setData(Uri.parse(paramJson.getString("text")));
+					callIntent.setData(Uri.parse("tel:" +paramJson.getString("text")));
 					activity.startActivity(callIntent);
 					break;
 				case message:
@@ -174,5 +177,6 @@ public class JsHandler {
 		getDeviceID,
 		requestCamera,
 		openSchemaApp,
+		showKeyboard,
 	}
 }

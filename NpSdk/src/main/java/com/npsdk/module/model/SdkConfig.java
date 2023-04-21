@@ -6,15 +6,13 @@ public class SdkConfig implements Serializable {
     private final String merchantCode;
     private final String uid;
     private final String env;
-    private final int brandColor;
-    private final String localUrl;
+    private static int brandColor;
 
     protected SdkConfig(Builder builder) {
         merchantCode = builder.mMerchantCode;
         uid = builder.mUid;
         env = builder.mEnv;
         brandColor = builder.mBrandColor;
-        localUrl = builder.mLocalUrl;
     }
 
     public String getMerchantCode() {
@@ -29,7 +27,7 @@ public class SdkConfig implements Serializable {
         return env;
     }
 
-    public int getBrandColor() {
+    public static int getBrandColor() {
         return brandColor;
     }
 

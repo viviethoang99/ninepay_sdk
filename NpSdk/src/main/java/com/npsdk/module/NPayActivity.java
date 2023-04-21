@@ -1,7 +1,6 @@
 package com.npsdk.module;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +14,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.webkit.PermissionRequest;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -53,10 +51,6 @@ public class NPayActivity extends AppCompatActivity {
 	private BroadcastReceiver changeUrlBR;
 	private RelativeLayout rlOverlay;
 	private JsHandler jsHandler;
-	private View rootView;
-	private InputMethodManager inputMethodManager;
-
-	private boolean isKeyboardShowing = false;
 
 	@SuppressLint("SetJavaScriptEnabled")
 	@Override
@@ -127,6 +121,7 @@ public class NPayActivity extends AppCompatActivity {
 				builder.scheme("https")
 						.authority(Flavor.baseUrl.replaceAll("https://", ""))
 						.appendPath("v1")
+//						.appendPath("header")
 //                        .appendQueryParameter("route", jsonObject.getString("route"))
 						.appendQueryParameter("Merchant-Code", jsonObject.getString("Merchant-Code"))
 						.appendQueryParameter("Merchant-Uid", jsonObject.getString("Merchant-Uid"))
@@ -146,14 +141,13 @@ public class NPayActivity extends AppCompatActivity {
 			e.printStackTrace();
 		}
 
-		inputMethodManager = (InputMethodManager)
-				getSystemService(Activity.INPUT_METHOD_SERVICE);
-		KeyboardUtils.addKeyboardToggleListener(this, isVisible -> isKeyboardShowing = isVisible);
+
+		KeyboardUtils.addKeyboardToggleListener(this, isVisible -> NPayLibrary.isKeyboardShowing = isVisible);
 	}
 
 	@Override
 	protected void onPause() {
-		hideSoftKeyboard();
+		NPayLibrary.hideSoftKeyboard(webView);
 		super.onPause();
 	}
 
@@ -291,7 +285,6 @@ public class NPayActivity extends AppCompatActivity {
 		toolbar = findViewById(R.id.toolbar);
 		btnClose = findViewById(R.id.btnClose);
 		rlOverlay = findViewById(R.id.rl_overlay);
-		rootView = findViewById(R.id.rootView);
 	}
 
 	@SuppressLint("SetJavaScriptEnabled")
@@ -317,9 +310,6 @@ public class NPayActivity extends AppCompatActivity {
 
 			@Override
 			public void onProgressChanged(WebView view, int newProgress) {
-				if (newProgress > 90) {
-					showKeyboard();
-				}
 				super.onProgressChanged(view, newProgress);
 			}
 		});
@@ -328,7 +318,7 @@ public class NPayActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-
+//		webView.loadUrl("javascript: window.JsHandler.executeFunction('copy', '{\"text\": \"0988\"}')");
 	}
 
 	@Override
@@ -394,24 +384,11 @@ public class NPayActivity extends AppCompatActivity {
 		}
 	}
 
-	private void showKeyboard() {
-		if (isKeyboardShowing) return;
-		webView.requestFocus();
-		inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-	}
-
-	private void hideSoftKeyboard() {
-		if (!isKeyboardShowing) return;
-		inputMethodManager.hideSoftInputFromWindow(
-				rootView.getWindowToken(),
-				0
-		);
-	}
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		if (requestCode == JsHandler.PERMISSION_REQUEST_CODE) {
-            JsHandler.sendStatusCamera(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
+			JsHandler.sendStatusCamera(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
 		}
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 	}
