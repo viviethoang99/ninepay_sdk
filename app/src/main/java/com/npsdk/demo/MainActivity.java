@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 		// Create flavor by packagen name test
 		String flavorEnv = Flavor.setEnvTest(this);
-		SdkConfig sdkConfig = new SdkConfig.Builder().merchantCode("sdk_test").uid("uid").env(flavorEnv).brandColor(0xff15AE62).build();
+		SdkConfig sdkConfig = new SdkConfig.Builder(this).phone("0975477088").merchantCode("sdk_test").uid("uid").env(flavorEnv).brandColor(0xff15AE62).build();
 		initSdk(sdkConfig);
 
 	}
@@ -200,12 +200,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				break;
 			case R.id.btn_thanh_toan:
 				//paste url thanh toán vào hàm pay
-				String test = "https://sand-payment.9pay.vn/portal?baseEncode=eyJtZXJjaGFudEtleSI6ImRMNXBDcCIsI\n" +
-						"nRpbWUiOjE2Nzc0ODg4MzIsImludm9pY2Vfbm8iOiJFczRsVVN4eSIsImFtb3VudCI6MTAwMDAsImRlc\n" +
-						"2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0N\n" +
-						"zY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iL\n" +
-						"CJtZXRob2QiOiI5UEFZIn0%3D&signature=qmfxThHdSJGxwpQilcwJ0zYkPpyZaJkdwrJe1FysRuY%\n" +
-						"3D\n";
+				String test = "";
 				NPayLibrary.getInstance().pay(test);
 				break;
 
@@ -215,6 +210,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 	@Override
 	public void onBackPressed() {
+		super.onBackPressed();
 	}
 
 }

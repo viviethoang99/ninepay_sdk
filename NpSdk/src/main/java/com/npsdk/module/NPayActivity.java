@@ -119,7 +119,7 @@ public class NPayActivity extends AppCompatActivity {
 				showOrHideToolbar();
 			} else {
 				builder.scheme("https")
-						.authority(Flavor.baseUrl.replaceAll("https://", ""))
+						.encodedAuthority(Flavor.baseUrl.replaceAll("https://", ""))
 						.appendPath("v1")
 //						.appendPath("header")
 //                        .appendQueryParameter("route", jsonObject.getString("route"))
@@ -128,7 +128,8 @@ public class NPayActivity extends AppCompatActivity {
 						.appendQueryParameter("App-version-Code", "375")
 						.appendQueryParameter("brand_color", String.valueOf(NPayLibrary.getInstance().sdkConfig.getBrandColor()))
 						.appendQueryParameter("platform", "android")
-						.appendQueryParameter("device", DeviceUtils.getDevice());
+						.appendQueryParameter("device", DeviceUtils.getDevice())
+						.appendQueryParameter("phone", NPayLibrary.getInstance().sdkConfig.getPhone());
 				if (jsonObject.has("order_id")) {
 					builder.appendQueryParameter("order_id", Utils.convertUrlToOrderId(jsonObject.getString("order_id")));
 				}
@@ -169,7 +170,7 @@ public class NPayActivity extends AppCompatActivity {
 						JSONObject jsonObject = new JSONObject(data);
 
 						builder.scheme("https")
-								.authority(/*"10.1.20.37:8080"*/ Flavor.baseUrl.replaceAll("https://", ""))
+								.encodedAuthority(/*"10.1.20.37:8080"*/ Flavor.baseUrl.replaceAll("https://", ""))
 								.appendPath("direct")
 								.appendQueryParameter("route", Constants.VERIFY_PAYMENT_ROUTE)
 								.appendQueryParameter("Merchant-Code", jsonObject.getString("Merchant-Code"))
@@ -178,7 +179,8 @@ public class NPayActivity extends AppCompatActivity {
 								.appendQueryParameter("brand_color", String.valueOf(NPayLibrary.getInstance().sdkConfig.getBrandColor()))
 								.appendQueryParameter("platform", "android")
 								.appendQueryParameter("order_id", Utils.convertUrlToOrderId(url))
-								.appendQueryParameter("device", DeviceUtils.getDevice());
+								.appendQueryParameter("device", DeviceUtils.getDevice())
+								.appendQueryParameter("phone", NPayLibrary.getInstance().sdkConfig.getPhone());
 						clearWebview2NonToolbar();
 						webView2.setVisibility(View.GONE);
 						rlOverlay.setVisibility(View.GONE);
@@ -319,14 +321,15 @@ public class NPayActivity extends AppCompatActivity {
 	@Override
 	public void onBackPressed() {
 //		webView.loadUrl("javascript: window.JsHandler.executeFunction('copy', '{\"text\": \"0988\"}')");
+//	super.onBackPressed();
 	}
 
 	@Override
 	protected void onDestroy() {
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(changeUrlBR);
-		webView.clearHistory();
-		webView.clearCache(true);
-		webView.destroy();
+//		webView.clearHistory();
+//		webView.clearCache(true);
+//		webView.destroy();
 		clearWebview2NonToolbar();
 		closeCamera();
 		super.onDestroy();

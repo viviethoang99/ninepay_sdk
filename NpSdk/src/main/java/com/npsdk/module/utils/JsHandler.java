@@ -37,7 +37,7 @@ public class JsHandler {
 	}
 
 	public static void sendStatusCamera(boolean status) {
-		String jsExcute = "javascript: window.postMessage({\"permission_camera\": " + status + "}, \"*\")";
+		String jsExcute = "javascript: window.sendStatusCamera("+status+")";
 		Handler mainHandler = new Handler(Looper.getMainLooper());
 		Runnable myRunnable = () -> {
 			NPayActivity.webView.loadUrl(jsExcute);
@@ -91,7 +91,7 @@ public class JsHandler {
 					break;
 				case call:
 					Intent callIntent = new Intent(Intent.ACTION_DIAL);
-					callIntent.setData(Uri.parse("tel:" +paramJson.getString("text")));
+					callIntent.setData(Uri.parse(paramJson.getString("text")));
 					activity.startActivity(callIntent);
 					break;
 				case message:
@@ -106,7 +106,7 @@ public class JsHandler {
 					NPayLibrary.getInstance().listener.onPaySuccessful();
 					break;
 				case onError:
-					int errorCode = Integer.parseInt(paramJson.getString("error_code"));
+					int errorCode = paramJson.getInt("error_code");
 					String message = paramJson.getString("message");
 					NPayLibrary.getInstance().listener.onError(errorCode, message);
 					break;
