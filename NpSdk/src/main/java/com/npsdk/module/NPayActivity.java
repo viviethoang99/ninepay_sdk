@@ -9,12 +9,14 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.webkit.PermissionRequest;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -118,18 +120,10 @@ public class NPayActivity extends AppCompatActivity {
 				webView2.loadUrl(Utils.getUrlActionShop(route), headerWebView);
 				showOrHideToolbar();
 			} else {
-				builder.scheme("https")
-						.encodedAuthority(Flavor.baseUrl.replaceAll("https://", ""))
-						.appendPath("v1")
+				builder.scheme("https").encodedAuthority(Flavor.baseUrl.replaceAll("https://", "")).appendPath("v1")
 //						.appendPath("header")
 //                        .appendQueryParameter("route", jsonObject.getString("route"))
-						.appendQueryParameter("Merchant-Code", jsonObject.getString("Merchant-Code"))
-						.appendQueryParameter("Merchant-Uid", jsonObject.getString("Merchant-Uid"))
-						.appendQueryParameter("App-version-Code", "375")
-						.appendQueryParameter("brand_color", String.valueOf(NPayLibrary.getInstance().sdkConfig.getBrandColor()))
-						.appendQueryParameter("platform", "android")
-						.appendQueryParameter("device", DeviceUtils.getDevice())
-						.appendQueryParameter("phone", NPayLibrary.getInstance().sdkConfig.getPhone());
+						.appendQueryParameter("Merchant-Code", jsonObject.getString("Merchant-Code")).appendQueryParameter("Merchant-Uid", jsonObject.getString("Merchant-Uid")).appendQueryParameter("App-version-Code", "375").appendQueryParameter("brand_color", String.valueOf(NPayLibrary.getInstance().sdkConfig.getBrandColor())).appendQueryParameter("platform", "android").appendQueryParameter("device", DeviceUtils.getDevice());
 				if (jsonObject.has("order_id")) {
 					builder.appendQueryParameter("order_id", Utils.convertUrlToOrderId(jsonObject.getString("order_id")));
 				}
@@ -154,6 +148,12 @@ public class NPayActivity extends AppCompatActivity {
 
 	private void setUpWeb2Client(String data) {
 		webView2.setWebViewClient(new WebViewClient() {
+
+			@Override
+			public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+				handler.proceed();
+			}
+
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
 				Log.d(TAG, "shouldOverrideUrlLoading 2: url ==   " + url);
@@ -169,18 +169,7 @@ public class NPayActivity extends AppCompatActivity {
 						Uri.Builder builder = new Uri.Builder();
 						JSONObject jsonObject = new JSONObject(data);
 
-						builder.scheme("https")
-								.encodedAuthority(/*"10.1.20.37:8080"*/ Flavor.baseUrl.replaceAll("https://", ""))
-								.appendPath("direct")
-								.appendQueryParameter("route", Constants.VERIFY_PAYMENT_ROUTE)
-								.appendQueryParameter("Merchant-Code", jsonObject.getString("Merchant-Code"))
-								.appendQueryParameter("Merchant-Uid", jsonObject.getString("Merchant-Uid"))
-								.appendQueryParameter("App-version-Code", "375")
-								.appendQueryParameter("brand_color", String.valueOf(NPayLibrary.getInstance().sdkConfig.getBrandColor()))
-								.appendQueryParameter("platform", "android")
-								.appendQueryParameter("order_id", Utils.convertUrlToOrderId(url))
-								.appendQueryParameter("device", DeviceUtils.getDevice())
-								.appendQueryParameter("phone", NPayLibrary.getInstance().sdkConfig.getPhone());
+						builder.scheme("https").encodedAuthority(/*"10.1.20.37:8080"*/ Flavor.baseUrl.replaceAll("https://", "")).appendPath("direct").appendQueryParameter("route", Constants.VERIFY_PAYMENT_ROUTE).appendQueryParameter("Merchant-Code", jsonObject.getString("Merchant-Code")).appendQueryParameter("Merchant-Uid", jsonObject.getString("Merchant-Uid")).appendQueryParameter("App-version-Code", "375").appendQueryParameter("brand_color", String.valueOf(NPayLibrary.getInstance().sdkConfig.getBrandColor())).appendQueryParameter("platform", "android").appendQueryParameter("order_id", Utils.convertUrlToOrderId(url)).appendQueryParameter("device", DeviceUtils.getDevice());
 						clearWebview2NonToolbar();
 						webView2.setVisibility(View.GONE);
 						rlOverlay.setVisibility(View.GONE);
@@ -213,6 +202,12 @@ public class NPayActivity extends AppCompatActivity {
 
 	private void setUpweb1Client() {
 		webView.setWebViewClient(new WebViewClient() {
+
+			@Override
+			public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+				handler.proceed();
+			}
+
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
 				if (!url.contains(Flavor.baseUrl)) {
@@ -390,8 +385,10 @@ public class NPayActivity extends AppCompatActivity {
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		if (requestCode == JsHandler.PERMISSION_REQUEST_CODE) {
+		if (requestCode == JsHandler.PERMISSION_CAMERA_REQUEST_CODE) {
 			JsHandler.sendStatusCamera(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
+		} else if (requestCode == JsHandler.PERMISSION_STORAGE_REQUEST_CODE) {
+			JsHandler.sendStatusStorage(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
 		}
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 	}

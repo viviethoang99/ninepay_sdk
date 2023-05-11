@@ -10,6 +10,7 @@ import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -27,7 +28,8 @@ import org.json.JSONObject;
 
 public class JsHandler {
 
-	public static final int PERMISSION_REQUEST_CODE = 999;
+	public static final int PERMISSION_CAMERA_REQUEST_CODE = 999;
+	public static final int PERMISSION_STORAGE_REQUEST_CODE = 888;
 	private static final String TAG = JsHandler.class.getSimpleName();
 
 	private final Activity activity;
@@ -37,7 +39,16 @@ public class JsHandler {
 	}
 
 	public static void sendStatusCamera(boolean status) {
-		String jsExcute = "javascript: window.sendStatusCamera("+status+")";
+		String jsExcute = "javascript: window.sendStatusCamera(" + status + ")";
+		Handler mainHandler = new Handler(Looper.getMainLooper());
+		Runnable myRunnable = () -> {
+			NPayActivity.webView.loadUrl(jsExcute);
+		};
+		mainHandler.post(myRunnable);
+	}
+
+	public static void sendStatusStorage(boolean status) {
+		String jsExcute = "javascript: window.getRequestGallery(" + status + ")";
 		Handler mainHandler = new Handler(Looper.getMainLooper());
 		Runnable myRunnable = () -> {
 			NPayActivity.webView.loadUrl(jsExcute);
@@ -71,11 +82,7 @@ public class JsHandler {
 				case getDeviceID:
 					break;
 				case share:
-					ShareCompat.IntentBuilder.from(activity)
-							.setType("text/plain")
-							.setChooserTitle("9Pay")
-							.setText(paramJson.getString("text"))
-							.startChooser();
+					ShareCompat.IntentBuilder.from(activity).setType("text/plain").setChooserTitle("9Pay").setText(paramJson.getString("text")).startChooser();
 					break;
 				case copy:
 					ClipboardManager clipboard = (ClipboardManager) activity.getSystemService(CLIPBOARD_SERVICE);
@@ -127,6 +134,9 @@ public class JsHandler {
 				case logout:
 					NPayLibrary.getInstance().logout();
 					break;
+				case requestGallery:
+					requestStorage();
+					break;
 				default:
 			}
 		} catch (Exception e) {
@@ -139,9 +149,33 @@ public class JsHandler {
 			sendStatusCamera(true);
 			return;
 		}
-		ActivityCompat.requestPermissions(activity,
-				new String[]{Manifest.permission.CAMERA},
-				PERMISSION_REQUEST_CODE);
+		ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA_REQUEST_CODE);
+	}
+
+	private void requestStorage() {
+		if (isHavePermissionStorage()) {
+			sendStatusStorage(true);
+			return;
+		}
+
+		String[] typePermission = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			// Android 13
+			typePermission = new String[]{Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO};
+		}
+
+		ActivityCompat.requestPermissions(activity, typePermission, PERMISSION_STORAGE_REQUEST_CODE);
+	}
+
+	private boolean isHavePermissionStorage() {
+		int checked = PackageManager.PERMISSION_DENIED;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			// Android 13
+			checked = ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_MEDIA_IMAGES);
+		} else {
+			checked = ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
+		}
+		return checked == PackageManager.PERMISSION_GRANTED;
 	}
 
 	private boolean isHavePermissionCamera() {
@@ -161,22 +195,6 @@ public class JsHandler {
 	}
 
 	private enum switchCommandJS {
-		open9PayApp,
-		close,
-		logout,
-		openOtherUrl,
-		share,
-		copy,
-		call,
-		message,
-		clearToken,
-		onLoggedInSuccess,
-		onPaymentSuccess,
-		onError,
-		getAllToken,
-		getDeviceID,
-		requestCamera,
-		openSchemaApp,
-		showKeyboard,
+		open9PayApp, close, logout, openOtherUrl, share, copy, call, message, clearToken, onLoggedInSuccess, onPaymentSuccess, onError, getAllToken, getDeviceID, requestCamera, openSchemaApp, showKeyboard, requestGallery
 	}
 }

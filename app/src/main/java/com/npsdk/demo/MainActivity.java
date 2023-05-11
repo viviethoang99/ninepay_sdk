@@ -83,10 +83,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		rlInfo.setOnClickListener(this);
 		btnClose.setOnClickListener(this);
 		btnThanhToan.setOnClickListener(this);
-
 		// Create flavor by packagen name test
 		String flavorEnv = Flavor.setEnvTest(this);
-		SdkConfig sdkConfig = new SdkConfig.Builder(this).phone("0975477088").merchantCode("sdk_test").uid("uid").env(flavorEnv).brandColor(0xff15AE62).build();
+		SdkConfig sdkConfig = new SdkConfig.Builder(this).merchantCode("sdk_test").uid(null).env(flavorEnv).brandColor(0xff15AE62).build();
 		initSdk(sdkConfig);
 
 	}
