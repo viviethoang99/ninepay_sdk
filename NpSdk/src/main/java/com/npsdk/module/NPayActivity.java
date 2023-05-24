@@ -41,6 +41,8 @@ public class NPayActivity extends AppCompatActivity {
     private RelativeLayout rlOverlay;
     private JsHandler jsHandler;
 
+    Boolean isProgressDeposit = false;
+
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -203,7 +205,7 @@ public class NPayActivity extends AppCompatActivity {
 
                 if (url.startsWith(Flavor.baseUrl) && !url.contains("kyc")) {
                     clearWebview2WithToolbar();
-                    webView.loadUrl(url, headerWebView);
+//                    webView.loadUrl(url, headerWebView);
                     return false;
                 }
                 webView2.loadUrl(url, headerWebView);
@@ -264,6 +266,10 @@ public class NPayActivity extends AppCompatActivity {
                         clearWebview2NonToolbar();
                     }
                     String getURL = intent.getStringExtra("url");
+                    String nameAction = intent.getStringExtra("name");
+                    if (nameAction != null) {
+                        isProgressDeposit = nameAction == "napas-deposit";
+                    }
                     if (getURL.startsWith(Flavor.baseUrl + "/v1/kyc")) {
                         Map<String, String> extraHeaders = new HashMap<>();
                         String token = intent.getStringExtra("token");
@@ -354,6 +360,10 @@ public class NPayActivity extends AppCompatActivity {
             clearWebview2NonToolbar();
             webView2.setVisibility(View.GONE);
             webView.setVisibility(View.VISIBLE);
+            if (isProgressDeposit) {
+                webView.loadUrl("javascript: window.sendEventDismissScreen()");
+                isProgressDeposit = false;
+            }
         }
         showOrHideToolbar();
     }

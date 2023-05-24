@@ -94,6 +94,7 @@ public class JsHandler {
 					intentOpenWebView.setAction("webViewBroadcast");
 					intentOpenWebView.putExtra("url", paramJson.getString("url"));
 					intentOpenWebView.putExtra("token", paramJson.getString("token"));
+					intentOpenWebView.putExtra("name", paramJson.getString("name"));
 					LocalBroadcastManager.getInstance(activity).sendBroadcast(intentOpenWebView);
 					break;
 				case call:
