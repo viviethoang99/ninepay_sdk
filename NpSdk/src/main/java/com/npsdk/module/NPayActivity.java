@@ -41,7 +41,7 @@ public class NPayActivity extends AppCompatActivity {
     private RelativeLayout rlOverlay;
     private JsHandler jsHandler;
 
-    Boolean isProgressDeposit = false;
+    boolean isProgressDeposit = false;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -268,7 +268,7 @@ public class NPayActivity extends AppCompatActivity {
                     String getURL = intent.getStringExtra("url");
                     String nameAction = intent.getStringExtra("name");
                     if (nameAction != null) {
-                        isProgressDeposit = nameAction == "napas-deposit";
+                        isProgressDeposit = nameAction.equals("napas-deposit");
                     }
                     if (getURL.startsWith(Flavor.baseUrl + "/v1/kyc")) {
                         Map<String, String> extraHeaders = new HashMap<>();
