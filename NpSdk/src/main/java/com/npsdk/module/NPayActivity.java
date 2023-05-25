@@ -203,9 +203,8 @@ public class NPayActivity extends AppCompatActivity {
 
                 }
 
-                if (url.startsWith(Flavor.baseUrl) && !url.contains("kyc")) {
+                if (url.startsWith(Flavor.baseUrl)) {
                     clearWebview2WithToolbar();
-//                    webView.loadUrl(url, headerWebView);
                     return false;
                 }
                 webView2.loadUrl(url, headerWebView);
@@ -269,17 +268,6 @@ public class NPayActivity extends AppCompatActivity {
                     String nameAction = intent.getStringExtra("name");
                     if (nameAction != null) {
                         isProgressDeposit = nameAction.equals("napas-deposit");
-                    }
-                    if (getURL.startsWith(Flavor.baseUrl + "/v1/kyc")) {
-                        Map<String, String> extraHeaders = new HashMap<>();
-                        String token = intent.getStringExtra("token");
-                        if (token != null) extraHeaders.put("Authorization", token);
-                        extraHeaders.putAll(NPayLibrary.getInstance().getHeader());
-                        webView.setVisibility(View.GONE);
-                        webView2.setVisibility(View.VISIBLE);
-                        webView2.loadUrl(getURL, extraHeaders);
-                        showOrHideToolbar();
-                        return;
                     }
                     if (!getURL.startsWith(Flavor.baseUrl)) {
                         webView.setVisibility(View.GONE);
@@ -360,10 +348,6 @@ public class NPayActivity extends AppCompatActivity {
             clearWebview2NonToolbar();
             webView2.setVisibility(View.GONE);
             webView.setVisibility(View.VISIBLE);
-            if (isProgressDeposit) {
-                webView.loadUrl("javascript: window.sendEventDismissScreen()");
-                isProgressDeposit = false;
-            }
         }
         showOrHideToolbar();
     }
@@ -380,8 +364,9 @@ public class NPayActivity extends AppCompatActivity {
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (webView2.getUrl().contains("v1/kyc/ket-qua")) {
-                    webView.loadUrl(Flavor.baseUrl + "#home?reload=true");
+                if (isProgressDeposit) {
+                    webView.loadUrl("javascript: window.sendEventDismissScreen()");
+                    isProgressDeposit = false;
                 }
                 clearWebview2WithToolbar();
             }
