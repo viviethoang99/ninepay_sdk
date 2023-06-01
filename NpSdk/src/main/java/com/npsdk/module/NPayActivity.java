@@ -182,7 +182,8 @@ public class NPayActivity extends AppCompatActivity {
 
                         builder.scheme("https")
 								.encodedAuthority(/*"10.1.20.37:8080"*/ Flavor.baseUrl.replaceAll("https://", ""))
-								.appendPath("direct")
+								.appendPath("v1")
+								.appendPath("payment")
 								.appendQueryParameter("route", Constants.VERIFY_PAYMENT_ROUTE)
 								.appendQueryParameter("Merchant-Code", jsonObject.getString("Merchant-Code"))
 								.appendQueryParameter("Merchant-Uid", jsonObject.getString("Merchant-Uid"))
