@@ -1,1 +1,7 @@
-<resources></resources>
+<resources>
+    <string name="title_activity_jetpack">JetpackActivity</string>
+    <string name="title_activity_mainaaaa">MainaaaaActivity</string>
+    <string name="title_activity_order">OrderActivity</string>
+    <string name="title_activity_input_card">InputCardActivity</string>
+    <string name="title_activity_error_payment">ErrorPaymentActivity</string>
+</resources>
