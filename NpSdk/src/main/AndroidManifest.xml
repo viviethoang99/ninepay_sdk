@@ -30,6 +30,13 @@
     <application
             android:enableOnBackInvokedCallback="true"
             android:usesCleartextTraffic="true">
+
+        <activity
+                android:name="com.npsdk.module.NPayActivity"
+                android:exported="true"
+                android:screenOrientation="portrait"
+                android:windowSoftInputMode="adjustResize"
+                android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity
                 android:name="com.npsdk.jetpack_sdk.ErrorPaymentActivity"
                 android:exported="false"
