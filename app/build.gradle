@@ -1,0 +1,89 @@
+apply plugin: "com.android.application"
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+repositories {
+    google()
+    mavenCentral()
+    maven { url 'https://maven.google.com/' }
+    maven { url 'https://jitpack.io' }
+}
+
+android {
+    compileSdk 33
+
+    defaultConfig {
+        applicationId "com.npsdk.demo"
+        minSdk 23
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("$rootProject.projectDir/key.jks")
+            storePassword "9paysdk"
+            keyAlias "9paysdk"
+            keyPassword "9paysdk"
+        }
+    }
+
+    flavorDimensions "app"
+    productFlavors {
+        sand {
+            dimension "app"
+            resValue "string", "app_name_9pay", "SDK Sand"
+            versionNameSuffix "-sand"
+            applicationIdSuffix ".sand"
+        }
+        prod {
+            dimension "app"
+            resValue "string", "app_name_9pay", "SDK Prod"
+            applicationId "com.npsdk.demo"
+        }
+        staging {
+            dimension "app"
+            resValue "string", "app_name_9pay", "SDK Stg"
+            versionNameSuffix "-stg"
+            applicationIdSuffix ".stg"
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+
+        debug {
+            minifyEnabled false
+            shrinkResources false
+            signingConfig signingConfigs.release
+        }
+    }
+
+
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+}
+
+dependencies {
+    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation project(path: ':NpSdk')
+    implementation 'androidx.webkit:webkit:1.6.0'
+    implementation 'commons-codec:commons-codec:1.15'
+}
