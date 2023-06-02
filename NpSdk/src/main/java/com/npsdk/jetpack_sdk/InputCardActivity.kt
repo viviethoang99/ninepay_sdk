@@ -173,7 +173,7 @@ fun createOrderInternational(viewModel: InputViewModel, context: Context, appVie
         expireMonth = month,
         expireYear = year,
         cvc = viewModel.cvvCardInter.value,
-        amount = dataOrderSaved!!.data.paymentData.amount.toString(),
+        amount = dataOrderSaved!!.data.listPaymentData.find { it.name.equals("amount") }?.value,
         method = methodsSelected!!.code
     )
 
@@ -227,7 +227,7 @@ fun createOrderInland(viewModel: InputViewModel, context: Context, appViewModel:
         cardName = nameCard,
         expireMonth = month,
         expireYear = year,
-        amount = dataOrderSaved!!.data.paymentData.amount.toString(),
+        amount = dataOrderSaved!!.data.listPaymentData.find { it.name.equals("amount") }?.value,
         method = methodsSelected!!.code
     )
 

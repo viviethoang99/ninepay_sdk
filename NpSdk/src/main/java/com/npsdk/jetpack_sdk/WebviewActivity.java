@@ -121,6 +121,9 @@ public class WebviewActivity extends AppCompatActivity {
         webSettings.setLoadsImagesAutomatically(true);
         webSettings.setDomStorageEnabled(true);
         webSettings.setSupportMultipleWindows(true);
+        webSettings.setSupportZoom(true);
+        webSettings.setDisplayZoomControls(false);
+        webSettings.setBuiltInZoomControls(true);
         webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
         webSettings.setMediaPlaybackRequiresUserGesture(false);
         webSettings.setPluginState(WebSettings.PluginState.ON);

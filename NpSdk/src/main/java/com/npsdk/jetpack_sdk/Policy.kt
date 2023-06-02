@@ -1,8 +1,7 @@
 package com.npsdk.jetpack_sdk
 
-import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,8 +24,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.npsdk.jetpack_sdk.theme.fontAppDefault
 import com.npsdk.R
+import com.npsdk.jetpack_sdk.theme.fontAppDefault
 
 
 @Composable
@@ -49,7 +48,10 @@ fun PolicyView(callBack: (Boolean) -> Unit) {
                 color = colorResource(R.color.green), fontFamily = fontAppDefault, fontSize = 12.sp
             )
         ) {
-            appendLink("Điều khoản và chính sách", "https://9pay.vn/dieu-khoan#dieu-khoan-su-dung")
+            appendLink(
+                "Điều khoản và chính sách",
+                dataOrderSaved?.data?.policyLink ?: "https://9pay.vn/dieu-khoan#dieu-khoan-su-dung"
+            )
         }
     }
 
@@ -75,15 +77,7 @@ fun PolicyView(callBack: (Boolean) -> Unit) {
             text = annotatedString,
             onClick = { offset ->
                 annotatedString.onLinkClick(offset) { link ->
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    intent.setPackage("com.android.chrome")
-                    try {
-                        context.startActivity(intent)
-                    } catch (ex: ActivityNotFoundException) {
-                        intent.setPackage(null)
-                        context.startActivity(Intent.createChooser(intent, "Chọn trình duyệt"))
-                    }
+                    openPolicy(context, link)
                 }
             })
     }
@@ -100,4 +94,10 @@ private fun AnnotatedString.onLinkClick(offset: Int, onClick: (String) -> Unit) 
     getStringAnnotations(start = offset, end = offset).firstOrNull()?.let {
         onClick(it.item)
     }
+}
+
+private fun openPolicy(context: Context, url: String) {
+    val intent = Intent(context, WebviewActivity::class.java)
+    intent.putExtra("url", "https://drive.google.com/viewerng/viewer?embedded=true&url=$url")
+    context.startActivity(intent)
 }

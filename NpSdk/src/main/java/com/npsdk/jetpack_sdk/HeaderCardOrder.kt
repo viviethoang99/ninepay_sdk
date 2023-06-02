@@ -26,7 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import com.npsdk.R
-import com.npsdk.jetpack_sdk.base.Utils
+import com.npsdk.jetpack_sdk.base.Utils.formatMoney
 import com.npsdk.jetpack_sdk.repository.model.ValidatePaymentModel
 import com.npsdk.jetpack_sdk.theme.fontAppBold
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
@@ -35,6 +35,8 @@ import kotlin.math.roundToInt
 
 @Composable
 private fun BoxCollapse(data: ValidatePaymentModel, onClick: () -> Unit) {
+    var description: String = data.data.listPaymentData.find { it.name.equals("description") }?.value ?: ""
+    var amount: Int? = (data.data.listPaymentData.find { it.name.equals("amount") }?.value as String).toInt()
     Box(
         modifier = Modifier.fillMaxWidth().clip(shape = RoundedCornerShape(12.dp)).background(Color.White)
     ) {
@@ -42,18 +44,22 @@ private fun BoxCollapse(data: ValidatePaymentModel, onClick: () -> Unit) {
             modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 16.dp, end = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
             Text(
-                text = data.data.paymentData.description, style = TextStyle(
+                text = description, style = TextStyle(
                     fontWeight = FontWeight.W400, color = colorResource(
                         id = R.color.titleText
                     ), fontSize = 12.sp, fontFamily = fontAppDefault
                 )
             )
-            Text(
-                text = Utils.formatMoney(data.data.paymentData.amount), style = TextStyle(
-                    fontWeight = FontWeight.W600, fontSize = 18.sp, fontFamily = fontAppBold
+            amount?.let {
+                Text(
+                    text = formatMoney(it),
+                    style = TextStyle(
+                        fontWeight = FontWeight.W600, fontSize = 18.sp, fontFamily = fontAppBold
+                    )
                 )
-            )
+            }
             Spacer(modifier = Modifier.height(10.dp))
             Box(
                 Modifier.height(1.dp).fillMaxWidth().background(Color.Gray, shape = DottedShape(step = 5.dp))
@@ -89,19 +95,19 @@ private fun BoxCollapse(data: ValidatePaymentModel, onClick: () -> Unit) {
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun HeaderOrder(data: ValidatePaymentModel) {
-    val labelItem: ArrayList<LabelItem> = arrayListOf()
-    val paymentData = data.data.paymentData
+//    val labelItem: ArrayList<LabelItem> = arrayListOf()
+    val paymentData = data.data.listPaymentData
     val merchantInfo = data.data.merchantInfo
 
-    val invoiceNo = paymentData.invoiceNo
-    val nameMerchant = merchantInfo.name
-    val description = paymentData.description
-    val amout = Utils.formatMoney(paymentData.amount)
-    labelItem.add(LabelItem("Mã giao dịch", invoiceNo))
-    labelItem.add(LabelItem("Đơn vị cung cấp", nameMerchant))
-    labelItem.add(LabelItem("Nội dung", description))
-    labelItem.add(LabelItem("Giá trị đơn hàng", amout))
-    labelItem.add(LabelItem("Phí giao dịch", ""))
+//    val invoiceNo = paymentData.invoiceNo
+//    val nameMerchant = merchantInfo.name
+//    val description = paymentData.description
+//    val amout = Utils.formatMoney(paymentData.amount)
+//    labelItem.add(LabelItem("Mã giao dịch", invoiceNo))
+//    labelItem.add(LabelItem("Đơn vị cung cấp", nameMerchant))
+//    labelItem.add(LabelItem("Nội dung", description))
+//    labelItem.add(LabelItem("Giá trị đơn hàng", amout))
+//    labelItem.add(LabelItem("Phí giao dịch", ""))
 
     var isExpanded by remember { mutableStateOf(true) }
 
@@ -115,14 +121,14 @@ fun HeaderOrder(data: ValidatePaymentModel) {
             Column(
                 modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 0.dp)
             ) {
-                labelItem.map { labelItem ->
+                data.data.listPaymentData.map { rowItem ->
                     Row(
                         modifier = Modifier.padding(bottom = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.End
                     ) {
                         Text(
-                            labelItem.name,
+                            rowItem.name,
                             modifier = Modifier.weight(1f),
                             textAlign = TextAlign.Start,
                             style = TextStyle(
@@ -134,7 +140,7 @@ fun HeaderOrder(data: ValidatePaymentModel) {
                         )
 
                         Text(
-                            text = labelItem.value,
+                            text = rowItem.value,
                             modifier = Modifier.weight(1f),
                             textAlign = TextAlign.End,
                             style = TextStyle(fontFamily = fontAppBold, fontSize = 12.sp)
@@ -142,6 +148,7 @@ fun HeaderOrder(data: ValidatePaymentModel) {
                         )
                     }
                 }
+
                 Spacer(modifier = Modifier.height(10.dp))
                 Box(
                     Modifier.height(1.dp).fillMaxWidth().background(Color.Gray, shape = DottedShape(step = 5.dp))
