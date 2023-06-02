@@ -26,7 +26,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
-import com.npsdk.module.R
+import com.npsdk.R
 
 
 @Composable

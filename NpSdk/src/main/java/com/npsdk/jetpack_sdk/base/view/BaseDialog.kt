@@ -20,7 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.npsdk.jetpack_sdk.theme.fontAppBold
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
 import kotlinx.coroutines.*
-import com.npsdk.module.R
+import com.npsdk.R
 import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 
 @Composable

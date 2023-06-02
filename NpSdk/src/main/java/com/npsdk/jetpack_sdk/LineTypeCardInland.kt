@@ -19,7 +19,7 @@ import com.npsdk.jetpack_sdk.base.view.ImageFromUrl
 import com.npsdk.jetpack_sdk.theme.fontAppBold
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
-import com.npsdk.module.R
+import com.npsdk.R
 
 @Composable
 fun LineTypeCardInland() {

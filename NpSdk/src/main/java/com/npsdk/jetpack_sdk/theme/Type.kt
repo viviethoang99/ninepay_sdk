@@ -6,7 +6,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.npsdk.module.R
+import com.npsdk.R
 
 val fontAppBold = FontFamily(Font(R.font.svn_poppins_semibold))
 val fontAppDefault = FontFamily(Font(R.font.svn_poppins_regular))

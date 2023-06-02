@@ -19,12 +19,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.npsdk.LibListener;
-import com.npsdk.jetpack_sdk.OrderActivity;
+import com.npsdk.jetpack_sdk.PasswordActivity;
 import com.npsdk.module.NPayLibrary;
 import com.npsdk.module.model.SdkConfig;
 import com.npsdk.module.utils.Actions;
 import com.npsdk.module.utils.Flavor;
-import com.npsdk.jetpack_sdk.ErrorPaymentActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 	public static final String TAG = "MainActivityLOG";
@@ -52,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		LinearLayout ll_mua_the_dich_vu = findViewById(R.id.ll_mua_the_dich_vu);
 		LinearLayout ll_mua_the_dt = findViewById(R.id.ll_mua_the_dt);
 		LinearLayout ll_nap_data = findViewById(R.id.ll_nap_data);
+		LinearLayout testClick = findViewById(R.id.test_click);
 		LinearLayout layout_sdv = findViewById(R.id.layout_sdv);
 		RelativeLayout rlInfo = findViewById(R.id.rl_info);
 		ImageView btn_eyes = findViewById(R.id.btn_eyes);
@@ -86,11 +86,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		rlInfo.setOnClickListener(this);
 		btnClose.setOnClickListener(this);
 		btnThanhToan.setOnClickListener(this);
+		testClick.setOnClickListener(this);
 		// Create flavor by packagen name test
 		String flavorEnv = Flavor.setEnvTest(this);
 		SdkConfig sdkConfig = new SdkConfig.Builder(this).merchantCode("sdk_test").uid(null).env(flavorEnv).brandColor(0xff15AE62).build();
 		initSdk(sdkConfig);
 
+//		Intent intent = new Intent(this, PasswordActivity.class);
+//		intent.putExtra("url", url);
+//		startActivity(intent);
 	}
 
 
@@ -195,11 +199,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			case R.id.layout_sdv:
 			case R.id.rl_info:
 				Log.d(TAG, "onClick: layout_sdv");
-//				NPayLibrary.getInstance().openWallet(Actions.OPEN_WALLET);
-				String url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODU2MzExNzQsImludm9pY2Vfbm8iOiJCaVJSWnhzRSIsImFtb3VudCI6MTAwMDAsImRlc2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0NzY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJtZXRob2QiOiI5UEFZIn0%3D&signature=btYIvja%2B3ca4m%2Fy7g%2FtcIxxhzHgrJ7FM46seHsfTSWY%3D";
-				Intent intent = new Intent(v.getContext(), OrderActivity.class);
-				intent.putExtra("url", url);
-				startActivity(intent);
+				NPayLibrary.getInstance().openWallet(Actions.OPEN_WALLET);
+//				String url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODU2MzExNzQsImludm9pY2Vfbm8iOiJCaVJSWnhzRSIsImFtb3VudCI6MTAwMDAsImRlc2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0NzY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJtZXRob2QiOiI5UEFZIn0%3D&signature=btYIvja%2B3ca4m%2Fy7g%2FtcIxxhzHgrJ7FM46seHsfTSWY%3D";
+//				Intent intent = new Intent(v.getContext(), OrderActivity.class);
+//				intent.putExtra("url", url);
+//				startActivity(intent);
 				break;
 			case R.id.btnClose:
 				layoutGate.setVisibility(View.GONE);
@@ -208,6 +212,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				//paste url thanh toán vào hàm pay
 				String test = "";
 				NPayLibrary.getInstance().pay(test);
+				break;
+			case R.id.test_click:
+				Intent intent = new Intent(this, PasswordActivity.class);
+				startActivity(intent);
 				break;
 
 		}
