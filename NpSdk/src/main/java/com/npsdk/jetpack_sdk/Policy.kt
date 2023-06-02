@@ -97,7 +97,7 @@ private fun AnnotatedString.onLinkClick(offset: Int, onClick: (String) -> Unit) 
 }
 
 private fun openPolicy(context: Context, url: String) {
-    val intent = Intent(context, WebviewActivity::class.java)
-    intent.putExtra("url", "https://drive.google.com/viewerng/viewer?embedded=true&url=$url")
+    val intent = Intent(context, PolicyActivity::class.java)
+    intent.putExtra("url", url)
     context.startActivity(intent)
 }

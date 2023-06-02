@@ -99,7 +99,7 @@ private fun Body(paddingValues: PaddingValues?) {
             }
 
             item {
-                PolicyView(callBack = {
+                if (isInternational()) PolicyView(callBack = {
                     isSelectedPolicy = it
                 })
             }

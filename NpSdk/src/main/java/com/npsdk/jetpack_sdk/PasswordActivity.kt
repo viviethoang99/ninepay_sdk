@@ -108,14 +108,16 @@ class PasswordActivity : ComponentActivity() {
                         fontFamily = fontAppBold
                     )
                 )
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-                Box (modifier = Modifier.clickableWithoutRipple {
+                Box (
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.clickableWithoutRipple {
                     focusRequester.requestFocus()
                     keyboardController?.show()
                 }) {
                     BasicTextField(
-                        modifier = Modifier.fillMaxWidth().height(60.dp)
+                        modifier = Modifier.fillMaxWidth().height(40.dp)
                             .background(colorResource(R.color.white)).focusRequester(focusRequester),
                         maxLines = 1,
                         minLines = 1,
@@ -136,7 +138,14 @@ class PasswordActivity : ComponentActivity() {
                     LineDot(passwordStr.length)
                 }
 
-                Spacer(modifier = Modifier.height(30.dp))
+
+                Text("Mật khẩu không chính xác, bạn còn 2 lần thử", style = TextStyle(
+                    color = colorResource(R.color.red),
+                    fontSize = 11.sp,
+                    fontFamily = fontAppDefault
+                ))
+
+                Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
                     "Quên mật khẩu?",
@@ -159,7 +168,7 @@ class PasswordActivity : ComponentActivity() {
     private fun LineDot(lengthPin: Int) {
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
-            modifier = Modifier.height(50.dp).fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         ) {
             items(6) { index ->
                 Box(
