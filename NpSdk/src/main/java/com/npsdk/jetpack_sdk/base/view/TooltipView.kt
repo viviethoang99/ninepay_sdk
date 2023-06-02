@@ -21,7 +21,7 @@ import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.BalloonSizeSpec
 import com.skydoves.balloon.compose.Balloon
 import com.skydoves.balloon.compose.rememberBalloonBuilder
-import com.npsdk.module.R
+import com.npsdk.R
 
 @Preview(showBackground = true)
 @Composable

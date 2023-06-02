@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.npsdk.module">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -60,6 +59,14 @@
                 android:name="com.npsdk.jetpack_sdk.OrderActivity"
                 android:exported="false"
                 android:label="@string/title_activity_order"
+                android:screenOrientation="portrait"
+                android:theme="@style/Theme.PaymentNinepay"
+                android:windowSoftInputMode="adjustResize"/>
+
+        <activity
+                android:name="com.npsdk.jetpack_sdk.PasswordActivity"
+                android:exported="false"
+                android:label="@string/title_activity_password"
                 android:screenOrientation="portrait"
                 android:theme="@style/Theme.PaymentNinepay"
                 android:windowSoftInputMode="adjustResize"/>

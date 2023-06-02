@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import com.npsdk.R;
 import com.npsdk.module.utils.*;
 import com.rw.keyboardlistener.KeyboardUtils;
 import org.json.JSONException;

@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
-import com.npsdk.module.R
+import com.npsdk.R
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable

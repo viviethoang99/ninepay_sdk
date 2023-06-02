@@ -32,8 +32,7 @@ import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.npsdk.jetpack_sdk.*
 import com.npsdk.jetpack_sdk.base.view.*
 import com.npsdk.jetpack_sdk.repository.*
-import com.npsdk.module.R
-
+import com.npsdk.R
 
 class InputCardActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)

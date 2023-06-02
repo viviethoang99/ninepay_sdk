@@ -10,7 +10,7 @@ import android.webkit.*;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.npsdk.module.NPayLibrary;
-import com.npsdk.module.R;
+import com.npsdk.R;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

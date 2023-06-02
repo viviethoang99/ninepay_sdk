@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.dt.composedatepicker.ComposeCalendar
 import com.dt.composedatepicker.SelectDateListener
 import java.util.*
-import com.npsdk.module.R
+import com.npsdk.R
 
 @Composable
 fun DatePicker(onDateSelected: (month: Int, year: Int) -> Unit, onCancel: () -> Unit) {

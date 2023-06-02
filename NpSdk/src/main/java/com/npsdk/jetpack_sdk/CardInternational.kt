@@ -24,7 +24,7 @@ import com.npsdk.jetpack_sdk.base.view.*
 import com.npsdk.jetpack_sdk.theme.fontAppBold
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.steliospapamichail.creditcardmasker.viewtransformations.CardNumberMask
-import com.npsdk.module.R
+import com.npsdk.R
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable

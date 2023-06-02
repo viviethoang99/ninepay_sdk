@@ -40,7 +40,7 @@ import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
 import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import com.npsdk.jetpack_sdk.viewmodel.OrderViewModel
-import com.npsdk.module.R
+import com.npsdk.R
 import com.npsdk.jetpack_sdk.base.view.*
 import com.npsdk.jetpack_sdk.theme.fontAppBold
 
