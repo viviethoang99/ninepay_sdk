@@ -26,7 +26,7 @@ object Utils {
         return month to year
     }
 
-    fun formatMoney(amount: Int): String {
+    fun formatMoney(amount: Any): String {
         val decimalFormatSymbols = DecimalFormatSymbols(Locale("vi", "VN"))
         decimalFormatSymbols.groupingSeparator = '.'
         decimalFormatSymbols.decimalSeparator = '.'
@@ -43,11 +43,5 @@ object Utils {
         } catch (e: Exception) {
             return ""
         }
-    }
-
-    fun getValueParamsURL(url: String, query: String) {
-        val uri = Uri.parse(url)
-        val value = uri.getQueryParameter(query)
-        print(value)
     }
 }

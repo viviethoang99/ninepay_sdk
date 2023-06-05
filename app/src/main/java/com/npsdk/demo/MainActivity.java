@@ -216,9 +216,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				break;
 			case R.id.test_click:
 //				Intent intent = new Intent(this, PasswordActivity.class);
-				Intent intent = new Intent(this, OrderActivity.class);
-				intent.putExtra("url", "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODU0OTkzMDMsImludm9pY2Vfbm8iOiJkOEFFMGJKdyIsImFtb3VudCI6MTAwMDAsImRlc2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0NzY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJtZXRob2QiOiI5UEFZIn0%3D&signature=LcASMO3nwXivlpUrIiG%2B%2FEwCZAXOIcGYTtC99nk3BRk%3D");
-				startActivity(intent);
+//				Intent intent = new Intent(this, OrderActivity.class);
+//				intent.putExtra("url", "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODU0OTkzMDMsImludm9pY2Vfbm8iOiJkOEFFMGJKdyIsImFtb3VudCI6MTAwMDAsImRlc2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0NzY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJtZXRob2QiOiI5UEFZIn0%3D&signature=LcASMO3nwXivlpUrIiG%2B%2FEwCZAXOIcGYTtC99nk3BRk%3D");
+//				startActivity(intent);
+				NPayLibrary.getInstance().payWithWallet("https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODU0OTkzMDMsImludm9pY2Vfbm8iOiJkOEFFMGJKdyIsImFtb3VudCI6MTAwMDAsImRlc2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0NzY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJtZXRob2QiOiI5UEFZIn0%3D&signature=LcASMO3nwXivlpUrIiG%2B%2FEwCZAXOIcGYTtC99nk3BRk%3D");
 				break;
 
 		}

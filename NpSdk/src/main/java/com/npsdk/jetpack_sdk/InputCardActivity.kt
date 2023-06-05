@@ -22,17 +22,16 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.npsdk.R
 import com.npsdk.jetpack_sdk.base.Validator
+import com.npsdk.jetpack_sdk.base.view.*
+import com.npsdk.jetpack_sdk.repository.*
 import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamsInland
 import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamsInter
 import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamsWallet
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
 import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
-import com.npsdk.jetpack_sdk.*
-import com.npsdk.jetpack_sdk.base.view.*
-import com.npsdk.jetpack_sdk.repository.*
-import com.npsdk.R
 
 class InputCardActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -81,7 +80,7 @@ private fun Body(paddingValues: PaddingValues?) {
             )
         ) {
             item {
-                if (dataOrderSaved != null) HeaderOrder(dataOrderSaved!!)
+                if (DataOrder.dataOrderSaved != null) HeaderOrder(DataOrder.dataOrderSaved!!)
             }
 
             item {
@@ -122,7 +121,7 @@ private fun Body(paddingValues: PaddingValues?) {
                 return@FooterButton
             }
 
-            activityOrder?.finish() // Close order activity
+            DataOrder.activityOrder?.finish() // Close order activity
 
             when {
                 isInternational() -> createOrderInternational(inputViewModel, context, appViewModel)
@@ -166,15 +165,17 @@ fun createOrderInternational(viewModel: InputViewModel, context: Context, appVie
     val expCardStr = viewModel.expirationDateCardInter.value.split("/")
     val month: String = expCardStr.first()
     val year: String = expCardStr[1]
+    var amount: Any? = DataOrder.dataOrderSaved!!.data.listPaymentData.find { it.name.equals("Giá trị đơn hàng") }?.value
+    if (amount is Double) amount = amount.toInt()
     val params = CreateOrderParamsInter(
-        url = urlData,
+        url = DataOrder.urlData,
         cardNumber = viewModel.numberOfCardInter.value,
         cardName = viewModel.nameOfCardInter.value,
         expireMonth = month,
         expireYear = year,
         cvc = viewModel.cvvCardInter.value,
-        amount = dataOrderSaved!!.data.listPaymentData.find { it.name.equals("amount") }?.value,
-        method = methodsSelected!!.code
+        amount = amount.toString(),
+        method = DataOrder.methodsSelected!!.code
     )
 
     appViewModel.showLoading()
@@ -221,14 +222,16 @@ fun createOrderInland(viewModel: InputViewModel, context: Context, appViewModel:
     val expCardStr = effectiveDay.split("/")
     val month: String = expCardStr.first()
     val year: String = expCardStr[1]
+    var amount : Any? = DataOrder.dataOrderSaved!!.data.listPaymentData.find { it.name.equals("Giá trị đơn hàng") }?.value
+    if (amount is Double) amount = amount.toInt()
     val params = CreateOrderParamsInland(
-        url = urlData,
+        url = DataOrder.urlData,
         cardNumber = numberCard,
         cardName = nameCard,
         expireMonth = month,
         expireYear = year,
-        amount = dataOrderSaved!!.data.listPaymentData.find { it.name.equals("amount") }?.value,
-        method = methodsSelected!!.code
+        amount = amount.toString(),
+        method = DataOrder.methodsSelected!!.code
     )
 
     appViewModel.showLoading()
@@ -250,7 +253,7 @@ fun createOrderInland(viewModel: InputViewModel, context: Context, appViewModel:
 fun createOrderWallet(viewModel: InputViewModel, context: Context, appViewModel: AppViewModel) {
     appViewModel.showLoading()
     val params = CreateOrderParamsWallet(
-        url = urlData, method = methodsSelected!!.code
+        url = DataOrder.urlData, method = DataOrder.methodsSelected!!.code
     )
     CreateOrderWalletRepo().create(context, params, CallbackCreateOrder {
         appViewModel.hideLoading()

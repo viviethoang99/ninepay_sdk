@@ -1,6 +1,6 @@
 package com.npsdk.jetpack_sdk.base
 
-import com.npsdk.jetpack_sdk.listBankModel
+import com.npsdk.jetpack_sdk.DataOrder
 import com.npsdk.jetpack_sdk.repository.model.INTERNATIONAL
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 
@@ -17,14 +17,14 @@ object Validator {
             input.length < 16 -> stringError = "Số thẻ không hợp lệ. Vui lòng kiểm tra lại."
         }
 
-        listBankModel?.data?.INTERNATIONAL?.isNotEmpty().let {
+        DataOrder.listBankModel?.data?.INTERNATIONAL?.isNotEmpty().let {
             if (input.isNotBlank()) {
-                val isMatchPrefix = checkMatchPrefixInter(listBankModel!!.data!!.INTERNATIONAL, input, inputViewModel)
+                val isMatchPrefix = checkMatchPrefixInter(DataOrder.listBankModel!!.data!!.INTERNATIONAL, input, inputViewModel)
 
                 // Cả 2 điệu kiện điều không thỏa mãn
                 if (!isMatchPrefix) {
                     val isMatchDistance =
-                        checkMatchDistanceInter(listBankModel!!.data!!.INTERNATIONAL, input.toLong(), inputViewModel)
+                        checkMatchDistanceInter(DataOrder.listBankModel!!.data!!.INTERNATIONAL, input.toLong(), inputViewModel)
                     if (!isMatchDistance) stringError =
                         "Thẻ này chưa được hỗ trợ thanh toán. Vui lòng thanh toán thẻ khác."
                 }
@@ -42,7 +42,7 @@ object Validator {
         }
 
 
-        listBankModel?.data?.INLAND?.let {
+        DataOrder.listBankModel?.data?.INLAND?.let {
             var isSupport = false
             for (item in it) {
                 if (input.startsWith(item.prefix.toString())) {

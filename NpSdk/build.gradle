@@ -68,9 +68,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
-    implementation 'com.squareup.okhttp3:okhttp:3.14.9'
     implementation 'com.squareup.retrofit2:converter-scalars:2.5.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.8.1'
     implementation 'androidx.webkit:webkit:1.5.0'
     implementation 'com.airbnb.android:lottie:6.0.0'
     implementation 'com.github.ravindu1024:android-keyboardlistener:1.0.0'
@@ -94,6 +92,10 @@ dependencies {
     implementation 'com.github.SteliosPapamichail:CreditCardHelper:v1.0.0'
     implementation "com.github.skydoves:balloon-compose:1.5.2"
     implementation 'io.github.grizzi91:bouquet:1.1.2'
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.11.0"))
+    // define any required OkHttp artifacts without version
+    implementation("com.squareup.okhttp3:okhttp")
+    implementation("com.squareup.okhttp3:logging-interceptor")
 }
 
 afterEvaluate {

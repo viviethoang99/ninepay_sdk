@@ -12,21 +12,21 @@ import retrofit2.http.POST;
 public interface ApiService {
 
     @FormUrlEncoded
-    @POST("sdk/v1/paygate-whitelabel/validate-order")
+    @POST("/sdk/v1/paygate-whitelabel/validate-order")
     Call<ValidatePaymentModel> check(@Field("data") String url);
 
     @FormUrlEncoded
-    @POST("sdk/v1/paygate-whitelabel/create-order")
+    @POST("/sdk/v1/paygate-whitelabel/create-order")
     Call<CreateOrderCardModel> createOrderCardInter(@Field("data") String url, @Field("card_number") String cardNumber, @Field("card_name") String cardName, @Field("expire_month") String expireMonth, @Field("expire_year") String expireYear, @Field("cvc") String cvc, @Field("amount") String amount, @Field("method") String method);
 
     @FormUrlEncoded
-    @POST("sdk/v1/paygate-whitelabel/create-order")
+    @POST("/sdk/v1/paygate-whitelabel/create-order")
     Call<CreateOrderCardModel> createOrderCardInland(@Field("data") String url, @Field("card_number") String cardNumber, @Field("card_name") String cardName, @Field("expire_month") String expireMonth, @Field("expire_year") String expireYear, @Field("amount") String amount, @Field("method") String method);
 
     @FormUrlEncoded
-    @POST("sdk/v1/paygate-whitelabel/create-order")
+    @POST("/sdk/v1/paygate-whitelabel/create-order")
     Call<CreateOrderCardModel> createOrderCardWallet(@Field("data") String url, @Field("method") String method);
 
-    @GET("sdk/v1/paygate-whitelabel/banks-support")
+    @GET("/sdk/v1/paygate-whitelabel/banks-support")
     Call<ListBankModel> getListBanks();
 }

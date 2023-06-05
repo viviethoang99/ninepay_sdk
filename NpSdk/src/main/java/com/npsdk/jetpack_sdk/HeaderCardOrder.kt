@@ -35,8 +35,9 @@ import kotlin.math.roundToInt
 
 @Composable
 private fun BoxCollapse(data: ValidatePaymentModel, onClick: () -> Unit) {
-    var description: String = data.data.listPaymentData.find { it.name.equals("description") }?.value ?: ""
-    var amount: Int? = (data.data.listPaymentData.find { it.name.equals("amount") }?.value as String).toInt()
+    var description: Any = data.data.listPaymentData.find { it.name.equals("Nội dung") }?.value ?: ""
+    var amount: Any? = (data.data.listPaymentData.find { it.name.equals("Giá trị đơn hàng") }?.value)
+    if (amount is Double) amount = amount.toInt()
     Box(
         modifier = Modifier.fillMaxWidth().clip(shape = RoundedCornerShape(12.dp)).background(Color.White)
     ) {
@@ -46,7 +47,7 @@ private fun BoxCollapse(data: ValidatePaymentModel, onClick: () -> Unit) {
         ) {
 
             Text(
-                text = description, style = TextStyle(
+                text = description.toString(), style = TextStyle(
                     fontWeight = FontWeight.W400, color = colorResource(
                         id = R.color.titleText
                     ), fontSize = 12.sp, fontFamily = fontAppDefault
@@ -91,23 +92,9 @@ private fun BoxCollapse(data: ValidatePaymentModel, onClick: () -> Unit) {
     }
 }
 
-//@Preview(showBackground = true)
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun HeaderOrder(data: ValidatePaymentModel) {
-//    val labelItem: ArrayList<LabelItem> = arrayListOf()
-    val paymentData = data.data.listPaymentData
-    val merchantInfo = data.data.merchantInfo
-
-//    val invoiceNo = paymentData.invoiceNo
-//    val nameMerchant = merchantInfo.name
-//    val description = paymentData.description
-//    val amout = Utils.formatMoney(paymentData.amount)
-//    labelItem.add(LabelItem("Mã giao dịch", invoiceNo))
-//    labelItem.add(LabelItem("Đơn vị cung cấp", nameMerchant))
-//    labelItem.add(LabelItem("Nội dung", description))
-//    labelItem.add(LabelItem("Giá trị đơn hàng", amout))
-//    labelItem.add(LabelItem("Phí giao dịch", ""))
 
     var isExpanded by remember { mutableStateOf(true) }
 
@@ -140,7 +127,7 @@ fun HeaderOrder(data: ValidatePaymentModel) {
                         )
 
                         Text(
-                            text = rowItem.value,
+                            text = if (rowItem.value is Double || rowItem.value is Int) formatMoney(rowItem.value) else rowItem.value.toString(),
                             modifier = Modifier.weight(1f),
                             textAlign = TextAlign.End,
                             style = TextStyle(fontFamily = fontAppBold, fontSize = 12.sp)
@@ -183,11 +170,6 @@ fun HeaderOrder(data: ValidatePaymentModel) {
 
 
 }
-
-data class LabelItem(
-    val name: String,
-    val value: String,
-)
 
 private data class DottedShape(
     val step: Dp,

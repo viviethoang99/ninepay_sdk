@@ -28,40 +28,44 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.npsdk.jetpack_sdk.repository.model.ListBankModel
-import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
+import com.npsdk.R
+import com.npsdk.jetpack_sdk.base.view.*
 import com.npsdk.jetpack_sdk.repository.CallbackListBank
 import com.npsdk.jetpack_sdk.repository.CallbackOrder
 import com.npsdk.jetpack_sdk.repository.CheckValidatePayment
 import com.npsdk.jetpack_sdk.repository.GetListBank
+import com.npsdk.jetpack_sdk.repository.model.ListBankModel
 import com.npsdk.jetpack_sdk.repository.model.ValidatePaymentModel
 import com.npsdk.jetpack_sdk.repository.model.validate_payment.Methods
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
+import com.npsdk.jetpack_sdk.theme.fontAppBold
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
 import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
+import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.npsdk.jetpack_sdk.viewmodel.OrderViewModel
-import com.npsdk.R
-import com.npsdk.jetpack_sdk.base.view.*
-import com.npsdk.jetpack_sdk.theme.fontAppBold
 
-var urlData: String = ""
-var dataOrderSaved: ValidatePaymentModel? = null
-var methodsSelected: Methods? = null
-var listBankModel: ListBankModel? = null
-var activityOrder: Activity? = null
+class DataOrder {
+    companion object {
+        var urlData: String = ""
+        var dataOrderSaved: ValidatePaymentModel? = null
+        var methodsSelected: Methods? = null
+        var listBankModel: ListBankModel? = null
+        var activityOrder: Activity? = null
+    }
+}
 
-fun isWallet(): Boolean = methodsSelected?.code == "WALLET"
-fun isInland(): Boolean = methodsSelected?.code == "ATM_CARD"
-fun isInternational(): Boolean = methodsSelected?.code == "CREDIT_CARD"
+fun isWallet(): Boolean = DataOrder.methodsSelected?.code == "WALLET"
+fun isInland(): Boolean = DataOrder.methodsSelected?.code == "ATM_CARD"
+fun isInternational(): Boolean = DataOrder.methodsSelected?.code == "CREDIT_CARD"
 
 class OrderActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        activityOrder = this
+        DataOrder.activityOrder = this
         val bundle = intent.extras
         if (bundle != null) {
-            urlData = bundle.getString("url") ?: ""
+            DataOrder.urlData = bundle.getString("url") ?: ""
         }
         setContent {
             PaymentNinepayTheme {
@@ -86,10 +90,15 @@ private fun Body() {
     val context = LocalContext.current
 
     LaunchedEffect(true) {
-        CheckValidatePayment().check(context, urlData, CallbackOrder { data ->
+        if (DataOrder.dataOrderSaved != null) {
+            modalOrderData = DataOrder.dataOrderSaved
+            return@LaunchedEffect
+        }
+        CheckValidatePayment().check(context, DataOrder.urlData, CallbackOrder { data ->
             modalOrderData = data
-            dataOrderSaved = data
+            DataOrder.dataOrderSaved = data
         })
+
     }
 
     if (modalOrderData == null) {
@@ -108,7 +117,7 @@ private fun Body() {
             item {
                 Box(modifier = Modifier.padding(horizontal = 12.dp)) {
                     ShowMethodPayment(modalOrderData!!, onItemClick = { itemCallback ->
-                        methodsSelected = itemCallback
+                        DataOrder.methodsSelected = itemCallback
                     })
                 }
             }
@@ -131,7 +140,7 @@ private fun Body() {
                     createOrderWallet(inputViewModel, context, appViewModel)
                     return@Footer
                 }
-                if (listBankModel != null) {
+                if (DataOrder.listBankModel != null) {
                     appViewModel.hideLoading()
                     context.startActivity(Intent(context, InputCardActivity::class.java))
                     return@Footer
@@ -139,7 +148,7 @@ private fun Body() {
                 appViewModel.showLoading()
                 GetListBank().get(context, CallbackListBank { response ->
                     appViewModel.hideLoading()
-                    listBankModel = response
+                    DataOrder.listBankModel = response
                     context.startActivity(Intent(context, InputCardActivity::class.java))
                 })
             })

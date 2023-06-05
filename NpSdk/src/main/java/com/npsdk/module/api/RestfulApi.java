@@ -1,32 +1,21 @@
 package com.npsdk.module.api;
 
 import android.content.Context;
-
-import com.npsdk.module.NPayLibrary;
 import com.npsdk.module.model.ActionMerchantResponse;
 import com.npsdk.module.model.RefreshTokenResponse;
 import com.npsdk.module.model.UserInfoResponse;
-import com.npsdk.module.utils.Constants;
 import com.npsdk.module.utils.Flavor;
-import com.npsdk.module.utils.Preference;
-
-import java.net.CookieManager;
-import java.net.CookiePolicy;
-import java.util.concurrent.TimeUnit;
-
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.Body;
-import retrofit2.http.Field;
-import retrofit2.http.FormUrlEncoded;
-import retrofit2.http.GET;
-import retrofit2.http.Header;
-import retrofit2.http.POST;
+import retrofit2.http.*;
+
+import java.net.CookieManager;
+import java.net.CookiePolicy;
+import java.util.concurrent.TimeUnit;
 
 public class RestfulApi {
     private PlfRestService restService;

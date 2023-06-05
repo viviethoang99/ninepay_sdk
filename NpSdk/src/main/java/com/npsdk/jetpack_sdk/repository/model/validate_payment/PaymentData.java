@@ -10,7 +10,7 @@ public class PaymentData {
     private String name;
     @SerializedName("value")
     @Expose
-    private String value;
+    private Object value;
 
     public String getName() {
         return name;
@@ -20,7 +20,7 @@ public class PaymentData {
         this.name = name;
     }
 
-    public String getValue() {
+    public Object getValue() {
         return value;
     }
 

@@ -71,9 +71,11 @@ public class NPayActivity extends AppCompatActivity {
             Uri.Builder builder = new Uri.Builder();
             JSONObject jsonObject = new JSONObject(data);
             String route = jsonObject.getString("route");
-
-            if (route.equals(Constants.VERIFY_PAYMENT_ROUTE)) {
-                String orderId = jsonObject.getString("order_id");
+            String orderId = "";
+            if (jsonObject.has("order_id")) {
+                orderId = jsonObject.getString("order_id");
+            }
+            if (route.equals(Constants.VERIFY_PAYMENT_ROUTE) && !orderId.contains("/merchant/payment/")) {
                 if (orderId.isEmpty()) {
                     Toast.makeText(NPayActivity.this, "Sai định dạng url", Toast.LENGTH_SHORT).show();
                     finish();
@@ -113,8 +115,7 @@ public class NPayActivity extends AppCompatActivity {
                 builder.scheme("https")
                         .encodedAuthority(Flavor.baseUrl.replaceAll("https://", ""))
                         .appendPath("v1")
-//						.appendPath("header")
-//                        .appendQueryParameter("route", jsonObject.getString("route"))
+                        .appendQueryParameter("route", route)
                         .appendQueryParameter("Merchant-Code", jsonObject.getString("Merchant-Code"))
                         .appendQueryParameter("Merchant-Uid", jsonObject.getString("Merchant-Uid"))
                         .appendQueryParameter("App-version-Code", "375")

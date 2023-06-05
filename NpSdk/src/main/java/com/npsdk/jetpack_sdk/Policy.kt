@@ -48,10 +48,8 @@ fun PolicyView(callBack: (Boolean) -> Unit) {
                 color = colorResource(R.color.green), fontFamily = fontAppDefault, fontSize = 12.sp
             )
         ) {
-            appendLink(
-                "Điều khoản và chính sách",
-                dataOrderSaved?.data?.policyLink ?: "https://9pay.vn/dieu-khoan#dieu-khoan-su-dung"
-            )
+            appendLink("Điều khoản và chính sách", DataOrder.dataOrderSaved?.data?.policyLink)
+
         }
     }
 
@@ -84,8 +82,10 @@ fun PolicyView(callBack: (Boolean) -> Unit) {
 
 }
 
-private fun AnnotatedString.Builder.appendLink(linkText: String, linkUrl: String) {
-    pushStringAnnotation(tag = linkUrl, annotation = linkUrl)
+private fun AnnotatedString.Builder.appendLink(linkText: String, linkUrl: String?) {
+    linkUrl?.let {
+        pushStringAnnotation(tag = linkUrl, annotation = linkUrl)
+    }
     append(linkText)
     pop()
 }
