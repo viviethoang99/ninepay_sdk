@@ -36,8 +36,6 @@ import kotlin.math.roundToInt
 @Composable
 private fun BoxCollapse(data: ValidatePaymentModel, onClick: () -> Unit) {
     var description: Any = data.data.listPaymentData.find { it.name.equals("Nội dung") }?.value ?: ""
-    var amount: Any? = (data.data.listPaymentData.find { it.name.equals("Giá trị đơn hàng") }?.value)
-    if (amount is Double) amount = amount.toInt()
     Box(
         modifier = Modifier.fillMaxWidth().clip(shape = RoundedCornerShape(12.dp)).background(Color.White)
     ) {
@@ -53,7 +51,7 @@ private fun BoxCollapse(data: ValidatePaymentModel, onClick: () -> Unit) {
                     ), fontSize = 12.sp, fontFamily = fontAppDefault
                 )
             )
-            amount?.let {
+            DataOrder.amount?.let {
                 Text(
                     text = formatMoney(it),
                     style = TextStyle(

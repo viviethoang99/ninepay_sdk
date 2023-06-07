@@ -2,6 +2,7 @@ package com.npsdk.jetpack_sdk
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -64,6 +66,15 @@ private fun Body(paddingValues: PaddingValues?) {
     val focusManager = LocalFocusManager.current
     var isSelectedPolicy = true
 
+    LaunchedEffect(true) {
+        if (DataOrder.listBankModel == null) {
+            appViewModel.showLoading()
+            GetListBank().get(context) { response ->
+                appViewModel.hideLoading()
+                DataOrder.listBankModel = response
+            }
+        }
+    }
     Box(
         modifier = Modifier.fillMaxSize().background(colorResource(id = R.color.background))
             .padding(top = paddingValues!!.calculateTopPadding()).clickableWithoutRipple {
@@ -84,7 +95,7 @@ private fun Body(paddingValues: PaddingValues?) {
             }
 
             item {
-                if (isInland()) CardInland(viewModel = inputViewModel) else if (isInternational()) CardInternational(
+                if (DataOrder.isInland()) CardInland(viewModel = inputViewModel) else if (DataOrder.isInternational()) CardInternational(
                     viewModel = inputViewModel
                 )
             }
@@ -98,7 +109,7 @@ private fun Body(paddingValues: PaddingValues?) {
             }
 
             item {
-                if (isInternational()) PolicyView(callBack = {
+                if (DataOrder.isInternational()) PolicyView(callBack = {
                     isSelectedPolicy = it
                 })
             }
@@ -124,8 +135,8 @@ private fun Body(paddingValues: PaddingValues?) {
             DataOrder.activityOrder?.finish() // Close order activity
 
             when {
-                isInternational() -> createOrderInternational(inputViewModel, context, appViewModel)
-                isInland() -> createOrderInland(inputViewModel, context, appViewModel)
+                DataOrder.isInternational() -> createOrderInternational(inputViewModel, context, appViewModel)
+                DataOrder.isInland() -> createOrderInland(inputViewModel, context, appViewModel)
             }
 
         }, modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter).padding(12.dp)
@@ -165,7 +176,7 @@ fun createOrderInternational(viewModel: InputViewModel, context: Context, appVie
     val expCardStr = viewModel.expirationDateCardInter.value.split("/")
     val month: String = expCardStr.first()
     val year: String = expCardStr[1]
-    var amount: Any? = DataOrder.dataOrderSaved!!.data.listPaymentData.find { it.name.equals("Giá trị đơn hàng") }?.value
+    var amount: Any? = DataOrder.amount
     if (amount is Double) amount = amount.toInt()
     val params = CreateOrderParamsInter(
         url = DataOrder.urlData,
@@ -175,7 +186,7 @@ fun createOrderInternational(viewModel: InputViewModel, context: Context, appVie
         expireYear = year,
         cvc = viewModel.cvvCardInter.value,
         amount = amount.toString(),
-        method = DataOrder.methodsSelected!!.code
+        method = DataOrder.selectedItemMethod?.code
     )
 
     appViewModel.showLoading()
@@ -222,7 +233,7 @@ fun createOrderInland(viewModel: InputViewModel, context: Context, appViewModel:
     val expCardStr = effectiveDay.split("/")
     val month: String = expCardStr.first()
     val year: String = expCardStr[1]
-    var amount : Any? = DataOrder.dataOrderSaved!!.data.listPaymentData.find { it.name.equals("Giá trị đơn hàng") }?.value
+    var amount: Any? = DataOrder.amount
     if (amount is Double) amount = amount.toInt()
     val params = CreateOrderParamsInland(
         url = DataOrder.urlData,
@@ -231,7 +242,7 @@ fun createOrderInland(viewModel: InputViewModel, context: Context, appViewModel:
         expireMonth = month,
         expireYear = year,
         amount = amount.toString(),
-        method = DataOrder.methodsSelected!!.code
+        method = DataOrder.selectedItemMethod?.code
     )
 
     appViewModel.showLoading()
@@ -253,7 +264,7 @@ fun createOrderInland(viewModel: InputViewModel, context: Context, appViewModel:
 fun createOrderWallet(viewModel: InputViewModel, context: Context, appViewModel: AppViewModel) {
     appViewModel.showLoading()
     val params = CreateOrderParamsWallet(
-        url = DataOrder.urlData, method = DataOrder.methodsSelected!!.code
+        url = DataOrder.urlData, method = DataOrder.selectedItemMethod?.code
     )
     CreateOrderWalletRepo().create(context, params, CallbackCreateOrder {
         appViewModel.hideLoading()

@@ -29,34 +29,44 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.npsdk.R
+import com.npsdk.jetpack_sdk.base.Utils
 import com.npsdk.jetpack_sdk.base.view.*
-import com.npsdk.jetpack_sdk.repository.CallbackListBank
 import com.npsdk.jetpack_sdk.repository.CallbackOrder
 import com.npsdk.jetpack_sdk.repository.CheckValidatePayment
-import com.npsdk.jetpack_sdk.repository.GetListBank
 import com.npsdk.jetpack_sdk.repository.model.ListBankModel
 import com.npsdk.jetpack_sdk.repository.model.ValidatePaymentModel
 import com.npsdk.jetpack_sdk.repository.model.validate_payment.Methods
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
 import com.npsdk.jetpack_sdk.theme.fontAppBold
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
-import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
-import com.npsdk.jetpack_sdk.viewmodel.OrderViewModel
 
 class DataOrder {
     companion object {
         var urlData: String = ""
         var dataOrderSaved: ValidatePaymentModel? = null
-        var methodsSelected: Methods? = null
+        var amount: Any? = null
         var listBankModel: ListBankModel? = null
         var activityOrder: Activity? = null
+
+        var selectedItemDefault by mutableStateOf<Methods?>(null)
+        var selectedItemMethod by mutableStateOf<Methods?>(null)
+        var balance by mutableStateOf<Int?>(null)
+
+        fun isWallet(): Boolean {
+            return selectedItemMethod?.code == "WALLET"
+        }
+
+        fun isInland(): Boolean {
+            return selectedItemMethod?.code == "ATM_CARD"
+        }
+
+        fun isInternational(): Boolean {
+            return selectedItemMethod?.code == "CREDIT_CARD"
+        }
     }
 }
 
-fun isWallet(): Boolean = DataOrder.methodsSelected?.code == "WALLET"
-fun isInland(): Boolean = DataOrder.methodsSelected?.code == "ATM_CARD"
-fun isInternational(): Boolean = DataOrder.methodsSelected?.code == "CREDIT_CARD"
 
 class OrderActivity : ComponentActivity() {
 
@@ -85,18 +95,22 @@ class OrderActivity : ComponentActivity() {
 @Composable
 private fun Body() {
     var modalOrderData by remember { mutableStateOf<ValidatePaymentModel?>(null) }
-    val appViewModel: AppViewModel = viewModel()
     val inputViewModel: InputViewModel = viewModel()
     val context = LocalContext.current
 
     LaunchedEffect(true) {
         if (DataOrder.dataOrderSaved != null) {
+            DataOrder.amount =
+                (DataOrder.dataOrderSaved!!.data.listPaymentData.find { it.name.equals("Giá trị đơn hàng") }?.value)
+            DataOrder.selectedItemMethod = DataOrder.selectedItemDefault
             modalOrderData = DataOrder.dataOrderSaved
             return@LaunchedEffect
         }
         CheckValidatePayment().check(context, DataOrder.urlData, CallbackOrder { data ->
             modalOrderData = data
             DataOrder.dataOrderSaved = data
+            DataOrder.amount =
+                (DataOrder.dataOrderSaved!!.data.listPaymentData.find { it.name.equals("Giá trị đơn hàng") }?.value)
         })
 
     }
@@ -117,7 +131,7 @@ private fun Body() {
             item {
                 Box(modifier = Modifier.padding(horizontal = 12.dp)) {
                     ShowMethodPayment(modalOrderData!!, onItemClick = { itemCallback ->
-                        DataOrder.methodsSelected = itemCallback
+                        DataOrder.selectedItemMethod = itemCallback
                     })
                 }
             }
@@ -130,27 +144,16 @@ private fun Body() {
                 }
             }
         }
-        if (appViewModel.isShowLoading) Box(Modifier.align(Alignment.Center)) {
-            LoadingView()
-        }
         Footer(modifier = Modifier.align(Alignment.BottomCenter).padding(horizontal = 16.dp),
 
             clickContinue = { ->
-                if (isWallet()) {
-                    createOrderWallet(inputViewModel, context, appViewModel)
+                // context.startActivity(Intent(context, PasswordActivity::class.java))
+                if (DataOrder.isWallet()) {
+//                    createOrderWallet(inputViewModel, context, appViewModel)
+                    context.startActivity(Intent(context, PasswordActivity::class.java))
                     return@Footer
                 }
-                if (DataOrder.listBankModel != null) {
-                    appViewModel.hideLoading()
-                    context.startActivity(Intent(context, InputCardActivity::class.java))
-                    return@Footer
-                }
-                appViewModel.showLoading()
-                GetListBank().get(context, CallbackListBank { response ->
-                    appViewModel.hideLoading()
-                    DataOrder.listBankModel = response
-                    context.startActivity(Intent(context, InputCardActivity::class.java))
-                })
+                context.startActivity(Intent(context, InputCardActivity::class.java))
             })
     }
 
@@ -160,17 +163,15 @@ private fun Body() {
 
 @Composable
 private fun Footer(modifier: Modifier, clickContinue: () -> Unit) {
-    val viewModel: OrderViewModel = viewModel()
     Column(
         modifier = modifier
     ) {
-
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.clip(RoundedCornerShape(8.dp)).fillMaxWidth().height(44.dp).background(
-                if (viewModel.selectedItemId.value == null) colorResource(R.color.grey) else colorResource(R.color.green)
+                if (DataOrder.selectedItemMethod == null) colorResource(R.color.grey) else colorResource(R.color.green)
             ).clickable {
-                if (viewModel.selectedItemId.value != null) clickContinue()
+                if (DataOrder.selectedItemMethod != null) clickContinue()
             },
         ) {
             androidx.compose.material.Text(
@@ -192,11 +193,14 @@ fun GreetingPreview() {
 
 @Composable
 private fun ShowMethodPayment(data: ValidatePaymentModel, onItemClick: (Methods) -> Unit) {
-    val viewModel: OrderViewModel = viewModel()
-    viewModel.listMethod = data.data.methods
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Spacer(modifier = Modifier.height(16.dp))
-        Text(
+        if (DataOrder.selectedItemDefault != null) Text(
+            text = "Phương thức thanh toán", style = TextStyle(
+                fontWeight = FontWeight.W600, fontSize = 12.sp, fontFamily = fontAppBold
+            )
+        ) else Text(
             text = "Chọn phương thức thanh toán", style = TextStyle(
                 fontWeight = FontWeight.W600, fontSize = 12.sp, fontFamily = fontAppBold
             )
@@ -205,15 +209,19 @@ private fun ShowMethodPayment(data: ValidatePaymentModel, onItemClick: (Methods)
         Column(
             modifier = Modifier.clip(shape = RoundedCornerShape(12.dp)).background(Color.White).padding(vertical = 8.dp)
         ) {
-            viewModel.listMethod.forEachIndexed { index, item ->
+            if (DataOrder.selectedItemDefault?.code == null) data.data.methods.forEachIndexed { index, item ->
 
                 Column {
-                    ItemRow(item, viewModel.listMethod[index].name == viewModel.selectedItemId.value) { ->
-                        viewModel.selectedItemId.value = item.name
+                    ItemRow(item, item.code == DataOrder.selectedItemMethod?.code) { ->
                         onItemClick(item)
                     }
-                    Divider(modifier = Modifier.padding(start = 50.dp), color = Color(0XFFF1F3F4))
+                    if (index != data.data.methods.size - 1) Divider(
+                        modifier = Modifier.padding(start = 50.dp),
+                        color = Color(0XFFF1F3F4)
+                    )
                 }
+            } else Column {
+                DataOrder.selectedItemDefault?.let { ItemRow(it, true) {} }
             }
         }
     }
@@ -237,14 +245,46 @@ private fun ItemRow(item: Methods, isChecked: Boolean, onItemClick: () -> Unit) 
             horizontalArrangement = Arrangement.SpaceBetween
 
         ) {
+            val parseAmount: Int =
+                if (DataOrder.amount is Double) (DataOrder.amount as Double).toInt() else (DataOrder.amount as Int)
+            Column {
+                Text(
+                    item.name,
+                    style = TextStyle(fontWeight = FontWeight.W600, fontSize = 13.sp, fontFamily = fontAppDefault)
+                )
+                DataOrder.balance?.let {
+                    if (it < parseAmount) Text(
+                        "${Utils.formatMoney(it)} - Không đủ",
+                        style = TextStyle(
+                            fontWeight = FontWeight.W400,
+                            fontSize = 12.sp,
+                            fontFamily = fontAppDefault,
+                            color = colorResource(R.color.yellow)
+                        )
+                    )
+                }
+            }
 
-            Text(item.name, style = TextStyle(fontWeight = FontWeight.W600, fontSize = 13.sp))
-
-            Image(
-                painter = painterResource(if (isChecked) R.drawable.radio_checked else R.drawable.radio_no_check),
-                contentDescription = null,
-                modifier = Modifier.size(20.dp)
-            )
+            if (DataOrder.balance != null && DataOrder.balance!! < parseAmount) Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.width(80.dp).height(28.dp).clip(RoundedCornerShape(14.dp))
+                    .background(colorResource(R.color.background))
+            ) {
+                Text(
+                    "Nạp tiền",
+                    style = TextStyle(
+                        color = colorResource(R.color.green),
+                        fontSize = 12.sp,
+                        fontFamily = fontAppDefault,
+                        fontWeight = FontWeight.W600
+                    )
+                )
+            } else
+                Image(
+                    painter = painterResource(if (isChecked) R.drawable.radio_checked else R.drawable.radio_no_check),
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
         }
     }
 }

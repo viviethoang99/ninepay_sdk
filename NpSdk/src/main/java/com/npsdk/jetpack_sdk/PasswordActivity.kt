@@ -40,6 +40,8 @@ import com.npsdk.jetpack_sdk.base.view.clickableWithoutRipple
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
 import com.npsdk.jetpack_sdk.theme.fontAppBold
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
+import com.npsdk.module.NPayLibrary
+import com.npsdk.module.utils.Actions
 
 class PasswordActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -148,7 +150,11 @@ class PasswordActivity : ComponentActivity() {
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
-                    "Quên mật khẩu?",
+                    modifier = Modifier.clickableWithoutRipple {
+                        // Gọi sang webview login
+                        NPayLibrary.getInstance().openWallet(Actions.LOGIN)
+                    },
+                    text = "Quên mật khẩu?",
                     style = TextStyle(
                         color = colorResource(R.color.green),
                         fontSize = 13.sp,

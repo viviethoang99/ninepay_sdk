@@ -28,7 +28,6 @@ import com.rw.keyboardlistener.KeyboardUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class NPayActivity extends AppCompatActivity {
@@ -125,6 +124,9 @@ public class NPayActivity extends AppCompatActivity {
                 if (jsonObject.has("order_id")) {
                     builder.appendQueryParameter("order_id", Utils.convertUrlToOrderId(jsonObject.getString("order_id")));
                 }
+                if (route.equals(Actions.LOGIN)) {
+                    builder.appendPath(Actions.LOGIN);
+                }
                 Log.d(TAG, "onCreate: Flavor.baseUrl ==   " + builder);
                 clearWebview2NonToolbar();
                 webView.loadUrl(builder.toString(), headerWebView);
@@ -183,17 +185,17 @@ public class NPayActivity extends AppCompatActivity {
                         JSONObject jsonObject = new JSONObject(data);
 
                         builder.scheme("https")
-								.encodedAuthority(/*"10.1.20.37:8080"*/ Flavor.baseUrl.replaceAll("https://", ""))
-								.appendPath("v1")
-								.appendPath("payment")
-								.appendQueryParameter("route", Constants.VERIFY_PAYMENT_ROUTE)
-								.appendQueryParameter("Merchant-Code", jsonObject.getString("Merchant-Code"))
-								.appendQueryParameter("Merchant-Uid", jsonObject.getString("Merchant-Uid"))
-								.appendQueryParameter("App-version-Code", "375")
-								.appendQueryParameter("brand_color", String.valueOf(NPayLibrary.getInstance().sdkConfig.getBrandColor()))
-								.appendQueryParameter("platform", "android")
-								.appendQueryParameter("order_id", Utils.convertUrlToOrderId(url))
-								.appendQueryParameter("device", DeviceUtils.getDevice());
+                                .encodedAuthority(/*"10.1.20.37:8080"*/ Flavor.baseUrl.replaceAll("https://", ""))
+                                .appendPath("v1")
+                                .appendPath("payment")
+                                .appendQueryParameter("route", Constants.VERIFY_PAYMENT_ROUTE)
+                                .appendQueryParameter("Merchant-Code", jsonObject.getString("Merchant-Code"))
+                                .appendQueryParameter("Merchant-Uid", jsonObject.getString("Merchant-Uid"))
+                                .appendQueryParameter("App-version-Code", "375")
+                                .appendQueryParameter("brand_color", String.valueOf(NPayLibrary.getInstance().sdkConfig.getBrandColor()))
+                                .appendQueryParameter("platform", "android")
+                                .appendQueryParameter("order_id", Utils.convertUrlToOrderId(url))
+                                .appendQueryParameter("device", DeviceUtils.getDevice());
                         clearWebview2NonToolbar();
                         webView2.setVisibility(View.GONE);
                         rlOverlay.setVisibility(View.GONE);
@@ -281,11 +283,8 @@ public class NPayActivity extends AppCompatActivity {
 
                 }
                 if (intent.getAction().equals("nativeBroadcast")) {
-                    switch (intent.getStringExtra("action")) {
-                        case "close":
-                            finish();
-                            break;
-
+                    if (intent.getStringExtra("action").equals("close")) {
+                        finish();
                     }
                 }
             }

@@ -11,23 +11,22 @@ import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.npsdk.LibListener;
 import com.npsdk.R;
 import com.npsdk.jetpack_sdk.DataOrder;
+import com.npsdk.jetpack_sdk.InputCardActivity;
 import com.npsdk.jetpack_sdk.OrderActivity;
 import com.npsdk.jetpack_sdk.repository.CallbackOrder;
 import com.npsdk.jetpack_sdk.repository.CheckValidatePayment;
 import com.npsdk.jetpack_sdk.repository.model.ValidatePaymentModel;
-import com.npsdk.jetpack_sdk.repository.model.validate_payment.PaymentData;
+import com.npsdk.jetpack_sdk.repository.model.validate_payment.Methods;
 import com.npsdk.module.api.GetInfoTask;
 import com.npsdk.module.api.RefreshTokenTask;
 import com.npsdk.module.model.SdkConfig;
-import com.npsdk.module.utils.Constants;
-import com.npsdk.module.utils.DeviceUtils;
-import com.npsdk.module.utils.Flavor;
-import com.npsdk.module.utils.Preference;
+import com.npsdk.module.utils.*;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -47,7 +46,7 @@ public class NPayLibrary {
     public LibListener listener;
     private static boolean isLoginComplete = false;
     private static boolean isCheckOrderComplete = false;
-    private static Dialog progressDialog;
+    private Dialog progressDialog;
 
     public static NPayLibrary getInstance() {
         if (INSTANCE == null) {
@@ -94,97 +93,128 @@ public class NPayLibrary {
         activity.startActivity(intent);
     }
 
-    void initDialogLoading() {
-        if (progressDialog == null) {
-            progressDialog = new Dialog(activity);
-            progressDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            ProgressBar progressBar = new ProgressBar(activity);
-            progressBar.getIndeterminateDrawable().setColorFilter(activity.getResources().getColor(R.color.green), PorterDuff.Mode.SRC_IN);
-            progressBar.setIndeterminate(true);
-            progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-            progressDialog.setContentView(progressBar);
-            progressDialog.setCancelable(false);
-            progressDialog.setCanceledOnTouchOutside(false);
-            progressDialog.setOnKeyListener((dialog, keyCode, event) -> false);
-        }
+    private void initDialogLoading() {
+        progressDialog = new Dialog(activity);
+        progressDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        ProgressBar progressBar = new ProgressBar(activity);
+        progressBar.getIndeterminateDrawable().setColorFilter(activity.getResources().getColor(R.color.green), PorterDuff.Mode.SRC_IN);
+        progressBar.setIndeterminate(true);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        progressDialog.setContentView(progressBar);
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setOnKeyListener((dialog, keyCode, event) -> false);
     }
 
-    public void payWithWallet(String url) {
+    private final Runnable showProgressRunnable = new Runnable() {
+        public void run() {
+            if (progressDialog != null) {
+                progressDialog.show();
+            }
+        }
+    };
+
+    private final Runnable hideProgressRunnable = new Runnable() {
+        public void run() {
+            if (progressDialog != null) {
+                progressDialog.dismiss();
+            }
+        }
+    };
+
+    public void payWithWallet(String url, @Nullable String type) {
         initDialogLoading();
         if (progressDialog.isShowing()) return;
         if (Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "").isEmpty()) {
             // Gọi sang webview login
-            NPayLibrary.getInstance().openWallet("dang-nhap");
+            NPayLibrary.getInstance().openWallet(Actions.LOGIN);
             return;
         }
         String token = Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
         String deviceId = DeviceUtils.getDeviceID(activity);
         String UID = DeviceUtils.getUniqueID(activity);
 
-        progressDialog.show();
+        showProgressRunnable.run();
         DataOrder.Companion.setUrlData(url);
         // Lấy thông tin đơn hàng
-        new CheckValidatePayment().check(activity, DataOrder.Companion.getUrlData() , new CallbackOrder() {
+        new CheckValidatePayment().check(activity, DataOrder.Companion.getUrlData(), new CallbackOrder() {
             @Override
             public void onSuccess(ValidatePaymentModel data) {
                 DataOrder.Companion.setDataOrderSaved(data);
+                if (type != null && !type.isEmpty()) {
+                    for (Methods methods : data.getData().getMethods()) {
+                        if (methods.getCode().equals(type)) {
+                            DataOrder.Companion.setSelectedItemDefault(methods);
+                            DataOrder.Companion.setSelectedItemMethod(methods);
+                            break;
+                        }
+                    }
+                } else {
+                    DataOrder.Companion.setSelectedItemDefault(null);
+                }
                 isCheckOrderComplete = true;
-                checkComplete(null);
+                checkComplete(type);
             }
         });
 
 
-        // Get user info
-        GetInfoTask getInfoTask = new GetInfoTask(activity, "Bearer " + token, new GetInfoTask.OnGetInfoListener() {
-            @Override
-            public void onGetInfoSuccess(String balance, String status, String phone) {
-                isLoginComplete = true;
-                checkComplete(balance);
-            }
-
-            @Override
-            public void onError(int errorCode, String message) {
-                if (errorCode == 403 || message.contains("đã hết hạn") || message.toLowerCase().contains("không tìm thấy")) {
-                    refreshToken(deviceId, UID, new Runnable() { // Refresh success
-                        @Override
-                        public void run() {
-                            payWithWallet(url);
-                        }
-                    });
+        if (type == null || type.equals("ATM_CARD") || type.equals("CREDIT_CARD")) {
+            isLoginComplete = true;
+        } else {
+            // Get user info
+            GetInfoTask getInfoTask = new GetInfoTask(activity, "Bearer " + token, new GetInfoTask.OnGetInfoListener() {
+                @Override
+                public void onGetInfoSuccess(String balance, String status, String phone) {
+                    isLoginComplete = true;
+                    DataOrder.Companion.setBalance(Integer.parseInt(balance));
+                    checkComplete(type);
                 }
 
-            }
-        });
-        getInfoTask.execute();
+                @Override
+                public void onError(int errorCode, String message) {
+                    if (errorCode == 403 || message.contains("đã hết hạn") || message.toLowerCase().contains("không tìm thấy")) {
+                        refreshToken(deviceId, UID, new Runnable() { // Refresh success
+                            @Override
+                            public void run() {
+                                payWithWallet(url, type);
+                            }
+                        });
+                    }
+
+                }
+            });
+            getInfoTask.execute();
+        }
     }
 
-    private void checkComplete(@Nullable String balanceStr) {
-        if (isCheckOrderComplete && isLoginComplete) {
-            isCheckOrderComplete = false;
-            isLoginComplete = false;
-            if (progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
-            // Call after 2 function called done
-            ValidatePaymentModel data = DataOrder.Companion.getDataOrderSaved();
-            if (data == null) return;
-            Integer amount = null;
-            int balanceUser = Integer.parseInt(balanceStr);
-            for (PaymentData paymentData : data.getData().getListPaymentData()) {
-                if (paymentData.getName().equals("Giá trị đơn hàng")) {
-                    Double amountOrder = (Double) paymentData.getValue();
-                    amount = amountOrder.intValue();
-                    break;
-                }
-            }
-            if (amount != null && amount <= balanceUser) {
-                Intent intent = new Intent(activity, OrderActivity.class);
-                intent.putExtra("url", DataOrder.Companion.getUrlData());
-                activity.startActivity(intent);
-            } else {
-                // Ra màn nạp tiền nếu không đủ.
-            }
 
+    private void checkComplete(@Nullable String type) {
+        try {
+            if (isCheckOrderComplete && isLoginComplete) {
+                isCheckOrderComplete = false;
+                isLoginComplete = false;
+                hideProgressRunnable.run();
+                // Call after 2 function called done
+                ValidatePaymentModel data = DataOrder.Companion.getDataOrderSaved();
+                if (data == null) return;
+                if (type != null && DataOrder.Companion.getSelectedItemDefault() == null) {
+                    Toast.makeText(activity, "Phương thức thanh toán không được hỗ trợ.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Intent intent;
+                Methods methods = DataOrder.Companion.getSelectedItemDefault();
+                if (methods == null || methods.getCode().equals("WALLET")) {
+                    intent = new Intent(activity, OrderActivity.class);
+                    intent.putExtra("url", DataOrder.Companion.getUrlData());
+
+                } else {
+                    intent = new Intent(activity, InputCardActivity.class);
+                }
+                activity.startActivity(intent);
+            }
+        } catch (Exception e) {
+            hideProgressRunnable.run();
+            Toast.makeText(activity, "Đã có lỗi xảy ra...", Toast.LENGTH_SHORT).show();
         }
     }
 
