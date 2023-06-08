@@ -1,6 +1,7 @@
 package com.npsdk.demo;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -11,6 +12,7 @@ import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.npsdk.LibListener;
+import com.npsdk.jetpack_sdk.WebviewActivity;
 import com.npsdk.module.NPayLibrary;
 import com.npsdk.module.model.SdkConfig;
 import com.npsdk.module.utils.Actions;
@@ -209,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (url.isEmpty())
                     url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODU0OTkzMDMsImludm9pY2Vfbm8iOiJkOEFFMGJKdyIsImFtb3VudCI6MTAwMDAsImRlc2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0NzY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJtZXRob2QiOiI5UEFZIn0%3D&signature=LcASMO3nwXivlpUrIiG%2B%2FEwCZAXOIcGYTtC99nk3BRk%3D";
                 NPayLibrary.getInstance().payWithWallet(url, "WALLET");
+                edtUrlPaygate.setText("");
                 break;
             case R.id.btn_thanh_toan2:
                 //paste url thanh toán vào hàm pay
@@ -216,6 +219,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (url2.isEmpty())
                     url2 = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODU0OTkzMDMsImludm9pY2Vfbm8iOiJkOEFFMGJKdyIsImFtb3VudCI6MTAwMDAsImRlc2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0NzY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJtZXRob2QiOiI5UEFZIn0%3D&signature=LcASMO3nwXivlpUrIiG%2B%2FEwCZAXOIcGYTtC99nk3BRk%3D";
                 NPayLibrary.getInstance().payWithWallet(url2, "ATM_CARD");
+                edtUrlPaygate.setText("");
                 break;
             case R.id.btn_thanh_toan3:
                 //paste url thanh toán vào hàm pay
@@ -223,9 +227,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (url3.isEmpty())
                     url3 = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODU0OTkzMDMsImludm9pY2Vfbm8iOiJkOEFFMGJKdyIsImFtb3VudCI6MTAwMDAsImRlc2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0NzY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJtZXRob2QiOiI5UEFZIn0%3D&signature=LcASMO3nwXivlpUrIiG%2B%2FEwCZAXOIcGYTtC99nk3BRk%3D";
                 NPayLibrary.getInstance().payWithWallet(url3, "CREDIT_CARD");
+                edtUrlPaygate.setText("");
+
                 break;
             case R.id.test_click:
-                NPayLibrary.getInstance().payWithWallet("https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODU0OTkzMDMsImludm9pY2Vfbm8iOiJkOEFFMGJKdyIsImFtb3VudCI6MTAwMDAsImRlc2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0NzY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJtZXRob2QiOiI5UEFZIn0%3D&signature=LcASMO3nwXivlpUrIiG%2B%2FEwCZAXOIcGYTtC99nk3BRk%3D", null);
+                String url4 = edtUrlPaygate.getText().toString();
+                if (url4.isEmpty()) url4 = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODYxODg2MTIsImludm9pY2Vfbm8iOiJTODc1WlI5QyIsImFtb3VudCI6MTAwMDAsImRlc2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0NzY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJtZXRob2QiOiI5UEFZIn0%3D&signature=BNofxRWOLe51atSN5COIzMCdBv2wIiGho9Q2pfHrlvs%3D";
+                NPayLibrary.getInstance().payWithWallet(url4, null);
+                edtUrlPaygate.setText("");
+//                Intent i = new Intent(this, WebviewActivity.class);
+//                i.putExtra("url", "https://zing.vn");
+//                startActivity(i);
                 break;
 
         }

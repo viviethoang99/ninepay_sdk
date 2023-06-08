@@ -2,7 +2,6 @@ package com.npsdk.jetpack_sdk
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -36,9 +35,16 @@ import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 
 class InputCardActivity : ComponentActivity() {
+
+    private var method: String? = null
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val intent = intent.extras
+        if (intent != null) {
+            method = intent.getString("method")
+        }
         setContent {
             PaymentNinepayTheme {
                 // A surface container using the 'background' color from the theme
@@ -54,95 +60,103 @@ class InputCardActivity : ComponentActivity() {
             }
         }
     }
-}
 
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-private fun Body(paddingValues: PaddingValues?) {
-    val inputViewModel: InputViewModel = viewModel()
-    val appViewModel: AppViewModel = viewModel()
-    val context = LocalContext.current
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
-    var isSelectedPolicy = true
+    @OptIn(ExperimentalComposeUiApi::class)
+    @Composable
+    private fun Body(paddingValues: PaddingValues?) {
+        val inputViewModel: InputViewModel = viewModel()
+        val appViewModel: AppViewModel = viewModel()
+        val context = LocalContext.current
+        val keyboardController = LocalSoftwareKeyboardController.current
+        val focusManager = LocalFocusManager.current
+        var isSelectedPolicy = true
 
-    LaunchedEffect(true) {
-        if (DataOrder.listBankModel == null) {
-            appViewModel.showLoading()
-            GetListBank().get(context) { response ->
-                appViewModel.hideLoading()
-                DataOrder.listBankModel = response
-            }
-        }
-    }
-    Box(
-        modifier = Modifier.fillMaxSize().background(colorResource(id = R.color.background))
-            .padding(top = paddingValues!!.calculateTopPadding()).clickableWithoutRipple {
-                context.let {
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
-                }
-
-            }, contentAlignment = Alignment.TopStart
-    ) {
-        LazyColumn(
-            modifier = Modifier.padding(
-                start = 16.dp, end = 16.dp, top = 16.dp, bottom = 60.dp
-            )
-        ) {
-            item {
-                if (DataOrder.dataOrderSaved != null) HeaderOrder(DataOrder.dataOrderSaved!!)
-            }
-
-            item {
-                if (DataOrder.isInland()) CardInland(viewModel = inputViewModel) else if (DataOrder.isInternational()) CardInternational(
-                    viewModel = inputViewModel
-                )
-            }
-
-            item {
-                if (inputViewModel.showNotification.value) {
-                    DialogNotification(contextString = inputViewModel.stringDialog.value, onDismiss = {
-                        inputViewModel.showNotification.value = false
-                    })
+        LaunchedEffect(true) {
+            if (DataOrder.listBankModel == null) {
+                appViewModel.showLoading()
+                GetListBank().get(context) { response ->
+                    appViewModel.hideLoading()
+                    DataOrder.listBankModel = response
                 }
             }
-
-            item {
-                if (DataOrder.isInternational()) PolicyView(callBack = {
-                    isSelectedPolicy = it
+            if (DataOrder.dataOrderSaved == null) {
+                CheckValidatePayment().check(context, DataOrder.urlData, CallbackOrder { data ->
+                    DataOrder.dataOrderSaved = data
+                    DataOrder.amount =
+                        (DataOrder.dataOrderSaved!!.data.listPaymentData.find { it.name.equals("Giá trị đơn hàng") }?.value)
                 })
             }
-
-            item {
-                Spacer(modifier = Modifier.height(50.dp))
-            }
-
         }
+        Box(
+            modifier = Modifier.fillMaxSize().background(colorResource(id = R.color.background))
+                .padding(top = paddingValues!!.calculateTopPadding()).clickableWithoutRipple {
+                    context.let {
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                    }
 
-        if (appViewModel.isShowLoading) Box(Modifier.align(Alignment.Center)) {
-            LoadingView()
+                }, contentAlignment = Alignment.TopStart
+        ) {
+            LazyColumn(
+                modifier = Modifier.padding(
+                    start = 16.dp, end = 16.dp, top = 16.dp, bottom = 60.dp
+                )
+            ) {
+                item {
+                    if (DataOrder.dataOrderSaved != null) HeaderOrder(DataOrder.dataOrderSaved!!)
+                }
+
+                item {
+                    if (method == "ATM_CARD") CardInland(viewModel = inputViewModel) else if (method == "CREDIT_CARD") CardInternational(
+                        viewModel = inputViewModel
+                    )
+                }
+
+                item {
+                    if (inputViewModel.showNotification.value) {
+                        DialogNotification(contextString = inputViewModel.stringDialog.value, onDismiss = {
+                            inputViewModel.showNotification.value = false
+                        })
+                    }
+                }
+
+                item {
+                    if (method == "CREDIT_CARD" && DataOrder.dataOrderSaved != null) PolicyView(callBack = {
+                        isSelectedPolicy = it
+                    })
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(50.dp))
+                }
+
+            }
+
+            if (appViewModel.isShowLoading) Box(Modifier.align(Alignment.Center)) {
+                LoadingView()
+            }
+            FooterButton(onClickBack = {
+                (context as Activity).finish()
+            }, onClickContinue = {
+                if (!isSelectedPolicy) {
+                    inputViewModel.showNotification.value = true
+                    inputViewModel.stringDialog.value = "Bạn phải chấp nhận với điều khoản để tiếp tục."
+                    return@FooterButton
+                }
+
+                DataOrder.activityOrder?.finish() // Close order activity
+
+                when {
+                    method == "CREDIT_CARD" -> createOrderInternational(inputViewModel, context, appViewModel)
+                    method == "ATM_CARD" -> createOrderInland(inputViewModel, context, appViewModel)
+                }
+
+            }, modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter).padding(12.dp)
+            )
         }
-        FooterButton(onClickBack = {
-            (context as Activity).finish()
-        }, onClickContinue = {
-            if (!isSelectedPolicy) {
-                inputViewModel.showNotification.value = true
-                inputViewModel.stringDialog.value = "Bạn phải chấp nhận với điều khoản để tiếp tục."
-                return@FooterButton
-            }
-
-            DataOrder.activityOrder?.finish() // Close order activity
-
-            when {
-                DataOrder.isInternational() -> createOrderInternational(inputViewModel, context, appViewModel)
-                DataOrder.isInland() -> createOrderInland(inputViewModel, context, appViewModel)
-            }
-
-        }, modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter).padding(12.dp)
-        )
     }
 }
+
 
 fun createOrderInternational(viewModel: InputViewModel, context: Context, appViewModel: AppViewModel) {
 
@@ -186,7 +200,7 @@ fun createOrderInternational(viewModel: InputViewModel, context: Context, appVie
         expireYear = year,
         cvc = viewModel.cvvCardInter.value,
         amount = amount.toString(),
-        method = DataOrder.selectedItemMethod?.code
+        method = "CREDIT_CARD"
     )
 
     appViewModel.showLoading()
@@ -242,7 +256,7 @@ fun createOrderInland(viewModel: InputViewModel, context: Context, appViewModel:
         expireMonth = month,
         expireYear = year,
         amount = amount.toString(),
-        method = DataOrder.selectedItemMethod?.code
+        method = "ATM_CARD"
     )
 
     appViewModel.showLoading()
@@ -264,7 +278,7 @@ fun createOrderInland(viewModel: InputViewModel, context: Context, appViewModel:
 fun createOrderWallet(viewModel: InputViewModel, context: Context, appViewModel: AppViewModel) {
     appViewModel.showLoading()
     val params = CreateOrderParamsWallet(
-        url = DataOrder.urlData, method = DataOrder.selectedItemMethod?.code
+        url = DataOrder.urlData, method = "WALLET"
     )
     CreateOrderWalletRepo().create(context, params, CallbackCreateOrder {
         appViewModel.hideLoading()

@@ -18,6 +18,7 @@ import android.view.View;
 import android.webkit.*;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -48,6 +49,13 @@ public class NPayActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_npay);
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+
+            }
+        };
+        this.getOnBackPressedDispatcher().addCallback(this, callback);
         findView();
         closeButtonWebview();
         jsHandler = new JsHandler(this);
@@ -330,8 +338,7 @@ public class NPayActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-//		webView.loadUrl("javascript: window.JsHandler.executeFunction('copy', '{\"text\": \"0988\"}')");
-//	super.onBackPressed();
+
     }
 
     @Override

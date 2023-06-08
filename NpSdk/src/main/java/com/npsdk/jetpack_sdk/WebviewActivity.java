@@ -1,16 +1,18 @@
 package com.npsdk.jetpack_sdk;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.http.SslError;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.webkit.*;
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import com.npsdk.module.NPayLibrary;
+import com.google.android.material.snackbar.Snackbar;
 import com.npsdk.R;
+import com.npsdk.module.NPayLibrary;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -18,12 +20,16 @@ import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.npsdk.jetpack_sdk.base.view.ShowDialogKt.showDialogConfirm;
+
 public class WebviewActivity extends AppCompatActivity {
 
     private WebView webView;
     private String urlLoad = "";
 
     private View btnClose;
+
+    private Activity activity;
 
     private static final Integer WEBVIEW_STATUS_CANCEL = -2;
     private static final Integer WEBVIEW_STATUS_FAIL = -1;
@@ -35,7 +41,7 @@ public class WebviewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_webview);
-
+        activity = this;
         Bundle intent = getIntent().getExtras();
 
         if (intent != null) {
@@ -50,8 +56,12 @@ public class WebviewActivity extends AppCompatActivity {
         webviewListener();
     }
 
+
     private void webviewListener() {
-        btnClose.setOnClickListener(view -> finish());
+        btnClose.setOnClickListener(view -> {
+//            finish()
+            showDialogConfirm(view.getContext());
+        });
         webView.setWebViewClient(new WebViewClient() {
 
             @Override
@@ -73,13 +83,18 @@ public class WebviewActivity extends AppCompatActivity {
                         String status = matcher.group(1);
                         String message = matcher.group(2);
 
-                        finish();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                finish();
+                            }
+                        }, 1000);
                         if (Integer.parseInt(status) == WEBVIEW_STATUS_PROCESSED) {
                             if (NPayLibrary.getInstance().listener != null) {
                                 NPayLibrary.getInstance().listener.onPaySuccessful();
-                                System.out.println("onPaySuccessful new sdk");
+                                showMessage(activity, "Thanh toán thành công!");
                             } else {
-                                Toast.makeText(WebviewActivity.this, "Bạn chưa khởi tạo SDK.", Toast.LENGTH_SHORT).show();
+                                showMessage(activity, "Bạn chưa khởi tạo SDK.");
                             }
                         } else {
                             // Move to error page
@@ -106,12 +121,18 @@ public class WebviewActivity extends AppCompatActivity {
         });
     }
 
+    private void showMessage(Activity activity, String message) {
+        Snackbar snackbar = Snackbar.make(activity.findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG);
+        snackbar.show();
+    }
+
     private void moveToErrorPage(Context context, String error) {
         // Move to error page
         Intent intent = new Intent(context, ErrorPaymentActivity.class);
         intent.putExtra("message", decodeMessage(error));
         startActivity(intent);
     }
+
     private void setupWebview() {
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         WebSettings webSettings = webView.getSettings();
@@ -144,11 +165,7 @@ public class WebviewActivity extends AppCompatActivity {
     }
 
     private static String decodeMessage(String encodedMessage) {
-        try {
-            String decoded = URLDecoder.decode(encodedMessage, Charset.forName("UTF-8").toString());
-            return decoded;
-        } catch (UnsupportedEncodingException e) {
-            return "";
-        }
+        String decoded = URLDecoder.decode(encodedMessage, Charset.forName("UTF-8"));
+        return decoded;
     }
 }
