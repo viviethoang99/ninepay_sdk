@@ -125,6 +125,7 @@ public class JsHandler {
 				case getAllToken:
 					Preference.save(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN, paramJson.getString("access_token"));
 					Preference.save(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.REFRESH_TOKEN, paramJson.getString("refresh_token"));
+					Preference.save(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PUBLIC_KEY, paramJson.getString("public_key"));
 					break;
 				case requestCamera:
 					requestCamera(activity);

@@ -55,6 +55,14 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    configurations.all {
+        c -> c.resolutionStrategy.eachDependency {
+            DependencyResolveDetails dependency ->
+                if (dependency.requested.group == 'org.bouncycastle') {
+                    dependency.useTarget 'org.bouncycastle:bcprov-jdk15to18:1.68'
+                }
+        }
+    }
 }
 
 dependencies {
@@ -96,6 +104,7 @@ dependencies {
     // define any required OkHttp artifacts without version
     implementation("com.squareup.okhttp3:okhttp")
     implementation("com.squareup.okhttp3:logging-interceptor")
+    implementation 'org.bouncycastle:bcprov-jdk15to18:1.68'
 }
 
 afterEvaluate {

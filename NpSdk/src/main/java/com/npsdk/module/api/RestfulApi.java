@@ -1,6 +1,7 @@
 package com.npsdk.module.api;
 
 import android.content.Context;
+import com.npsdk.module.NPayLibrary;
 import com.npsdk.module.model.ActionMerchantResponse;
 import com.npsdk.module.model.RefreshTokenResponse;
 import com.npsdk.module.model.UserInfoResponse;
@@ -51,7 +52,8 @@ public class RestfulApi {
                     .addInterceptor(chain -> {
                         Request.Builder builder = chain.request()
                                 .newBuilder()
-                                .addHeader("Merchant-Code", "sdk_test").addHeader("App-version-Code", "375");
+                                .addHeader("Merchant-Code", NPayLibrary.getInstance().sdkConfig.getMerchantCode())
+                                .addHeader("App-version-Code", "400");
 
                         Request request = builder.build();
                         return chain.proceed(request);

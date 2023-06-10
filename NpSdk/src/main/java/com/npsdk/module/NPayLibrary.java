@@ -2,7 +2,6 @@ package com.npsdk.module;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Intent;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
@@ -15,9 +14,6 @@ import com.npsdk.LibListener;
 import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.jetpack_sdk.InputCardActivity;
 import com.npsdk.jetpack_sdk.OrderActivity;
-import com.npsdk.jetpack_sdk.repository.CallbackOrder;
-import com.npsdk.jetpack_sdk.repository.CheckValidatePayment;
-import com.npsdk.jetpack_sdk.repository.model.ValidatePaymentModel;
 import com.npsdk.module.api.GetInfoTask;
 import com.npsdk.module.api.RefreshTokenTask;
 import com.npsdk.module.model.SdkConfig;

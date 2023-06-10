@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.npsdk.LibListener;
 import com.npsdk.jetpack_sdk.WebviewActivity;
+import com.npsdk.jetpack_sdk.repository.GetUserInfo;
 import com.npsdk.module.NPayLibrary;
 import com.npsdk.module.model.SdkConfig;
 import com.npsdk.module.utils.Actions;
@@ -231,13 +232,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 break;
             case R.id.test_click:
-                String url4 = edtUrlPaygate.getText().toString();
-                if (url4.isEmpty()) url4 = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODYxODg2MTIsImludm9pY2Vfbm8iOiJTODc1WlI5QyIsImFtb3VudCI6MTAwMDAsImRlc2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0NzY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJtZXRob2QiOiI5UEFZIn0%3D&signature=BNofxRWOLe51atSN5COIzMCdBv2wIiGho9Q2pfHrlvs%3D";
-                NPayLibrary.getInstance().payWithWallet(url4, null);
-                edtUrlPaygate.setText("");
+//                String url4 = edtUrlPaygate.getText().toString();
+//                if (url4.isEmpty()) url4 = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODYxODg2MTIsImludm9pY2Vfbm8iOiJTODc1WlI5QyIsImFtb3VudCI6MTAwMDAsImRlc2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0NzY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJtZXRob2QiOiI5UEFZIn0%3D&signature=BNofxRWOLe51atSN5COIzMCdBv2wIiGho9Q2pfHrlvs%3D";
+//                NPayLibrary.getInstance().payWithWallet(url4, null);
+//                edtUrlPaygate.setText("");
 //                Intent i = new Intent(this, WebviewActivity.class);
 //                i.putExtra("url", "https://zing.vn");
 //                startActivity(i);
+                new GetUserInfo().get(getApplicationContext());
                 break;
 
         }

@@ -29,4 +29,7 @@ public interface ApiService {
 
     @GET("/sdk/v1/paygate-whitelabel/banks-support")
     Call<ListBankModel> getListBanks();
+
+    @GET("/sdk/v1/user/info")
+    Call<String> getUserInfo();
 }

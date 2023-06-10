@@ -3,6 +3,7 @@ package com.npsdk.module.utils;
 public class Constants {
     public static final String ACCESS_TOKEN = "access_token";
     public static final String REFRESH_TOKEN = "refresh_token";
+    public static final String PUBLIC_KEY = "public_key";
 
     public static final String PROD_URL = "https://sdk.9pay.vn";
     public static final String SANDBOX_URL = "https://sand-sdk.9pay.vn";
