@@ -19,12 +19,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.npsdk.R
 import com.npsdk.jetpack_sdk.base.Validator
-import com.npsdk.jetpack_sdk.base.view.*
+import com.npsdk.jetpack_sdk.base.view.BaseDialog
+import com.npsdk.jetpack_sdk.base.view.DatePicker
+import com.npsdk.jetpack_sdk.base.view.ExpandedRow
+import com.npsdk.jetpack_sdk.base.view.MyEdittext
 import com.npsdk.jetpack_sdk.theme.fontAppBold
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.steliospapamichail.creditcardmasker.viewtransformations.CardNumberMask
-import com.npsdk.R
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -151,10 +154,11 @@ private fun LineCardLabel() {
                 Color.White
             ).padding(horizontal = 4.dp, vertical = 8.dp)
         ) {
-            ImageFromUrl(
-                url = inputViewModel.interCardDetect!!.icon!!,
-                modifier = Modifier.width(22.dp),
-            )
+//            ImageFromUrl(
+//                url = inputViewModel.interCardDetect!!.icon!!,
+//                modifier = Modifier.width(22.dp),
+//            )
+            Text(inputViewModel.interCardDetect!!.cardBrand!!)
         }
     }
 

@@ -243,7 +243,7 @@ public class NPayActivity extends AppCompatActivity {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (!url.contains(Flavor.baseUrl)) {
+                if (!url.contains(Flavor.baseUrl) || !url.contains(Flavor.baseShop)) {
                     webView.setVisibility(View.GONE);
                     clearWebview2NonToolbar();
                     webView2.setVisibility(View.VISIBLE);
@@ -282,7 +282,7 @@ public class NPayActivity extends AppCompatActivity {
                     if (nameAction != null) {
                         isProgressDeposit = nameAction.equals("napas-deposit");
                     }
-                    if (!getURL.startsWith(Flavor.baseUrl)) {
+                    if (!getURL.startsWith(Flavor.baseUrl) || !getURL.startsWith(Flavor.baseShop)) {
                         webView.setVisibility(View.GONE);
                         webView2.setVisibility(View.VISIBLE);
                         webView2.loadUrl(getURL, headerWebView);

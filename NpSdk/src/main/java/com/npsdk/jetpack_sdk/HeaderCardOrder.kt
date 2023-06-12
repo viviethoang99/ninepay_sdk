@@ -51,7 +51,7 @@ private fun BoxCollapse(data: ValidatePaymentModel, onClick: () -> Unit) {
                     ), fontSize = 12.sp, fontFamily = fontAppDefault
                 )
             )
-            DataOrder.amount?.let {
+            DataOrder.feeTemp?.let {
                 Text(
                     text = formatMoney(it),
                     style = TextStyle(
@@ -97,7 +97,6 @@ fun HeaderOrder(data: ValidatePaymentModel) {
     var isExpanded by remember { mutableStateOf(true) }
     var nameMerchant: String = data.data.merchantInfo.name
 
-
     AnimatedContent(targetState = isExpanded) { showBoxCollapse ->
         if (showBoxCollapse) BoxCollapse(data = data) { ->
             isExpanded = !isExpanded
@@ -118,7 +117,7 @@ fun HeaderOrder(data: ValidatePaymentModel) {
                         ), fontSize = 12.sp, fontFamily = fontAppDefault
                     )
                 )
-                DataOrder.amount?.let {
+                DataOrder.feeTemp?.let {
                     Text(
                         text = formatMoney(it),
                         textAlign = TextAlign.Center,
@@ -193,8 +192,6 @@ fun HeaderOrder(data: ValidatePaymentModel) {
         }
 
     }
-
-
 }
 
 private data class DottedShape(

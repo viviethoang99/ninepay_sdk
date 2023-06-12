@@ -24,7 +24,7 @@ import com.npsdk.jetpack_sdk.theme.fontAppBold
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBarApp(title: String = "Thanh toán", isShowBack: Boolean? = true) {
+fun TopAppBarApp(title: String = "Thanh toán", isShowBack: Boolean? = true, onBack: () -> Unit = {}) {
     var context = LocalContext.current
     Row(modifier = Modifier.height(50.dp).fillMaxWidth()) {
         CenterAlignedTopAppBar(
@@ -35,8 +35,9 @@ fun TopAppBarApp(title: String = "Thanh toán", isShowBack: Boolean? = true) {
                     style = TextStyle(fontFamily = fontAppBold, textAlign = TextAlign.Center, fontSize = 14.sp)
                 )
             }, navigationIcon = {
-               if (isShowBack!!) IconButton(onClick = {
+                if (isShowBack!!) IconButton(onClick = {
                     (context as Activity).onBackPressed()
+                    onBack()
                 }) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack, contentDescription = "Back"

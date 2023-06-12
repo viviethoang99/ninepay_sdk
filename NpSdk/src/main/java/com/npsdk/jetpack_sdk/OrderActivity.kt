@@ -55,6 +55,8 @@ class DataOrder {
         var activityOrder: Activity? = null
         var selectedItemMethod by mutableStateOf<String?>(null)
         var balance by mutableStateOf<Int?>(null)
+
+        var feeTemp by mutableStateOf<Int?>(null)
     }
 }
 
@@ -64,6 +66,11 @@ class OrderActivity : ComponentActivity() {
     private var methodDefault: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        DataOrder.amount = null
+        DataOrder.feeTemp = null
+        DataOrder.dataOrderSaved = null
+        DataOrder.selectedItemMethod = null
+
         DataOrder.activityOrder = this
         val bundle = intent.extras
         if (bundle != null) {
@@ -97,7 +104,8 @@ class OrderActivity : ComponentActivity() {
                 modalOrderData = data
                 DataOrder.dataOrderSaved = data
                 DataOrder.amount =
-                    (DataOrder.dataOrderSaved!!.data.listPaymentData.find { it.name.equals("Giá trị đơn hàng") }?.value)
+                    (DataOrder.dataOrderSaved!!.data.feeData.wallet).toInt()
+                DataOrder.feeTemp = DataOrder.amount.toString().toInt()
             })
 
             // Get user info
@@ -140,6 +148,21 @@ class OrderActivity : ComponentActivity() {
 
                 clickContinue = { ->
                     if (methodDefault == "WALLET" || DataOrder.selectedItemMethod == "WALLET") {
+                        if (DataOrder.balance == null) {
+                            inputViewModel.showNotification.value = true
+                            inputViewModel.stringDialog.value = "Không thể lấy dữ liệu tài khoản ví!!!"
+                            return@Footer
+                        }
+                        DataOrder.balance?.let { it1 ->
+                            DataOrder.feeTemp?.let { it2 ->
+                                if (it1 < it2) {
+                                    inputViewModel.showNotification.value = true
+                                    inputViewModel.stringDialog.value = "Số dư không đủ để thực hiện giao dịch!"
+                                    return@Footer
+                                }
+                            }
+                        }
+
                         createOrderWallet(inputViewModel, context, appViewModel)
                         return@Footer
                     }

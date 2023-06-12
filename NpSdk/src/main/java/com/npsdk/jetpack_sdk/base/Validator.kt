@@ -148,10 +148,51 @@ object Validator {
         }
         currentCardInterMatch?.cardBrand?.let {
             inputViewModel.interCardDetect = currentCardInterMatch
+            if (prefixString.length >= 6) filterFeeInter(it, prefixString)
         }
         return isMatch
     }
 
+    private fun filterFeeInter(nameCard: String, prefixString: String) {
+        val listFeeBank = DataOrder.listBankModel?.data?.INTERNATIONALINLAND
+        if (listFeeBank != null) {
+            val createCard = DataOrder.dataOrderSaved?.data?.feeData?.creditCard
+            when {
+                nameCard.contains("MASTER") -> {
+                    if (listFeeBank.contains(prefixString)) {
+                        DataOrder.feeTemp = createCard?.master?.inLand?.toInt()
+                    } else {
+                        DataOrder.feeTemp = createCard?.master?.outLand?.toInt()
+                    }
+                }
+
+                nameCard.contains("VISA") -> {
+                    if (listFeeBank.contains(prefixString)) {
+                        DataOrder.feeTemp = createCard?.visa?.inLand?.toInt()
+                    } else {
+                        DataOrder.feeTemp = createCard?.visa?.outLand?.toInt()
+                    }
+                }
+
+                nameCard.contains("JCB") -> {
+                    if (listFeeBank.contains(prefixString)) {
+                        DataOrder.feeTemp = createCard?.jcb?.inLand?.toInt()
+                    } else {
+                        DataOrder.feeTemp = createCard?.jcb?.outLand?.toInt()
+                    }
+                }
+
+                nameCard.contains("AMEX") -> {
+                    if (listFeeBank.contains(prefixString)) {
+                        DataOrder.feeTemp = createCard?.amex?.inLand?.toInt()
+                    } else {
+                        DataOrder.feeTemp = createCard?.amex?.outLand?.toInt()
+                    }
+                }
+            }
+
+        }
+    }
 
     private fun checkMatchDistanceInter(
         list: ArrayList<INTERNATIONAL>, prefixNumber: Long, inputViewModel: InputViewModel
@@ -179,6 +220,7 @@ object Validator {
         }
         currentCardMatch?.cardBrand?.let {
             inputViewModel.interCardDetect = currentCardMatch
+            if (prefixNumber.toString().length >= 6) filterFeeInter(it, prefixNumber.toString())
         }
         return isMatch
     }

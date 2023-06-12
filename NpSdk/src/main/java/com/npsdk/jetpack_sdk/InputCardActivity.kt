@@ -51,7 +51,9 @@ class InputCardActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
                     Scaffold(topBar = {
-                        TopAppBarApp()
+                        TopAppBarApp(onBack = {
+                            DataOrder.feeTemp = DataOrder.amount.toString().toInt()
+                        })
                     }, content = { paddingValues ->
                         Body(paddingValues = paddingValues)
                     })
@@ -78,13 +80,15 @@ class InputCardActivity : ComponentActivity() {
                     DataOrder.listBankModel = response
                 }
             }
-            if (DataOrder.dataOrderSaved == null) {
-                CheckValidatePayment().check(context, DataOrder.urlData, CallbackOrder { data ->
-                    DataOrder.dataOrderSaved = data
-                    DataOrder.amount =
-                        (DataOrder.dataOrderSaved!!.data.listPaymentData.find { it.name.equals("Giá trị đơn hàng") }?.value)
-                })
-            }
+            CheckValidatePayment().check(context, DataOrder.urlData, CallbackOrder { data ->
+                DataOrder.dataOrderSaved = data
+                // Dafault wallet
+                DataOrder.amount = data!!.data.feeData.wallet.toInt()
+                DataOrder.feeTemp = DataOrder.amount.toString().toInt()
+                if (method == "ATM_CARD") {
+                    DataOrder.feeTemp = data.data.feeData.atmCard.toInt()
+                }
+            })
         }
         Box(
             modifier = Modifier.fillMaxSize().background(colorResource(id = R.color.background))
@@ -135,6 +139,7 @@ class InputCardActivity : ComponentActivity() {
                 LoadingView()
             }
             FooterButton(onClickBack = {
+                DataOrder.feeTemp = DataOrder.amount.toString().toInt()
                 (context as Activity).finish()
             }, onClickContinue = {
                 if (!isSelectedPolicy) {
