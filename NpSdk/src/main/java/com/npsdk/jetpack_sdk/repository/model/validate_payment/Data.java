@@ -25,6 +25,10 @@ public class Data {
     @Expose
     private List<String> allowedCreditCardBrand;
 
+    @SerializedName("fee_data")
+    @Expose
+    private FeeData feeData;
+
     public List<PaymentData> getListPaymentData() {
         return listPaymentData;
     }
@@ -56,6 +60,14 @@ public class Data {
 
     public void setAllowedCreditCardBrand(List<String> allowedCreditCardBrand) {
         this.allowedCreditCardBrand = allowedCreditCardBrand;
+    }
+
+    public FeeData getFeeData() {
+        return feeData;
+    }
+
+    public void setFeeData(FeeData feeData) {
+        this.feeData = feeData;
     }
 
 }

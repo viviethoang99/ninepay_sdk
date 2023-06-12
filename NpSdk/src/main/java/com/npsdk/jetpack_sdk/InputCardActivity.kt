@@ -29,7 +29,6 @@ import com.npsdk.jetpack_sdk.base.view.*
 import com.npsdk.jetpack_sdk.repository.*
 import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamsInland
 import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamsInter
-import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamsWallet
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
 import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
@@ -224,12 +223,12 @@ fun createOrderInland(viewModel: InputViewModel, context: Context, appViewModel:
 
     val numberCard = viewModel.numberCardInLand.value
     val nameCard = viewModel.nameCardInLand.value
-    val effectiveDay = viewModel.effectiveCardInLand.value
+    val dateCard = viewModel.dateCardInLand.value
 
     viewModel.numberCardErrorInLand.value = Validator.validateNumberCardATM(numberCard, inputViewModel = viewModel)
     viewModel.nameCardErrorInLand.value = Validator.validateNameCard(nameCard)
-    viewModel.effectiveCardErrorInLand.value = Validator.validateEffectiveCard(
-        viewModel.effectiveCardInLand.value, viewModel.monthNonParseInLand, viewModel.yearNonParseInLand
+    viewModel.dateCardErrorInLand.value = Validator.validateDateCardInland(
+        viewModel.dateCardInLand.value, viewModel.monthNonParseInLand, viewModel.yearNonParseInLand, viewModel
     )
 
     if (viewModel.numberCardErrorInLand.value.isNotBlank()) {
@@ -240,11 +239,11 @@ fun createOrderInland(viewModel: InputViewModel, context: Context, appViewModel:
     }
 
 
-    if (viewModel.effectiveCardErrorInLand.value.isNotBlank()) {
+    if (viewModel.dateCardErrorInLand.value.isNotBlank()) {
         return
     }
 
-    val expCardStr = effectiveDay.split("/")
+    val expCardStr = dateCard.split("/")
     val month: String = expCardStr.first()
     val year: String = expCardStr[1]
     var amount: Any? = DataOrder.amount
@@ -273,23 +272,4 @@ fun createOrderInland(viewModel: InputViewModel, context: Context, appViewModel:
         }
     })
 
-}
-
-fun createOrderWallet(viewModel: InputViewModel, context: Context, appViewModel: AppViewModel) {
-    appViewModel.showLoading()
-    val params = CreateOrderParamsWallet(
-        url = DataOrder.urlData, method = "WALLET"
-    )
-    CreateOrderWalletRepo().create(context, params, CallbackCreateOrder {
-        appViewModel.hideLoading()
-        it.message?.let { it1 ->
-            if (it.errorCode == 1) {
-                viewModel.showNotification.value = true
-                viewModel.stringDialog.value = it1
-            } else if (it.errorCode == 0) {
-                (context as Activity).finish() // Close input Card
-                openWebviewSdk(context, it.data!!.redirectUrl!!)
-            }
-        }
-    })
 }

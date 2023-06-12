@@ -17,8 +17,8 @@ class InputViewModel : ViewModel() {
     var nameCardInLand = mutableStateOf("")
     var nameCardErrorInLand = mutableStateOf("")
 
-    var effectiveCardInLand = mutableStateOf("")
-    var effectiveCardErrorInLand = mutableStateOf("")
+    var dateCardInLand = mutableStateOf("")
+    var dateCardErrorInLand = mutableStateOf("")
 
 
     var monthNonParseInLand: Int? = null

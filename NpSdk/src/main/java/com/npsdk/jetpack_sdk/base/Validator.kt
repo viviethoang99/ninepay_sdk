@@ -19,12 +19,17 @@ object Validator {
 
         DataOrder.listBankModel?.data?.INTERNATIONAL?.isNotEmpty().let {
             if (input.isNotBlank()) {
-                val isMatchPrefix = checkMatchPrefixInter(DataOrder.listBankModel!!.data!!.INTERNATIONAL, input, inputViewModel)
+                val isMatchPrefix =
+                    checkMatchPrefixInter(DataOrder.listBankModel!!.data!!.INTERNATIONAL, input, inputViewModel)
 
                 // Cả 2 điệu kiện điều không thỏa mãn
                 if (!isMatchPrefix) {
                     val isMatchDistance =
-                        checkMatchDistanceInter(DataOrder.listBankModel!!.data!!.INTERNATIONAL, input.toLong(), inputViewModel)
+                        checkMatchDistanceInter(
+                            DataOrder.listBankModel!!.data!!.INTERNATIONAL,
+                            input.toLong(),
+                            inputViewModel
+                        )
                     if (!isMatchDistance) stringError =
                         "Thẻ này chưa được hỗ trợ thanh toán. Vui lòng thanh toán thẻ khác."
                 }
@@ -81,19 +86,28 @@ object Validator {
         return stringError
     }
 
-    fun validateEffectiveCard(input: String, month: Int?, year: Int?): String {
+    fun validateDateCardInland(input: String, month: Int?, year: Int?, inputViewModel: InputViewModel): String {
+        val isEffectiveCard: Boolean = inputViewModel.inlandBankDetect?.isValidDate == 1
+        val typeString = if (isEffectiveCard) "hiệu lực" else "hết hạn"
         var stringError = ""
 
         when {
-            input.isBlank() -> stringError = "Vui lòng nhập ngày hiệu lực."
-            input.length != 5 -> stringError = "Ngày hiệu lực không hợp lệ. Vui lòng kiểm tra lại."
+            input.isBlank() -> stringError = "Vui lòng nhập ngày $typeString."
+            input.length != 5 -> stringError = "Ngày $typeString không hợp lệ. Vui lòng kiểm tra lại."
 
         }
 
         val (monthCurrent, yearCurrent) = Utils.getMonthYearCurrent()
         year?.let {
-            if (year > yearCurrent || (year == yearCurrent && month!! > monthCurrent)) stringError =
-                "Ngày hiệu lực không hợp lệ. Vui lòng kiểm tra lại."
+            if (isEffectiveCard) {
+                // Hieu luc
+                if (year > yearCurrent || (year == yearCurrent && month!! > monthCurrent)) stringError =
+                    "Ngày hiệu lực không hợp lệ. Vui lòng kiểm tra lại."
+            } else {
+                // Het han
+                if (year < yearCurrent || (year == yearCurrent && month!! < monthCurrent)) stringError =
+                    "Ngày hết hạn không hợp lệ. Vui lòng kiểm tra lại."
+            }
         }
         return stringError
     }

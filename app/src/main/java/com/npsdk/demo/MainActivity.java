@@ -1,7 +1,6 @@
 package com.npsdk.demo;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -12,8 +11,6 @@ import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.npsdk.LibListener;
-import com.npsdk.jetpack_sdk.WebviewActivity;
-import com.npsdk.jetpack_sdk.repository.GetUserInfo;
 import com.npsdk.module.NPayLibrary;
 import com.npsdk.module.model.SdkConfig;
 import com.npsdk.module.utils.Actions;
@@ -159,23 +156,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.ll_nap_tien_dt:
                 Log.d(TAG, "onClick: ll_nap_tien_dt");
-                NPayLibrary.getInstance().openWallet(Actions.TOPUP_PHONE_CARD);
+                NPayLibrary.getInstance().openWallet(Actions.BILLING_TOPUP);
                 break;
             case R.id.ll_mua_the_game:
                 Log.d(TAG, "onClick: ll_mua_the_game");
-                NPayLibrary.getInstance().openWallet(Actions.MG_CARD);
+                NPayLibrary.getInstance().openWallet(Actions.BILLING_GAME);
                 break;
             case R.id.ll_mua_the_dich_vu:
                 Log.d(TAG, "onClick: ll_mua_the_dich_vu");
-                NPayLibrary.getInstance().openWallet(Actions.BUY_SERVICES_CARD);
+                NPayLibrary.getInstance().openWallet(Actions.BILLING_SERVICE_CARD);
                 break;
             case R.id.ll_mua_the_dt:
                 Log.d(TAG, "onClick: ll_mua_the_dt");
-                NPayLibrary.getInstance().openWallet(Actions.BUY_PHONE_CARD);
+                NPayLibrary.getInstance().openWallet(Actions.BILLING_PHONE_CARD);
                 break;
             case R.id.ll_nap_data:
                 Log.d(TAG, "onClick: ll_nap_data");
-                NPayLibrary.getInstance().openWallet(Actions.TOPUP_DATA_CARD);
+                NPayLibrary.getInstance().openWallet(Actions.BILLING_DATA_CARD);
                 break;
             case R.id.btn_bank_link_manage:
                 Log.d(TAG, "onClick: btn_bank_link_manage");
@@ -232,14 +229,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 break;
             case R.id.test_click:
-//                String url4 = edtUrlPaygate.getText().toString();
-//                if (url4.isEmpty()) url4 = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODYxODg2MTIsImludm9pY2Vfbm8iOiJTODc1WlI5QyIsImFtb3VudCI6MTAwMDAsImRlc2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0NzY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJtZXRob2QiOiI5UEFZIn0%3D&signature=BNofxRWOLe51atSN5COIzMCdBv2wIiGho9Q2pfHrlvs%3D";
-//                NPayLibrary.getInstance().payWithWallet(url4, null);
-//                edtUrlPaygate.setText("");
+                String url4 = edtUrlPaygate.getText().toString();
+                if (url4.isEmpty())
+                    url4 = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODY1NTU5NzksImludm9pY2Vfbm8iOiJJekZiQWVGRiIsImFtb3VudCI6MTAwMDAsImRlc2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0NzY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJtZXRob2QiOiI5UEFZIn0%3D&signature=Hhqc6MrGiDcWo7vMXSbtq5PZjzHmRXsZ8YHbOrNEiAg%3D";
+                NPayLibrary.getInstance().payWithWallet(url4, null);
+                edtUrlPaygate.setText("");
 //                Intent i = new Intent(this, WebviewActivity.class);
 //                i.putExtra("url", "https://zing.vn");
 //                startActivity(i);
-                new GetUserInfo().get(getApplicationContext());
                 break;
 
         }

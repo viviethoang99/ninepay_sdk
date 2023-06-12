@@ -108,7 +108,7 @@ public class NPayLibrary {
     }
 
     public void getUserInfoSendToPayment() {
-
+        DataOrder.Companion.setBalance(null);
         String token = Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
         String deviceId = DeviceUtils.getDeviceID(activity);
         String UID = DeviceUtils.getUniqueID(activity);

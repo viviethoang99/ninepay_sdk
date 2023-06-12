@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import com.npsdk.R
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyEdittext(
     label: String,

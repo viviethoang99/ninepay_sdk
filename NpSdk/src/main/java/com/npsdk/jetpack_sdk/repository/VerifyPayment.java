@@ -9,7 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.npsdk.jetpack_sdk.base.api.BaseApiClient;
 import com.npsdk.jetpack_sdk.base.api.EncryptServiceHelper;
-import com.npsdk.module.model.UserInfoResponse;
+import com.npsdk.jetpack_sdk.repository.model.VerifyPaymentModel;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -17,14 +17,14 @@ import retrofit2.Response;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class GetUserInfo extends BaseApiClient {
+public class VerifyPayment extends BaseApiClient {
 
     ExecutorService executor = Executors.newSingleThreadExecutor();
     Handler mainThread = new Handler(Looper.getMainLooper());
 
-    public void get(Context context) {
+    public void create(Context context, String paymentId, String otp, CallbackVerifyPayment callback) {
         executor.execute(() -> {
-            Call<String> call = apiService.getUserInfo();
+            Call<String> call = apiService.verifyPayment(paymentId, otp);
             enqueue(call, new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
@@ -35,17 +35,21 @@ public class GetUserInfo extends BaseApiClient {
                                     EncryptServiceHelper.INSTANCE.getRandomkeyRaw()
                             );
                             Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                            UserInfoResponse userInfoResponse = gson.fromJson(objectDecrypt, UserInfoResponse.class);
-                            System.out.println("My phone: " + userInfoResponse.getData().getPhone());
+                            VerifyPaymentModel verifyPaymentModel = gson.fromJson(objectDecrypt, VerifyPaymentModel.class);
+                            if (verifyPaymentModel.getErrorCode() == 1) {
+                                callback.onSuccess(verifyPaymentModel.getMessage());
+                            } else {
+                                callback.onSuccess(null);
+                            }
                         });
                     } else {
-                        System.out.println("SERVER ERROR");
+                        Toast.makeText(context, "Đã có lỗi xảy ra, code 1004", Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-                    Toast.makeText(context, "Đã có lỗi xảy ra, code 1001", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Đã có lỗi xảy ra, code 1004", Toast.LENGTH_SHORT).show();
                 }
             });
         });

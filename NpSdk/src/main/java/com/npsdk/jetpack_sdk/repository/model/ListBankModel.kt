@@ -15,7 +15,8 @@ data class ListBankModel(
 data class DataBank(
 
     @SerializedName("INLAND") var INLAND: ArrayList<INLAND> = arrayListOf(),
-    @SerializedName("INTERNATIONAL") var INTERNATIONAL: ArrayList<INTERNATIONAL> = arrayListOf()
+    @SerializedName("INTERNATIONAL") var INTERNATIONAL: ArrayList<INTERNATIONAL> = arrayListOf(),
+    @SerializedName("INTERNATIONAL_INLAND" ) var INTERNATIONALINLAND : ArrayList<String> = arrayListOf()
 
 )
 

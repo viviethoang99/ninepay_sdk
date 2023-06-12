@@ -35,7 +35,7 @@ import kotlin.math.roundToInt
 
 @Composable
 private fun BoxCollapse(data: ValidatePaymentModel, onClick: () -> Unit) {
-    var description: Any = data.data.listPaymentData.find { it.name.equals("Nội dung") }?.value ?: ""
+    var nameMerchant: String = data.data.merchantInfo.name
     Box(
         modifier = Modifier.fillMaxWidth().clip(shape = RoundedCornerShape(12.dp)).background(Color.White)
     ) {
@@ -45,7 +45,7 @@ private fun BoxCollapse(data: ValidatePaymentModel, onClick: () -> Unit) {
         ) {
 
             Text(
-                text = description.toString(), style = TextStyle(
+                text = "Thanh toán cho $nameMerchant", style = TextStyle(
                     fontWeight = FontWeight.W400, color = colorResource(
                         id = R.color.titleText
                     ), fontSize = 12.sp, fontFamily = fontAppDefault
@@ -95,6 +95,7 @@ private fun BoxCollapse(data: ValidatePaymentModel, onClick: () -> Unit) {
 fun HeaderOrder(data: ValidatePaymentModel) {
 
     var isExpanded by remember { mutableStateOf(true) }
+    var nameMerchant: String = data.data.merchantInfo.name
 
 
     AnimatedContent(targetState = isExpanded) { showBoxCollapse ->
@@ -104,8 +105,35 @@ fun HeaderOrder(data: ValidatePaymentModel) {
             modifier = Modifier.fillMaxWidth().clip(shape = RoundedCornerShape(12.dp)).background(Color.White)
         ) {
             Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 0.dp)
             ) {
+
+                Text(
+                    text = "Thanh toán cho $nameMerchant",
+                    textAlign = TextAlign.Center,
+                    style = TextStyle(
+                        fontWeight = FontWeight.W400, color = colorResource(
+                            id = R.color.titleText
+                        ), fontSize = 12.sp, fontFamily = fontAppDefault
+                    )
+                )
+                DataOrder.amount?.let {
+                    Text(
+                        text = formatMoney(it),
+                        textAlign = TextAlign.Center,
+                        style = TextStyle(
+                            fontWeight = FontWeight.W600, fontSize = 18.sp, fontFamily = fontAppBold
+                        )
+                    )
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                Box(
+                    Modifier.height(1.dp).fillMaxWidth().background(Color.Gray, shape = DottedShape(step = 5.dp))
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+
+
                 data.data.listPaymentData.map { rowItem ->
                     Row(
                         modifier = Modifier.padding(bottom = 16.dp),
