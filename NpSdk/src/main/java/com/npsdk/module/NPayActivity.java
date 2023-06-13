@@ -114,9 +114,13 @@ public class NPayActivity extends AppCompatActivity {
 
             // Các route thuộc danh mục hóa đơn.
             if (route.equals(Actions.SHOP) || route.contains("BILLING")) {
-                webView.setVisibility(View.GONE);
-                webView2.setVisibility(View.VISIBLE);
-                webView2.loadUrl(Utils.getUrlActionShop(route), headerWebView);
+//                webView.setVisibility(View.GONE);
+//                webView2.setVisibility(View.VISIBLE);
+//                webView2.loadUrl(Utils.getUrlActionShop(route), headerWebView);
+//                showOrHideToolbar();
+                webView2.setVisibility(View.GONE);
+                webView.setVisibility(View.VISIBLE);
+                webView.loadUrl(Utils.getUrlActionShop(route), headerWebView);
                 showOrHideToolbar();
             } else {
                 builder.scheme("https")
@@ -225,6 +229,12 @@ public class NPayActivity extends AppCompatActivity {
             }
 
             @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                view.loadUrl(request.getUrl().toString(), headerWebView);
+                return true;
+            }
+
+            @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 //TODO xử lý load lỗi
@@ -243,7 +253,7 @@ public class NPayActivity extends AppCompatActivity {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (!url.contains(Flavor.baseUrl) || !url.contains(Flavor.baseShop)) {
+                if (!url.contains(Flavor.baseUrl) && !url.contains(Flavor.baseShop)) {
                     webView.setVisibility(View.GONE);
                     clearWebview2NonToolbar();
                     webView2.setVisibility(View.VISIBLE);
@@ -258,6 +268,11 @@ public class NPayActivity extends AppCompatActivity {
                 super.onPageFinished(view, url);
             }
 
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                view.loadUrl(request.getUrl().toString(), headerWebView);
+                return true;
+            }
 
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -282,7 +297,7 @@ public class NPayActivity extends AppCompatActivity {
                     if (nameAction != null) {
                         isProgressDeposit = nameAction.equals("napas-deposit");
                     }
-                    if (!getURL.startsWith(Flavor.baseUrl) || !getURL.startsWith(Flavor.baseShop)) {
+                    if (!getURL.startsWith(Flavor.baseUrl) && !getURL.startsWith(Flavor.baseShop)) {
                         webView.setVisibility(View.GONE);
                         webView2.setVisibility(View.VISIBLE);
                         webView2.loadUrl(getURL, headerWebView);
@@ -312,6 +327,7 @@ public class NPayActivity extends AppCompatActivity {
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         webView.addJavascriptInterface(jsHandler, "JsHandler");
         WebSettings webSettings = webView.getSettings();
+        webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         webSettings.setJavaScriptEnabled(true);
         webSettings.setAllowFileAccess(true);
         webSettings.setDatabaseEnabled(true);

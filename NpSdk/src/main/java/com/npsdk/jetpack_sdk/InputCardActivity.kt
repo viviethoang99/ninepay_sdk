@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -44,6 +45,13 @@ class InputCardActivity : ComponentActivity() {
         if (intent != null) {
             method = intent.getString("method")
         }
+        val callback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                DataOrder.feeTemp = DataOrder.amount.toString().toInt()
+                finish()
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, callback)
         setContent {
             PaymentNinepayTheme {
                 // A surface container using the 'background' color from the theme
