@@ -88,13 +88,16 @@ public class NPayLibrary {
 
 
     public void payWithWallet(String url, @Nullable String type) {
-        if (Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "").isEmpty()) {
-            // Gọi sang webview login
-            NPayLibrary.getInstance().openWallet(Actions.LOGIN);
-            return;
-        }
         DataOrder.Companion.setUrlData(url);
+
         if (type == null || type.equals("WALLET")) {
+            if (type != null && type.equals("WALLET")) {
+                if (Preference.getString(activity, Flavor.prefKey + Constants.PUBLIC_KEY, "").isEmpty()) {
+                    // Gọi sang webview login
+                    NPayLibrary.getInstance().openWallet(Actions.LOGIN);
+                    return;
+                }
+            }
             Intent intent = new Intent(activity, OrderActivity.class);
             if (type != null) intent.putExtra("method", type);
             intent.putExtra("url", url);
@@ -102,6 +105,7 @@ public class NPayLibrary {
             return;
         }
 
+        // Method other
         Intent intent = new Intent(activity, InputCardActivity.class);
         intent.putExtra("method", type);
         activity.startActivity(intent);
@@ -110,9 +114,10 @@ public class NPayLibrary {
     public void getUserInfoSendToPayment() {
         DataOrder.Companion.setBalance(null);
         String token = Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
+        String publickey = Preference.getString(activity, Flavor.prefKey + Constants.PUBLIC_KEY, "");
         String deviceId = DeviceUtils.getDeviceID(activity);
         String UID = DeviceUtils.getUniqueID(activity);
-
+        if (token.isEmpty() || publickey.isEmpty()) return;
         // Get user info
         GetInfoTask getInfoTask = new GetInfoTask(activity, "Bearer " + token, new GetInfoTask.OnGetInfoListener() {
             @Override
@@ -186,6 +191,7 @@ public class NPayLibrary {
         WebStorage.getInstance().deleteAllData();
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN);
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.REFRESH_TOKEN);
+        Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PUBLIC_KEY);
         listener.onLogoutSuccessful();
     }
 

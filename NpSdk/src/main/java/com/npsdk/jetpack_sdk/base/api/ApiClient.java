@@ -1,5 +1,6 @@
 package com.npsdk.jetpack_sdk.base.api;
 
+import androidx.annotation.Nullable;
 import com.npsdk.module.NPayLibrary;
 import com.npsdk.module.utils.Constants;
 import com.npsdk.module.utils.Flavor;
@@ -32,10 +33,15 @@ public class ApiClient {
 		return retrofit;
 	}
 
+	@Nullable
 	private static String getToken() {
-		String token = Preference.getString(NPayLibrary.getInstance().activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN);
-		if (token != null) token = "Bearer "+token;
-		return token;
+		try {
+			String token = Preference.getString(NPayLibrary.getInstance().activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN);
+			if (token != null) token = "Bearer "+token;
+			return token;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	private static OkHttpClient getCommonClient() {
@@ -52,9 +58,12 @@ public class ApiClient {
 								.newBuilder()
 								.addHeader("Merchant-Code", NPayLibrary.getInstance().sdkConfig.getMerchantCode())
 								.addHeader("App-version-Code", "400")
-								.addHeader("App-Type", "SDK")
-								.addHeader("Authorization", getToken())
-								.addHeader("Rke", Rke);
+								.addHeader("App-Type", "SDK");
+						if (getToken() != null && Rke != null) {
+							builder.addHeader("Authorization", getToken())
+									.addHeader("Rke", Rke);
+						}
+
 
 						Request request = builder.build();
 						return chain.proceed(request);

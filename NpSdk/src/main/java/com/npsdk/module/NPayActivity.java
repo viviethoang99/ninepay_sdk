@@ -190,36 +190,6 @@ public class NPayActivity extends AppCompatActivity {
                     return false;
                 }
 
-                //dành cho thanh toán merchant, bóc tách orderID
-                if (url.contains("/merchant/payment/") || url.contains("/thanh-toan-qr/")) {
-                    try {
-                        Uri.Builder builder = new Uri.Builder();
-                        JSONObject jsonObject = new JSONObject(data);
-
-                        builder.scheme("https")
-                                .encodedAuthority(/*"10.1.20.37:8080"*/ Flavor.baseUrl.replaceAll("https://", ""))
-                                .appendPath("v1")
-                                .appendPath("payment")
-                                .appendQueryParameter("route", Constants.VERIFY_PAYMENT_ROUTE)
-                                .appendQueryParameter("Merchant-Code", jsonObject.getString("Merchant-Code"))
-                                .appendQueryParameter("Merchant-Uid", jsonObject.getString("Merchant-Uid"))
-                                .appendQueryParameter("App-version-Code", "375")
-                                .appendQueryParameter("brand_color", String.valueOf(NPayLibrary.getInstance().sdkConfig.getBrandColor()))
-                                .appendQueryParameter("platform", "android")
-                                .appendQueryParameter("order_id", Utils.convertUrlToOrderId(url))
-                                .appendQueryParameter("device", DeviceUtils.getDevice());
-                        clearWebview2NonToolbar();
-                        webView2.setVisibility(View.GONE);
-                        rlOverlay.setVisibility(View.GONE);
-                        webView.setVisibility(View.VISIBLE);
-                        webView.loadUrl(builder.toString(), headerWebView);
-
-                    } catch (Exception ignored) {
-                    }
-                    return false;
-
-                }
-
                 if (url.startsWith(Flavor.baseUrl)) {
                     clearWebview2WithToolbar();
                     return false;
@@ -270,8 +240,37 @@ public class NPayActivity extends AppCompatActivity {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                view.loadUrl(request.getUrl().toString(), headerWebView);
-                return true;
+                String url = request.getUrl().toString();
+                if (url.contains("/merchant/payment/") || url.contains("/thanh-toan-qr/")) {
+                    try {
+                        Uri.Builder builder = new Uri.Builder();
+
+                        builder.scheme("https")
+                                .encodedAuthority(/*"10.1.20.37:8080"*/ Flavor.baseUrl.replaceAll("https://", ""))
+                                .appendPath("v1")
+                                .appendPath("payment")
+                                .appendQueryParameter("route", Constants.VERIFY_PAYMENT_ROUTE)
+                                .appendQueryParameter("Merchant-Code", NPayLibrary.getInstance().sdkConfig.getMerchantCode())
+                                .appendQueryParameter("Merchant-Uid", NPayLibrary.getInstance().sdkConfig.getUid())
+                                .appendQueryParameter("App-version-Code", "400")
+                                .appendQueryParameter("brand_color", String.valueOf(NPayLibrary.getInstance().sdkConfig.getBrandColor()))
+                                .appendQueryParameter("platform", "android")
+                                .appendQueryParameter("order_id", Utils.convertUrlToOrderId(url))
+                                .appendQueryParameter("device", DeviceUtils.getDevice());
+                        clearWebview2NonToolbar();
+                        webView2.setVisibility(View.GONE);
+                        rlOverlay.setVisibility(View.GONE);
+                        webView.setVisibility(View.VISIBLE);
+                        webView.loadUrl(builder.toString(), headerWebView);
+
+                    } catch (Exception ignored) {
+                        System.out.println("Error webiew "+ignored);
+                    }
+                    return false;
+                } else {
+                    view.loadUrl(request.getUrl().toString(), headerWebView);
+                    return true;
+                }
             }
 
             @Override

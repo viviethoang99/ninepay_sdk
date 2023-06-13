@@ -9,14 +9,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.webkit.*;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.snackbar.Snackbar;
 import com.npsdk.R;
 import com.npsdk.module.NPayLibrary;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -164,8 +163,8 @@ public class WebviewActivity extends AppCompatActivity {
 //        super.onBackPressed();
     }
 
+    @Nullable
     private static String decodeMessage(String encodedMessage) {
-        String decoded = URLDecoder.decode(encodedMessage, Charset.forName("UTF-8"));
-        return decoded;
+        return URLDecoder.decode(encodedMessage);
     }
 }

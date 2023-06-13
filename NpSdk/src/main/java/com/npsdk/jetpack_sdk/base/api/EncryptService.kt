@@ -34,11 +34,15 @@ object EncryptServiceHelper {
         return paddedData
     }
 
-    fun getRandomkeyEncrypt(): String {
-        if (randomKeyEncrypt != null) return randomKeyEncrypt!!
-        val myRandomkey = getPublicKeySaved() ?: throw Exception("No public key available")
-        randomKeyEncrypt = encryptRandomkey(getRandomkeyRaw(), myRandomkey)
-        return randomKeyEncrypt!!
+    fun getRandomkeyEncrypt(): String? {
+        try {
+            val myRandomkey = getPublicKeySaved() ?: return null
+            if (randomKeyEncrypt != null) return randomKeyEncrypt!!
+            randomKeyEncrypt = encryptRandomkey(getRandomkeyRaw(), myRandomkey)
+            return randomKeyEncrypt!!
+        } catch (e: Exception) {
+            return null
+        }
     }
 
     fun getRandomkeyRaw(): String {

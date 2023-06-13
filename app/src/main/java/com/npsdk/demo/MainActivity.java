@@ -132,6 +132,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
+        String url = edtUrlPaygate.getText().toString();
+        if (url.isEmpty())
+            url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODY2MzM4MDAsImludm9pY2Vfbm8iOiJIZk9XaWttcSIsImFtb3VudCI6MTAwMDAwLCJkZXNjcmlwdGlvbiI6Ik11YSBoYW5nIDlQYXkiLCJyZXR1cm5fdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJiYWNrX3VybCI6Imh0dHA6Ly9mY2RjYzQ3NjdhY2Iubmdyb2suaW8vIiwibWV0aG9kIjoiOVBBWSJ9&signature=r8HPS4u2FC%2BKbJHHnr1rEqCWc1tegLF4L%2FXfSxvGMoE%3D";
         switch (v.getId()) {
             case R.id.ll_quet_ma:
                 Log.d(TAG, "onClick: ll_rut_tien");
@@ -205,41 +208,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_thanh_toan:
                 //paste url thanh toán vào hàm pay
-                String url = edtUrlPaygate.getText().toString();
-                if (url.isEmpty())
-                    url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODU0OTkzMDMsImludm9pY2Vfbm8iOiJkOEFFMGJKdyIsImFtb3VudCI6MTAwMDAsImRlc2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0NzY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJtZXRob2QiOiI5UEFZIn0%3D&signature=LcASMO3nwXivlpUrIiG%2B%2FEwCZAXOIcGYTtC99nk3BRk%3D";
+
                 NPayLibrary.getInstance().payWithWallet(url, "WALLET");
                 edtUrlPaygate.setText("");
                 break;
             case R.id.btn_thanh_toan2:
-                //paste url thanh toán vào hàm pay
-                String url2 = edtUrlPaygate.getText().toString();
-                if (url2.isEmpty())
-                    url2 = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODU0OTkzMDMsImludm9pY2Vfbm8iOiJkOEFFMGJKdyIsImFtb3VudCI6MTAwMDAsImRlc2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0NzY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJtZXRob2QiOiI5UEFZIn0%3D&signature=LcASMO3nwXivlpUrIiG%2B%2FEwCZAXOIcGYTtC99nk3BRk%3D";
-                NPayLibrary.getInstance().payWithWallet(url2, "ATM_CARD");
+                NPayLibrary.getInstance().payWithWallet(url, "ATM_CARD");
                 edtUrlPaygate.setText("");
                 break;
             case R.id.btn_thanh_toan3:
                 //paste url thanh toán vào hàm pay
-                String url3 = edtUrlPaygate.getText().toString();
-                if (url3.isEmpty())
-                    url3 = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODU0OTkzMDMsImludm9pY2Vfbm8iOiJkOEFFMGJKdyIsImFtb3VudCI6MTAwMDAsImRlc2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0NzY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJtZXRob2QiOiI5UEFZIn0%3D&signature=LcASMO3nwXivlpUrIiG%2B%2FEwCZAXOIcGYTtC99nk3BRk%3D";
-                NPayLibrary.getInstance().payWithWallet(url3, "CREDIT_CARD");
-                edtUrlPaygate.setText("");
-
+                NPayLibrary.getInstance().payWithWallet(url, "CREDIT_CARD");
                 break;
             case R.id.test_click:
-                String url4 = edtUrlPaygate.getText().toString();
-                if (url4.isEmpty())
-                    url4 = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODY1NTU5NzksImludm9pY2Vfbm8iOiJJekZiQWVGRiIsImFtb3VudCI6MTAwMDAsImRlc2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0NzY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJtZXRob2QiOiI5UEFZIn0%3D&signature=Hhqc6MrGiDcWo7vMXSbtq5PZjzHmRXsZ8YHbOrNEiAg%3D";
-                NPayLibrary.getInstance().payWithWallet(url4, null);
-                edtUrlPaygate.setText("");
+                NPayLibrary.getInstance().payWithWallet(url, null);
 //                Intent i = new Intent(this, WebviewActivity.class);
 //                i.putExtra("url", "https://zing.vn");
 //                startActivity(i);
                 break;
-
         }
+        edtUrlPaygate.setText("");
 
     }
 
