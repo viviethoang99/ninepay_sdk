@@ -77,6 +77,7 @@ public class JsHandler {
 					activity.startActivity(intent);
 					break;
 				case close:
+				case backToApp:
 					NPayLibrary.getInstance().close();
 					break;
 				case getDeviceID:
@@ -140,6 +141,9 @@ public class JsHandler {
 				case requestGallery:
 					requestStorage();
 					break;
+				case callbackToApp:
+					handleCallbackToApp(paramJson);
+					break;
 				default:
 			}
 		} catch (Exception e) {
@@ -147,6 +151,9 @@ public class JsHandler {
 		}
 	}
 
+	private void handleCallbackToApp(JSONObject params) {
+		System.out.println("params "+params.toString());
+	}
 	private void requestCamera(Activity activity) {
 		if (isHavePermissionCamera()) {
 			sendStatusCamera(true);
@@ -198,6 +205,11 @@ public class JsHandler {
 	}
 
 	private enum switchCommandJS {
-		open9PayApp, close, logout, openOtherUrl, share, copy, call, message, clearToken, onLoggedInSuccess, onPaymentSuccess, onError, getAllToken, getDeviceID, requestCamera, openSchemaApp, showKeyboard, requestGallery
+		open9PayApp, close, logout, openOtherUrl, share, copy,
+		call, message, clearToken, onLoggedInSuccess, onPaymentSuccess,
+		onError, getAllToken, getDeviceID, requestCamera,
+		openSchemaApp, showKeyboard, requestGallery,
+		backToApp,
+		callbackToApp
 	}
 }

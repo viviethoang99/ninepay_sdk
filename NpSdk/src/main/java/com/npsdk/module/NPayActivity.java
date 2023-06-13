@@ -73,7 +73,7 @@ public class NPayActivity extends AppCompatActivity {
         settingWebview(webView2);
 
         setUpweb1Client();
-        setUpWeb2Client(data);
+        setUpWeb2Client();
         try {
             Uri.Builder builder = new Uri.Builder();
             JSONObject jsonObject = new JSONObject(data);
@@ -173,7 +173,7 @@ public class NPayActivity extends AppCompatActivity {
         super.onPause();
     }
 
-    private void setUpWeb2Client(String data) {
+    private void setUpWeb2Client() {
         webView2.setWebViewClient(new WebViewClient() {
 
             @Override
@@ -181,8 +181,10 @@ public class NPayActivity extends AppCompatActivity {
                 handler.proceed();
             }
 
+
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                String url = request.getUrl().toString();
                 Log.d(TAG, "shouldOverrideUrlLoading 2: url ==   " + url);
 
                 if (url.endsWith("close-webview")) {
@@ -196,12 +198,6 @@ public class NPayActivity extends AppCompatActivity {
                 }
                 webView2.loadUrl(url, headerWebView);
                 return false;
-            }
-
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                view.loadUrl(request.getUrl().toString(), headerWebView);
-                return true;
             }
 
             @Override
@@ -221,17 +217,6 @@ public class NPayActivity extends AppCompatActivity {
                 handler.proceed();
             }
 
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (!url.contains(Flavor.baseUrl) && !url.contains(Flavor.baseShop)) {
-                    webView.setVisibility(View.GONE);
-                    clearWebview2NonToolbar();
-                    webView2.setVisibility(View.VISIBLE);
-                    webView2.loadUrl(url, headerWebView);
-                    return false;
-                }
-                return false;
-            }
 
             @Override
             public void onPageFinished(WebView view, String url) {
@@ -240,7 +225,16 @@ public class NPayActivity extends AppCompatActivity {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+
                 String url = request.getUrl().toString();
+
+                if (!url.contains(Flavor.baseUrl) && !url.contains(Flavor.baseShop)) {
+                    webView.setVisibility(View.GONE);
+                    clearWebview2NonToolbar();
+                    webView2.setVisibility(View.VISIBLE);
+                    webView2.loadUrl(url, headerWebView);
+                    return false;
+                }
                 if (url.contains("/merchant/payment/") || url.contains("/thanh-toan-qr/")) {
                     try {
                         Uri.Builder builder = new Uri.Builder();
@@ -269,7 +263,7 @@ public class NPayActivity extends AppCompatActivity {
                     return false;
                 } else {
                     view.loadUrl(request.getUrl().toString(), headerWebView);
-                    return true;
+                    return false;
                 }
             }
 
