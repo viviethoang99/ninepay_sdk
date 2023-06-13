@@ -43,6 +43,7 @@ import com.npsdk.jetpack_sdk.theme.fontAppDefault
 import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.npsdk.module.NPayLibrary
+import com.npsdk.module.utils.Actions
 
 class DataOrder {
     companion object {
@@ -157,7 +158,7 @@ class OrderActivity : ComponentActivity() {
                             DataOrder.feeTemp?.let { it2 ->
                                 if (it1 < it2) {
                                     inputViewModel.showNotification.value = true
-                                    inputViewModel.stringDialog.value = "Số dư không đủ để thực hiện giao dịch!"
+                                    inputViewModel.stringDialog.value = "Số dư không đủ để thực hiện giao dịch, vui lòng nạp thêm tiền!"
                                     return@Footer
                                 }
                             }
@@ -270,7 +271,7 @@ class OrderActivity : ComponentActivity() {
                         style = TextStyle(fontWeight = FontWeight.W600, fontSize = 13.sp, fontFamily = fontAppDefault)
                     )
                     DataOrder.balance?.let {
-                        if (it < parseAmount) Text(
+                        if (it < parseAmount && item.code.equals("WALLET")) Text(
                             "${Utils.formatMoney(it)} - Không đủ",
                             style = TextStyle(
                                 fontWeight = FontWeight.W400,
@@ -290,10 +291,12 @@ class OrderActivity : ComponentActivity() {
                     }
                 }
 
-                if (DataOrder.balance != null && DataOrder.balance!! < parseAmount) Box(
+                if (DataOrder.balance != null && DataOrder.balance!! < parseAmount && item.code.equals("WALLET")) Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.width(80.dp).height(28.dp).clip(RoundedCornerShape(14.dp))
-                        .background(colorResource(R.color.background))
+                        .background(colorResource(R.color.background)).clickableWithoutRipple {
+                            NPayLibrary.getInstance().openWallet(Actions.DEPOSIT)
+                        }
                 ) {
                     Text(
                         "Nạp tiền",

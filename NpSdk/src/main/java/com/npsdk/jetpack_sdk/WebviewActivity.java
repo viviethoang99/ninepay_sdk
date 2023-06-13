@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.webkit.*;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.snackbar.Snackbar;
@@ -48,6 +49,13 @@ public class WebviewActivity extends AppCompatActivity {
                 urlLoad = intent.getString("url");
             }
         }
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+
+            }
+        };
+        this.getOnBackPressedDispatcher().addCallback(this, callback);
         System.out.println("URLLOAD 1: " + urlLoad);
         webView = findViewById(R.id.webView);
         btnClose = findViewById(R.id.btnClose);

@@ -77,7 +77,7 @@ public class JsHandler {
 					activity.startActivity(intent);
 					break;
 				case close:
-				case backToApp:
+//				case backToApp:
 					NPayLibrary.getInstance().close();
 					break;
 				case getDeviceID:

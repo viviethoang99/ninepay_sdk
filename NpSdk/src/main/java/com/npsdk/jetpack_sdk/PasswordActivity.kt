@@ -2,6 +2,7 @@ package com.npsdk.jetpack_sdk
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,10 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.npsdk.R
-import com.npsdk.jetpack_sdk.base.view.DialogNotification
-import com.npsdk.jetpack_sdk.base.view.LoadingView
-import com.npsdk.jetpack_sdk.base.view.TopAppBarApp
-import com.npsdk.jetpack_sdk.base.view.clickableWithoutRipple
+import com.npsdk.jetpack_sdk.base.view.*
 import com.npsdk.jetpack_sdk.repository.CallbackVerifyPayment
 import com.npsdk.jetpack_sdk.repository.VerifyPayment
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
@@ -62,18 +60,31 @@ class PasswordActivity : ComponentActivity() {
         if (bundle != null) {
             paymentId = bundle.getString("paymentId")
         }
+        val callback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, callback)
         setContent {
             PaymentNinepayTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
                     Scaffold(topBar = {
-                        TopAppBarApp()
+                        TopAppBarApp(
+                            onBack = {
+                                showDialogConfirm(this)
+                            }
+                        )
                     }, content = { paddingValues ->
                         Body(paddingValues = paddingValues)
                     })
                 }
             }
         }
+    }
+
+    override fun onBackPressed() {
     }
 
     @Composable

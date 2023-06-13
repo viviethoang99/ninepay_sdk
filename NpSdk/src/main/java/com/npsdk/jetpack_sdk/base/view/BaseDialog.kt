@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -31,7 +32,7 @@ fun BaseDialog(content: @Composable () -> Unit, onClose: () -> Unit) {
 }
 
 @Composable
-fun DialogNotification(contextString: String, onDismiss: () -> Unit) {
+fun DialogNotification(contextString: String, onDismiss: () -> Unit, titleButon: String? = "Quay lại") {
     Dialog(onDismissRequest = {
 
     }) {
@@ -47,6 +48,7 @@ fun DialogNotification(contextString: String, onDismiss: () -> Unit) {
                 text = contextString,
                 color = colorResource(R.color.titleText),
                 fontSize = 12.sp,
+                textAlign = TextAlign.Center,
                 fontFamily = fontAppDefault
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -58,7 +60,7 @@ fun DialogNotification(contextString: String, onDismiss: () -> Unit) {
                     onDismiss()
                 },
             ) {
-                Text("Quay lại", fontFamily = fontAppDefault, fontSize = 12.sp, color = Color.White)
+                Text(titleButon!!, fontFamily = fontAppDefault, fontSize = 12.sp, color = Color.White)
             }
         }
     }
