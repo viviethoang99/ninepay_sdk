@@ -44,6 +44,9 @@ import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.npsdk.module.NPayLibrary
 import com.npsdk.module.utils.Actions
+import com.npsdk.module.utils.Constants
+import com.npsdk.module.utils.Flavor
+import com.npsdk.module.utils.Preference
 
 class DataOrder {
     companion object {
@@ -247,6 +250,7 @@ class OrderActivity : ComponentActivity() {
 
     @Composable
     private fun ItemRow(item: Methods, isChecked: Boolean, onItemClick: () -> Unit) {
+        val context = LocalContext.current
 
         Row(
             modifier = Modifier.fillMaxWidth().padding(8.dp).clickableWithoutRipple {
@@ -295,7 +299,8 @@ class OrderActivity : ComponentActivity() {
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.width(80.dp).height(28.dp).clip(RoundedCornerShape(14.dp))
                         .background(colorResource(R.color.background)).clickableWithoutRipple {
-                            NPayLibrary.getInstance().openWallet(Actions.DEPOSIT)
+                            val phone = Preference.getString(context, Flavor.prefKey + Constants.PHONE, "");
+                            NPayLibrary.getInstance().openWallet(Actions.deposit(phone, null))
                         }
                 ) {
                     Text(

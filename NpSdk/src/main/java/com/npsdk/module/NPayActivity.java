@@ -79,6 +79,7 @@ public class NPayActivity extends AppCompatActivity {
             JSONObject jsonObject = new JSONObject(data);
             String route = jsonObject.getString("route");
             String orderId = "";
+            String path = "";
             if (jsonObject.has("order_id")) {
                 orderId = jsonObject.getString("order_id");
             }
@@ -113,16 +114,19 @@ public class NPayActivity extends AppCompatActivity {
             }
 
             // Các route thuộc danh mục hóa đơn.
-            if (route.equals(Actions.SHOP) || route.contains("BILLING")) {
-//                webView.setVisibility(View.GONE);
-//                webView2.setVisibility(View.VISIBLE);
-//                webView2.loadUrl(Utils.getUrlActionShop(route), headerWebView);
-//                showOrHideToolbar();
+            if (Actions.listAllServices().contains(route)) {
                 webView2.setVisibility(View.GONE);
                 webView.setVisibility(View.VISIBLE);
                 webView.loadUrl(Utils.getUrlActionShop(route), headerWebView);
                 showOrHideToolbar();
             } else {
+                if (route.startsWith("http")) {
+                    // Call load url direct
+                    webView2.setVisibility(View.GONE);
+                    webView.setVisibility(View.VISIBLE);
+                    webView.loadUrl(route, headerWebView);
+                    return;
+                }
                 builder.scheme("https")
                         .encodedAuthority(Flavor.baseUrl.replaceAll("https://", ""))
                         .appendPath("v1")
@@ -135,11 +139,6 @@ public class NPayActivity extends AppCompatActivity {
                         .appendQueryParameter("device", DeviceUtils.getDevice());
                 if (jsonObject.has("order_id")) {
                     builder.appendQueryParameter("order_id", Utils.convertUrlToOrderId(jsonObject.getString("order_id")));
-                }
-                if (route.equals(Actions.LOGIN) || route.equals(Actions.FORGOT_PASSWORD)) {
-                    String phone = Preference.getString(this, Flavor.prefKey + Constants.PHONE, "");
-                    builder.appendQueryParameter("phone", phone);
-                    builder.appendPath(route);
                 }
                 Log.d(TAG, "onCreate: Flavor.baseUrl ==   " + builder);
                 clearWebview2NonToolbar();
@@ -219,6 +218,8 @@ public class NPayActivity extends AppCompatActivity {
 
                 String url = request.getUrl().toString();
 
+                System.out.println("shouldOverrideUrlLoading 1: " + url);
+
                 if (!url.contains(Flavor.baseUrl) && !url.contains(Flavor.baseShop)) {
                     webView.setVisibility(View.GONE);
                     clearWebview2NonToolbar();
@@ -249,7 +250,7 @@ public class NPayActivity extends AppCompatActivity {
                         webView.loadUrl(builder.toString(), headerWebView);
 
                     } catch (Exception ignored) {
-                        System.out.println("Error webiew "+ignored);
+                        System.out.println("Error webiew " + ignored);
                     }
                     return false;
                 } else {

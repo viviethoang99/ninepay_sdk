@@ -48,6 +48,9 @@ import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.npsdk.module.NPayLibrary
 import com.npsdk.module.utils.Actions
+import com.npsdk.module.utils.Constants
+import com.npsdk.module.utils.Flavor
+import com.npsdk.module.utils.Preference
 
 class PasswordActivity : ComponentActivity() {
 
@@ -168,6 +171,7 @@ class PasswordActivity : ComponentActivity() {
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     private fun FieldPassword(onTextChanged: (String) -> Unit = {}, errTextPassword: String) {
+        val context = LocalContext.current
         val keyboardController = LocalSoftwareKeyboardController.current
         val focusRequester = remember { FocusRequester() }
         var passwordStr by remember {
@@ -238,7 +242,8 @@ class PasswordActivity : ComponentActivity() {
                 Text(
                     modifier = Modifier.clickableWithoutRipple {
                         // Gọi sang webview login
-                        NPayLibrary.getInstance().openWallet(Actions.FORGOT_PASSWORD)
+                        val phone = Preference.getString(context, Flavor.prefKey + Constants.PHONE, "")
+                        NPayLibrary.getInstance().openWallet(Actions.forgotPassword(phone))
                     },
                     text = "Quên mật khẩu?",
                     style = TextStyle(

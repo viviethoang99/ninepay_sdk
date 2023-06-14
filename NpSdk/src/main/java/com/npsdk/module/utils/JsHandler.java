@@ -16,6 +16,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 
+import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ShareCompat;
 import androidx.core.content.ContextCompat;
@@ -77,7 +78,7 @@ public class JsHandler {
 					activity.startActivity(intent);
 					break;
 				case close:
-//				case backToApp:
+				case backToApp:
 					NPayLibrary.getInstance().close();
 					break;
 				case getDeviceID:
@@ -152,6 +153,7 @@ public class JsHandler {
 	}
 
 	private void handleCallbackToApp(JSONObject params) {
+		Toast.makeText(activity, params.toString(), Toast.LENGTH_LONG).show();
 		System.out.println("params "+params.toString());
 	}
 	private void requestCamera(Activity activity) {

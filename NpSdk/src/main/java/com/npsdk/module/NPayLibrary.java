@@ -75,6 +75,12 @@ public class NPayLibrary {
         activity.startActivity(intent);
     }
 
+    public void openUrl(String path) {
+        Intent intent = new Intent(activity, NPayActivity.class);
+        intent.putExtra("data", NPayLibrary.getInstance().pathData(path));
+        activity.startActivity(intent);
+    }
+
     public void pay(String urlPayment) {
         Intent intent = new Intent(activity, NPayActivity.class);
         intent.putExtra("data", NPayLibrary.getInstance().paymentData(urlPayment));
@@ -221,6 +227,13 @@ public class NPayLibrary {
     private String walletData(String route) {
         Map<String, String> data = getHeader();
         data.put("route", route);
+        JSONObject obj = new JSONObject(data);
+        return obj.toString();
+    }
+
+    private String pathData(String path) {
+        Map<String, String> data = getHeader();
+        data.put("path", path);
         JSONObject obj = new JSONObject(data);
         return obj.toString();
     }

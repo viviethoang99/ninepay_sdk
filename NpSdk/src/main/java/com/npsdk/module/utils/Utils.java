@@ -17,7 +17,7 @@ public class Utils {
         String path = null;
         switch (action) {
             case Actions.SHOP:
-                return Flavor.baseShop + "/hoa-don-thanh-toan?is_start=1";
+                return "/hoa-don-thanh-toan?is_start=1";
             case Actions.BILLING_DIEN:
                 path = "/hoa-don/hoa-don-tien-dien";
                 break;
@@ -57,26 +57,23 @@ public class Utils {
             case Actions.BILLING_VETC:
                 path = "/hoa-don/hoa-don-duong-bo";
                 break;
-            case Actions.BILLING_TOPUP:
+            case Actions.TOPUP:
                 path = "/dich-vu-dien-thoai?code=topup_phone&is_start=1";
                 break;
-            case Actions.BILLING_PHONE_CARD:
+            case Actions.PHONE_CARD:
                 path = "/dich-vu-dien-thoai?code=phone_card&is_start=1";
                 break;
-            case Actions.BILLING_DATA_CARD:
+            case Actions.DATA_CARD:
                 path = "/dich-vu-dien-thoai?code=topup_data&is_start=1";
                 break;
-            case Actions.BILLING_GAME:
+            case Actions.GAME:
                 path = "/mua-the-game?code=game_card&is_start=1";
                 break;
-            case Actions.BILLING_SERVICE_CARD:
+            case Actions.SERVICE_CARD:
                 path = "/dich-vu-thanh-toan?is_start=1";
                 break;
         }
 
-        if (path == null) {
-            return Flavor.baseShop + "/hoa-don-thanh-toan/";
-        }
         return Flavor.baseShop + path;
     }
 }
