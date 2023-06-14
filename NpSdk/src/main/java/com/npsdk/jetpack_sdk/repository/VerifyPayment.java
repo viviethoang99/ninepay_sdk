@@ -28,7 +28,7 @@ public class VerifyPayment extends BaseApiClient {
             enqueue(call, new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
-                    if (response.body() != null) {
+                    if (response.code() == 200 && response.body() != null) {
                         updateUI(() -> {
                             String objectDecrypt = EncryptServiceHelper.INSTANCE.decryptAesBase64(
                                     response.body(),

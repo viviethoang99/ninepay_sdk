@@ -3,8 +3,9 @@ package com.npsdk.module.utils;
 public class Actions {
     public static final String OPEN_WALLET = "direct";
     public static final String LOGIN = "dang-nhap";
+    public static final String FORGOT_PASSWORD = "quen-mat-khau";
     public static final String HISTORY = "history";
-    public static final String DEPOSIT = "deposit";
+    public static final String DEPOSIT = "nap-tien";
     public static final String TRANSFER = "transfer";
     public static final String QR = "scan_qr_code";
 

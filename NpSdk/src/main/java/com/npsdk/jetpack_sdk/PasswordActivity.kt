@@ -238,7 +238,7 @@ class PasswordActivity : ComponentActivity() {
                 Text(
                     modifier = Modifier.clickableWithoutRipple {
                         // Gọi sang webview login
-                        NPayLibrary.getInstance().openWallet(Actions.LOGIN)
+                        NPayLibrary.getInstance().openWallet(Actions.FORGOT_PASSWORD)
                     },
                     text = "Quên mật khẩu?",
                     style = TextStyle(

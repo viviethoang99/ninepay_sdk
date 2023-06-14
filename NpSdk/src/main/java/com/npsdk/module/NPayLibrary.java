@@ -122,6 +122,7 @@ public class NPayLibrary {
         GetInfoTask getInfoTask = new GetInfoTask(activity, "Bearer " + token, new GetInfoTask.OnGetInfoListener() {
             @Override
             public void onGetInfoSuccess(String balance, String status, String phone) {
+                Preference.save(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PHONE, phone);
                 DataOrder.Companion.setBalance(Integer.parseInt(balance));
             }
 

@@ -26,12 +26,12 @@ public class CreateOrderInlandRepo extends BaseApiClient {
             enqueue(call, new Callback<CreateOrderCardModel>() {
                 @Override
                 public void onResponse(Call<CreateOrderCardModel> call, Response<CreateOrderCardModel> response) {
-                    if (response != null && response.body() != null) {
+                    if (response.code() ==200 && response.body() != null) {
                         updateUI(() -> {
                             callbackCreateOrder.onSuccess(response.body());
                         });
                     } else {
-                        System.out.println("SERVER ERROR");
+                        Toast.makeText(context, "Đã có lỗi xảy ra, code 10021", Toast.LENGTH_SHORT).show();
                     }
                 }
 

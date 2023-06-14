@@ -45,9 +45,10 @@ class InputCardActivity : ComponentActivity() {
         if (intent != null) {
             method = intent.getString("method")
         }
+        DataOrder.dataOrderSaved = null
         val callback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                DataOrder.feeTemp = DataOrder.amount.toString().toInt()
+                setDefaultAmount()
                 finish()
             }
         }
@@ -60,7 +61,9 @@ class InputCardActivity : ComponentActivity() {
                 ) {
                     Scaffold(topBar = {
                         TopAppBarApp(onBack = {
-                            DataOrder.feeTemp = DataOrder.amount.toString().toInt()
+                            setDefaultAmount()
+                            finish()
+
                         })
                     }, content = { paddingValues ->
                         Body(paddingValues = paddingValues)
@@ -90,13 +93,18 @@ class InputCardActivity : ComponentActivity() {
             }
             CheckValidatePayment().check(context, DataOrder.urlData, CallbackOrder { data ->
                 DataOrder.dataOrderSaved = data
-                // Dafault wallet
+                // Default wallet
                 DataOrder.amount = data!!.data.feeData.wallet.toInt()
-                DataOrder.feeTemp = DataOrder.amount.toString().toInt()
+                setDefaultAmount()
                 if (method == "ATM_CARD") {
-                    DataOrder.feeTemp = data.data.feeData.atmCard.toInt()
+                    setDefaultAmount()
                 }
             })
+        }
+
+        if (DataOrder.dataOrderSaved == null) {
+            ShimmerLoading()
+            return
         }
         Box(
             modifier = Modifier.fillMaxSize().background(colorResource(id = R.color.background))
@@ -147,7 +155,7 @@ class InputCardActivity : ComponentActivity() {
                 LoadingView()
             }
             FooterButton(onClickBack = {
-                DataOrder.feeTemp = DataOrder.amount.toString().toInt()
+                setDefaultAmount()
                 (context as Activity).finish()
             }, onClickContinue = {
                 if (!isSelectedPolicy) {
@@ -285,4 +293,15 @@ fun createOrderInland(viewModel: InputViewModel, context: Context, appViewModel:
         }
     })
 
+}
+
+fun setDefaultAmount() {
+    try {
+        DataOrder.amount?.let {
+            DataOrder.feeTemp = it.toString().toInt()
+        }
+
+    } catch (e: Exception) {
+        println("Error parse data")
+    }
 }

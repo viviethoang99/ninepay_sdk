@@ -36,7 +36,6 @@ fun TopAppBarApp(title: String = "Thanh toán", isShowBack: Boolean? = true, onB
                 )
             }, navigationIcon = {
                 if (isShowBack!!) IconButton(onClick = {
-                    (context as Activity).onBackPressed()
                     onBack()
                 }) {
                     Icon(

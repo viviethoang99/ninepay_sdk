@@ -25,12 +25,12 @@ public class GetListBank extends BaseApiClient {
             enqueue(call, new Callback<ListBankModel>() {
                 @Override
                 public void onResponse(Call<ListBankModel> call, Response<ListBankModel> response) {
-                    if (response.body() != null) {
+                    if (response.code() == 200 && response.body() != null) {
                         updateUI(() -> {
                             callbackListBank.onSuccess(response.body());
                         });
                     } else {
-                        System.out.println("SERVER ERROR");
+                        Toast.makeText(context, "Đã có lỗi xảy ra, code 10011", Toast.LENGTH_SHORT).show();
                     }
                 }
 

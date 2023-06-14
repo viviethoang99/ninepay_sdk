@@ -129,15 +129,17 @@ public class NPayActivity extends AppCompatActivity {
                         .appendQueryParameter("route", route)
                         .appendQueryParameter("Merchant-Code", jsonObject.getString("Merchant-Code"))
                         .appendQueryParameter("Merchant-Uid", jsonObject.getString("Merchant-Uid"))
-                        .appendQueryParameter("App-version-Code", "375")
+                        .appendQueryParameter("App-version-Code", "400")
                         .appendQueryParameter("brand_color", String.valueOf(NPayLibrary.getInstance().sdkConfig.getBrandColor()))
                         .appendQueryParameter("platform", "android")
                         .appendQueryParameter("device", DeviceUtils.getDevice());
                 if (jsonObject.has("order_id")) {
                     builder.appendQueryParameter("order_id", Utils.convertUrlToOrderId(jsonObject.getString("order_id")));
                 }
-                if (route.equals(Actions.LOGIN)) {
-                    builder.appendPath(Actions.LOGIN);
+                if (route.equals(Actions.LOGIN) || route.equals(Actions.FORGOT_PASSWORD)) {
+                    String phone = Preference.getString(this, Flavor.prefKey + Constants.PHONE, "");
+                    builder.appendQueryParameter("phone", phone);
+                    builder.appendPath(route);
                 }
                 Log.d(TAG, "onCreate: Flavor.baseUrl ==   " + builder);
                 clearWebview2NonToolbar();
@@ -154,22 +156,11 @@ public class NPayActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-
-        Handler mainThread = new Handler(Looper.getMainLooper());
-        mainThread.post(new Runnable() {
-            @Override
-            public void run() {
-                String jsExcute = "javascript: window.hiddenAppHandle()";
-                webView.loadUrl(jsExcute);
-                webView2.loadUrl(jsExcute);
-            }
-        });
         super.onStop();
     }
 
     @Override
     protected void onPause() {
-        NPayLibrary.hideSoftKeyboard(webView);
         super.onPause();
     }
 
@@ -202,9 +193,8 @@ public class NPayActivity extends AppCompatActivity {
 
             @Override
             public void onPageFinished(WebView view, String url) {
+                CookieManager.getInstance().flush();
                 super.onPageFinished(view, url);
-                //TODO xử lý load lỗi
-                Log.d(TAG, "onPageFinished: " + url);
             }
         });
     }
@@ -220,6 +210,7 @@ public class NPayActivity extends AppCompatActivity {
 
             @Override
             public void onPageFinished(WebView view, String url) {
+                CookieManager.getInstance().flush();
                 super.onPageFinished(view, url);
             }
 
@@ -353,9 +344,6 @@ public class NPayActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(changeUrlBR);
-//		webView.clearHistory();
-//		webView.clearCache(true);
-//		webView.destroy();
         clearWebview2NonToolbar();
         closeCamera();
         super.onDestroy();
@@ -379,15 +367,12 @@ public class NPayActivity extends AppCompatActivity {
 
 
     void closeButtonWebview() {
-        btnClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isProgressDeposit) {
-                    webView.loadUrl("javascript: window.sendEventDismissScreen()");
-                    isProgressDeposit = false;
-                }
-                clearWebview2WithToolbar();
+        btnClose.setOnClickListener(view -> {
+            if (isProgressDeposit) {
+                webView.loadUrl("javascript: window.sendEventDismissScreen()");
+                isProgressDeposit = false;
             }
+            clearWebview2WithToolbar();
         });
     }
 

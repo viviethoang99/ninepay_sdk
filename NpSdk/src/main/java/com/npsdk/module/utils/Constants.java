@@ -1,6 +1,7 @@
 package com.npsdk.module.utils;
 
 public class Constants {
+    public static final String PHONE = "phone";
     public static final String ACCESS_TOKEN = "access_token";
     public static final String REFRESH_TOKEN = "refresh_token";
     public static final String PUBLIC_KEY = "public_key";

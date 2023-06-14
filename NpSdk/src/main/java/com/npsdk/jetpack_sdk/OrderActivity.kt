@@ -106,7 +106,7 @@ class OrderActivity : ComponentActivity() {
                 DataOrder.dataOrderSaved = data
                 DataOrder.amount =
                     (DataOrder.dataOrderSaved!!.data.feeData.wallet).toInt()
-                DataOrder.feeTemp = DataOrder.amount.toString().toInt()
+                setDefaultAmount()
             })
 
             // Get user info

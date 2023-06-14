@@ -41,7 +41,9 @@ class PolicyActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
                     Scaffold(topBar = {
-                        TopAppBarApp("Điều khoản & chính sách")
+                        TopAppBarApp("Điều khoản & chính sách", onBack = {
+                            finish()
+                        })
                     }, content = { paddingValues ->
                         Body(paddingValues = paddingValues, url)
                     })

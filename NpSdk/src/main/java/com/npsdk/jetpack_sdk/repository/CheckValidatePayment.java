@@ -29,13 +29,12 @@ public class CheckValidatePayment extends BaseApiClient {
 			enqueue(call, new Callback<ValidatePaymentModel>() {
 				@Override
 				public void onResponse(Call<ValidatePaymentModel> call, Response<ValidatePaymentModel> response) {
-					if (response != null && response.body().getErrorCode() == 0) {
-						List<Methods> methods = response.body().getData().getMethods();
+					if (response.body() != null && response.code() == 200 && response.body().getErrorCode() == 0) {
 						updateUI(() -> {
 							callbackOrder.onSuccess(response.body());
 						});
 					} else {
-						System.out.println("SERVER ERROR");
+						Toast.makeText(context, "Đã có lỗi xảy ra, code 100000", Toast.LENGTH_SHORT).show();
 					}
 				}
 

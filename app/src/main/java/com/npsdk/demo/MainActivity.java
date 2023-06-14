@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         String url = edtUrlPaygate.getText().toString();
         if (url.isEmpty())
-            url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODY2MzM4MDAsImludm9pY2Vfbm8iOiJIZk9XaWttcSIsImFtb3VudCI6MTAwMDAwLCJkZXNjcmlwdGlvbiI6Ik11YSBoYW5nIDlQYXkiLCJyZXR1cm5fdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJiYWNrX3VybCI6Imh0dHA6Ly9mY2RjYzQ3NjdhY2Iubmdyb2suaW8vIiwibWV0aG9kIjoiOVBBWSJ9&signature=r8HPS4u2FC%2BKbJHHnr1rEqCWc1tegLF4L%2FXfSxvGMoE%3D";
+            url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODY3MTI3ODQsImludm9pY2Vfbm8iOiJNMzZaN2ZLRiIsImFtb3VudCI6MTAwMDAwLCJkZXNjcmlwdGlvbiI6Ik11YSBoYW5nIDlQYXkiLCJyZXR1cm5fdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJiYWNrX3VybCI6Imh0dHA6Ly9mY2RjYzQ3NjdhY2Iubmdyb2suaW8vIiwibWV0aG9kIjoiOVBBWSJ9&signature=foZMxLGoyLCWqUXqvMAaaz1f4GUXyFnhez3Fy%2BwoyLw%3D";
         switch (v.getId()) {
             case R.id.ll_quet_ma:
                 Log.d(TAG, "onClick: ll_rut_tien");
@@ -224,6 +224,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 NPayLibrary.getInstance().payWithWallet(url, "CREDIT_CARD");
                 break;
             case R.id.test_click:
+//                NPayLibrary.getInstance().openWallet(Actions.FORGOT_PASSWORD);
                 NPayLibrary.getInstance().payWithWallet(url, null);
 //                Intent i = new Intent(this, WebviewActivity.class);
 //                i.putExtra("url", "https://zing.vn");
