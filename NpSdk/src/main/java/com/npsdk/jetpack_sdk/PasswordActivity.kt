@@ -359,6 +359,7 @@ class PasswordActivity : ComponentActivity() {
                                             // Done
                                             NPayLibrary.getInstance().listener.onPaySuccessful()
                                             (context as Activity).finish() // Close screen
+                                            DataOrder.activityOrder?.finish()
                                         }
                                     })
                             }

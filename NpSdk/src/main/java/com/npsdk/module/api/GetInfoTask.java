@@ -7,11 +7,13 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.npsdk.module.NPayLibrary;
+import com.npsdk.module.model.Bank;
 import com.npsdk.module.model.UserInfoResponse;
 import com.npsdk.module.utils.Constants;
 import com.npsdk.module.utils.Preference;
 
 import java.io.IOException;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -44,7 +46,7 @@ public class GetInfoTask extends AsyncTask<Void, Void, Void> {
                     UserInfoResponse data = response.body();
                     if (data != null) {
                         if (data.getErrorCode() == 0) {
-                            callback.onGetInfoSuccess(data.getData().getBalance().toString(), data.getData().getStatus().toString(), data.getData().getPhone());
+                            callback.onGetInfoSuccess(data.getData().getBalance().toString(), data.getData().getStatus().toString(), data.getData().getPhone(), data.getData().getBanks());
                         } else {
                             callback.onError(data.getErrorCode(), data.getMessage());
                         }
@@ -71,7 +73,7 @@ public class GetInfoTask extends AsyncTask<Void, Void, Void> {
     }
 
     public interface OnGetInfoListener {
-        void onGetInfoSuccess(String balance, String status, String phone);
+        void onGetInfoSuccess(String balance, String status, String phone, List<Bank> listBank);
 
         void onError(int errorCode, String message);
     }

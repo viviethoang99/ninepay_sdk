@@ -3,6 +3,8 @@ package com.npsdk.jetpack_sdk.repository.model.validate_payment;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class FeeData {
 
     @SerializedName("ATM_CARD")
@@ -10,7 +12,7 @@ public class FeeData {
     private String atmCard;
     @SerializedName("CREDIT_CARD")
     @Expose
-    private CreditCard creditCard;
+    private List<CreditCard> creditCard;
     @SerializedName("COLLECTION")
     @Expose
     private String collection;
@@ -32,11 +34,11 @@ public class FeeData {
         this.atmCard = atmCard;
     }
 
-    public CreditCard getCreditCard() {
+    public List<CreditCard> getCreditCard() {
         return creditCard;
     }
 
-    public void setCreditCard(CreditCard creditCard) {
+    public void setCreditCard(List<CreditCard> creditCard) {
         this.creditCard = creditCard;
     }
 

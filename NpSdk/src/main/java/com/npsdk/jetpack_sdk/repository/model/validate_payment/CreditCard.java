@@ -5,49 +5,38 @@ import com.google.gson.annotations.SerializedName;
 
 public class CreditCard {
 
-    @SerializedName("MASTER")
+    @SerializedName("CARD_BRAND")
     @Expose
-    private Master master;
-    @SerializedName("VISA")
+    private String cardBrand;
+    @SerializedName("IN_LAND")
     @Expose
-    private Visa visa;
-    @SerializedName("JCB")
+    private String inLand;
+    @SerializedName("OUT_LAND")
     @Expose
-    private Jcb jcb;
-    @SerializedName("AMEX")
-    @Expose
-    private Amex amex;
+    private String outLand;
 
-    public Master getMaster() {
-        return master;
+    public String getCardBrand() {
+        return cardBrand;
     }
 
-    public void setMaster(Master master) {
-        this.master = master;
+    public void setCardBrand(String cardBrand) {
+        this.cardBrand = cardBrand;
     }
 
-    public Visa getVisa() {
-        return visa;
+    public String getInLand() {
+        return inLand;
     }
 
-    public void setVisa(Visa visa) {
-        this.visa = visa;
+    public void setInLand(String inLand) {
+        this.inLand = inLand;
     }
 
-    public Jcb getJcb() {
-        return jcb;
+    public String getOutLand() {
+        return outLand;
     }
 
-    public void setJcb(Jcb jcb) {
-        this.jcb = jcb;
-    }
-
-    public Amex getAmex() {
-        return amex;
-    }
-
-    public void setAmex(Amex amex) {
-        this.amex = amex;
+    public void setOutLand(String outLand) {
+        this.outLand = outLand;
     }
 
 }

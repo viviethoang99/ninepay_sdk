@@ -16,11 +16,13 @@ import com.npsdk.jetpack_sdk.InputCardActivity;
 import com.npsdk.jetpack_sdk.OrderActivity;
 import com.npsdk.module.api.GetInfoTask;
 import com.npsdk.module.api.RefreshTokenTask;
+import com.npsdk.module.model.Bank;
 import com.npsdk.module.model.SdkConfig;
 import com.npsdk.module.utils.*;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @SuppressLint("StaticFieldLeak")
@@ -127,7 +129,7 @@ public class NPayLibrary {
         // Get user info
         GetInfoTask getInfoTask = new GetInfoTask(activity, "Bearer " + token, new GetInfoTask.OnGetInfoListener() {
             @Override
-            public void onGetInfoSuccess(String balance, String status, String phone) {
+            public void onGetInfoSuccess(String balance, String status, String phone, List<Bank> listBank) {
                 Preference.save(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PHONE, phone);
                 DataOrder.Companion.setBalance(Integer.parseInt(balance));
                 if (afterSuccess != null) {
@@ -152,7 +154,7 @@ public class NPayLibrary {
         getInfoTask.execute();
     }
 
-    public void getInfoAccount() {
+    public void getUserInfo() {
         if (Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "").isEmpty()) {
             listener.onError(403, "Tài khoản chưa được đăng nhập!");
             return;
@@ -163,8 +165,8 @@ public class NPayLibrary {
         Log.d(TAG, "device id : " + deviceId + " , UID : " + UID);
         GetInfoTask getInfoTask = new GetInfoTask(activity, "Bearer " + token, new GetInfoTask.OnGetInfoListener() {
             @Override
-            public void onGetInfoSuccess(String balance, String status, String phone) {
-                listener.getInfoSuccess(phone, status, balance);
+            public void onGetInfoSuccess(String balance, String status, String phone, List<Bank> listBank) {
+                listener.getInfoSuccess(phone, status, balance, listBank);
             }
 
             @Override
@@ -187,7 +189,7 @@ public class NPayLibrary {
                 if (runnable != null) {
                     runnable.run();
                 } else {
-                    getInfoAccount();
+                    getUserInfo();
                 }
             }
 

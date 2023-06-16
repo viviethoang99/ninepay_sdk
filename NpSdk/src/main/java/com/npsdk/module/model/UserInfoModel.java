@@ -3,6 +3,8 @@ package com.npsdk.module.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class UserInfoModel {
 
     @SerializedName("phone")
@@ -15,6 +17,9 @@ public class UserInfoModel {
     @Expose
     private Integer balance;
 
+    @SerializedName("banks")
+    @Expose
+    private List<Bank> banks;
     /**
      * No args constructor for use in serialization
      */
@@ -56,5 +61,14 @@ public class UserInfoModel {
     public void setBalance(Integer balance) {
         this.balance = balance;
     }
+
+    public List<Bank> getBanks() {
+        return banks;
+    }
+
+    public void setBanks(List<Bank> banks) {
+        this.banks = banks;
+    }
+
 
 }

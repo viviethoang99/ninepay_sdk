@@ -156,39 +156,12 @@ object Validator {
     private fun filterFeeInter(nameCard: String, prefixString: String) {
         val listFeeBank = DataOrder.listBankModel?.data?.INTERNATIONALINLAND
         if (listFeeBank != null) {
-            val createCard = DataOrder.dataOrderSaved?.data?.feeData?.creditCard
-            when {
-                nameCard.contains("MASTER") -> {
-                    if (listFeeBank.contains(prefixString)) {
-                        DataOrder.feeTemp = createCard?.master?.inLand?.toInt()
-                    } else {
-                        DataOrder.feeTemp = createCard?.master?.outLand?.toInt()
-                    }
-                }
-
-                nameCard.contains("VISA") -> {
-                    if (listFeeBank.contains(prefixString)) {
-                        DataOrder.feeTemp = createCard?.visa?.inLand?.toInt()
-                    } else {
-                        DataOrder.feeTemp = createCard?.visa?.outLand?.toInt()
-                    }
-                }
-
-                nameCard.contains("JCB") -> {
-                    if (listFeeBank.contains(prefixString)) {
-                        DataOrder.feeTemp = createCard?.jcb?.inLand?.toInt()
-                    } else {
-                        DataOrder.feeTemp = createCard?.jcb?.outLand?.toInt()
-                    }
-                }
-
-                nameCard.contains("AMEX") -> {
-                    if (listFeeBank.contains(prefixString)) {
-                        DataOrder.feeTemp = createCard?.amex?.inLand?.toInt()
-                    } else {
-                        DataOrder.feeTemp = createCard?.amex?.outLand?.toInt()
-                    }
-                }
+            val listCreateCard = DataOrder.dataOrderSaved?.data?.feeData?.creditCard
+            val createCard = listCreateCard?.single { it.cardBrand == nameCard }
+            if (listFeeBank.contains(prefixString)) {
+                DataOrder.feeTemp = createCard?.inLand?.toInt()
+            } else {
+                DataOrder.feeTemp = createCard?.outLand?.toInt()
             }
 
         }
