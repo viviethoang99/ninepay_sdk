@@ -101,6 +101,7 @@ public class NPayLibrary {
         if (type == null || type.equals("WALLET")) {
             if (type != null && type.equals("WALLET")) {
                 if (Preference.getString(activity, Flavor.prefKey + Constants.PUBLIC_KEY, "").isEmpty()) {
+                    DataOrder.Companion.setProgressing(true);
                     // Gọi sang webview login
                     NPayLibrary.getInstance().openWallet(Actions.LOGIN);
                     return;
@@ -203,7 +204,8 @@ public class NPayLibrary {
     }
 
     public void logout() {
-        WebStorage.getInstance().deleteAllData();
+//        WebStorage.getInstance().deleteAllData();
+        Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PHONE);
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN);
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.REFRESH_TOKEN);
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PUBLIC_KEY);

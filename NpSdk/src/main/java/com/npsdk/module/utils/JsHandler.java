@@ -23,6 +23,7 @@ import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.npsdk.jetpack_sdk.DataOrder;
+import com.npsdk.jetpack_sdk.OrderActivity;
 import com.npsdk.module.NPayActivity;
 import com.npsdk.module.NPayLibrary;
 
@@ -160,8 +161,9 @@ public class JsHandler {
 			System.out.println("params "+params);
 			Boolean isResetPassword = params.getString("name").equals("RESET_PASSWORD");
 			Boolean isDeposit = params.getString("name").equals("DEPOSIT");
+			Boolean isLoginSuccess = params.getString("name").equals("LOGIN") && (params.has("status") && params.getString("status").equals("onSuccess"));
 
-			if (isResetPassword || isDeposit) {
+			if (isResetPassword || isDeposit || isLoginSuccess) {
 				if (DataOrder.Companion.isProgressing()) {
 					DataOrder.Companion.setProgressing(false);
 					if (isDeposit) {
@@ -171,8 +173,13 @@ public class JsHandler {
 								NPayLibrary.getInstance().close();
 							}
 						});
+					} else if (isLoginSuccess) {
+						NPayLibrary.getInstance().close();
+						Intent intent = new Intent(activity, OrderActivity.class);
+						intent.putExtra("method", "WALLET");
+						intent.putExtra("url", DataOrder.Companion.getUrlData());
+						activity.startActivity(intent);
 					}
-
 				}
 			}
 		} catch (JSONException jsonException) {
