@@ -22,9 +22,11 @@ import androidx.core.app.ShareCompat;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.module.NPayActivity;
 import com.npsdk.module.NPayLibrary;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class JsHandler {
@@ -153,8 +155,29 @@ public class JsHandler {
 	}
 
 	private void handleCallbackToApp(JSONObject params) {
-		Toast.makeText(activity, params.toString(), Toast.LENGTH_LONG).show();
-		System.out.println("params "+params.toString());
+		try {
+			Toast.makeText(activity, params.toString(), Toast.LENGTH_LONG).show();
+			System.out.println("params "+params);
+			Boolean isResetPassword = params.getString("name").equals("RESET_PASSWORD");
+			Boolean isDeposit = params.getString("name").equals("DEPOSIT");
+
+			if (isResetPassword || isDeposit) {
+				if (DataOrder.Companion.isProgressing()) {
+					DataOrder.Companion.setProgressing(false);
+					if (isDeposit) {
+						NPayLibrary.getInstance().getUserInfoSendToPayment(new Runnable() {
+							@Override
+							public void run() {
+								NPayLibrary.getInstance().close();
+							}
+						});
+					}
+
+				}
+			}
+		} catch (JSONException jsonException) {
+			System.out.println(jsonException);
+		}
 	}
 	private void requestCamera(Activity activity) {
 		if (isHavePermissionCamera()) {

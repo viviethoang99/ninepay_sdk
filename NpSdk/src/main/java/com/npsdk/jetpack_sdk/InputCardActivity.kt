@@ -81,6 +81,7 @@ class InputCardActivity : ComponentActivity() {
         val context = LocalContext.current
         val keyboardController = LocalSoftwareKeyboardController.current
         val focusManager = LocalFocusManager.current
+
         var isSelectedPolicy = true
 
         LaunchedEffect(true) {
@@ -166,9 +167,9 @@ class InputCardActivity : ComponentActivity() {
 
                 DataOrder.activityOrder?.finish() // Close order activity
 
-                when {
-                    method == "CREDIT_CARD" -> createOrderInternational(inputViewModel, context, appViewModel)
-                    method == "ATM_CARD" -> createOrderInland(inputViewModel, context, appViewModel)
+                when (method) {
+                    "CREDIT_CARD" -> createOrderInternational(inputViewModel, context, appViewModel)
+                    "ATM_CARD" -> createOrderInland(inputViewModel, context, appViewModel)
                 }
 
             }, modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter).padding(12.dp)

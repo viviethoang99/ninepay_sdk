@@ -38,4 +38,8 @@ public interface ApiService {
     @FormUrlEncoded
     @POST("/sdk/v1/payment/verifyOtp")
     Call<String> verifyPayment(@Field("payment_id") String paymentId, @Field("otp") String otp);
+
+    @FormUrlEncoded
+    @POST("/sdk/v1/reset-password/check-info")
+    Call<String> verifyPassword(@Field("password") String password);
 }

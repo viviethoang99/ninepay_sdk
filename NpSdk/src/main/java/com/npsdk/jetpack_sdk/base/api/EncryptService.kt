@@ -37,7 +37,6 @@ object EncryptServiceHelper {
     fun getRandomkeyEncrypt(): String? {
         try {
             val myRandomkey = getPublicKeySaved() ?: return null
-            if (randomKeyEncrypt != null) return randomKeyEncrypt!!
             randomKeyEncrypt = encryptRandomkey(getRandomkeyRaw(), myRandomkey)
             return randomKeyEncrypt!!
         } catch (e: Exception) {

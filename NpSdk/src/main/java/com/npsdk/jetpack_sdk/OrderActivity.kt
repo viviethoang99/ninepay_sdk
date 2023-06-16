@@ -2,7 +2,6 @@ package com.npsdk.jetpack_sdk
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -33,7 +32,6 @@ import com.npsdk.R
 import com.npsdk.jetpack_sdk.base.Utils
 import com.npsdk.jetpack_sdk.base.view.*
 import com.npsdk.jetpack_sdk.repository.*
-import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamsWallet
 import com.npsdk.jetpack_sdk.repository.model.ListBankModel
 import com.npsdk.jetpack_sdk.repository.model.ValidatePaymentModel
 import com.npsdk.jetpack_sdk.repository.model.validate_payment.Methods
@@ -61,6 +59,7 @@ class DataOrder {
         var balance by mutableStateOf<Int?>(null)
 
         var feeTemp by mutableStateOf<Int?>(null)
+        var isProgressing = false
     }
 }
 
@@ -70,6 +69,7 @@ class OrderActivity : ComponentActivity() {
     private var methodDefault: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        DataOrder.isProgressing = false
         DataOrder.amount = null
         DataOrder.feeTemp = null
         DataOrder.dataOrderSaved = null
@@ -113,7 +113,7 @@ class OrderActivity : ComponentActivity() {
             })
 
             // Get user info
-            NPayLibrary.getInstance().getUserInfoSendToPayment()
+            NPayLibrary.getInstance().getUserInfoSendToPayment(null)
         }
 
         if (modalOrderData == null) {
@@ -161,13 +161,15 @@ class OrderActivity : ComponentActivity() {
                             DataOrder.feeTemp?.let { it2 ->
                                 if (it1 < it2) {
                                     inputViewModel.showNotification.value = true
-                                    inputViewModel.stringDialog.value = "Số dư không đủ để thực hiện giao dịch, vui lòng nạp thêm tiền!"
+                                    inputViewModel.stringDialog.value =
+                                        "Số dư không đủ để thực hiện giao dịch, vui lòng nạp thêm tiền!"
                                     return@Footer
                                 }
                             }
                         }
 
-                        createOrderWallet(inputViewModel, context, appViewModel)
+                        val intent = Intent(context, PasswordActivity::class.java)
+                        context.startActivity(intent)
                         return@Footer
                     }
                     val intent = Intent(context, InputCardActivity::class.java)
@@ -299,7 +301,8 @@ class OrderActivity : ComponentActivity() {
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.width(80.dp).height(28.dp).clip(RoundedCornerShape(14.dp))
                         .background(colorResource(R.color.background)).clickableWithoutRipple {
-                            val phone = Preference.getString(context, Flavor.prefKey + Constants.PHONE, "");
+                            DataOrder.isProgressing = true
+                            val phone = Preference.getString(context, Flavor.prefKey + Constants.PHONE, "")
                             NPayLibrary.getInstance().openWallet(Actions.deposit(phone, null))
                         }
                 ) {
@@ -320,40 +323,6 @@ class OrderActivity : ComponentActivity() {
                     )
             }
         }
-    }
-
-    private fun createOrderWallet(viewModel: InputViewModel, context: Context, appViewModel: AppViewModel) {
-        appViewModel.showLoading()
-        val params = CreateOrderParamsWallet(
-            url = DataOrder.urlData, method = "WALLET"
-        )
-        CreateOrderWalletRepo().create(context, params, CallbackCreateOrder {
-            appViewModel.hideLoading()
-            it.message?.let { it1 ->
-                if (it.errorCode == 1) {
-                    viewModel.showNotification.value = true
-                    viewModel.stringDialog.value = it1
-                } else if (it.errorCode == 0) {
-                    val orderId = com.npsdk.module.utils.Utils.convertUrlToOrderId(it.data!!.redirectUrl!!)
-                    appViewModel.showLoading()
-                    CreatePayment().create(context, orderId, CallbackCreatePayment { paymentId, message ->
-                        run {
-                            appViewModel.hideLoading()
-                            (context as Activity).finish() // Close input Card
-                            if (paymentId == null) {
-                                viewModel.showNotification.value = true
-                                viewModel.stringDialog.value = message
-                                return@run
-                            } else {
-                                val intent = Intent(context, PasswordActivity::class.java)
-                                intent.putExtra("paymentId", paymentId)
-                                context.startActivity(intent)
-                            }
-                        }
-                    })
-                }
-            }
-        })
     }
 }
 

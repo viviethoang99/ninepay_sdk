@@ -1,5 +1,7 @@
 package com.npsdk.jetpack_sdk
 
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
@@ -39,30 +41,23 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.npsdk.R
 import com.npsdk.jetpack_sdk.base.view.*
-import com.npsdk.jetpack_sdk.repository.CallbackVerifyPayment
-import com.npsdk.jetpack_sdk.repository.VerifyPayment
+import com.npsdk.jetpack_sdk.repository.*
+import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamsWallet
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
 import com.npsdk.jetpack_sdk.theme.fontAppBold
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
 import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.npsdk.module.NPayLibrary
-import com.npsdk.module.utils.Actions
-import com.npsdk.module.utils.Constants
-import com.npsdk.module.utils.Flavor
-import com.npsdk.module.utils.Preference
+import com.npsdk.module.utils.*
 
 class PasswordActivity : ComponentActivity() {
 
-    private var paymentId: String? = null
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val bundle = intent.extras
-        if (bundle != null) {
-            paymentId = bundle.getString("paymentId")
-        }
+        DataOrder.isProgressing = false
         val callback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
 
@@ -107,25 +102,27 @@ class PasswordActivity : ComponentActivity() {
             LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
                 item {
                     Box(modifier = Modifier.padding(12.dp)) {
-                        FieldPassword(onTextChanged = {
-                            passwordSaved = it
+                        FieldPassword(onTextChanged = { password ->
+                            passwordSaved = password
                             if (passwordSaved.length == 6) {
                                 errTextPassword = ""
-                                // Verify password
+                                // Verify password and create order, payment.
                                 appViewModel.showLoading()
-                                VerifyPayment().create(
-                                    context,
-                                    paymentId,
-                                    passwordSaved,
-                                    CallbackVerifyPayment { message: String? ->
+                                VerifyPassword().check(context, passwordSaved, CallbackVerifyPassword {
+                                    // Message khac null tuc la co loi xay ra, show loi ra man hinh
+                                    if (it != null) {
                                         appViewModel.hideLoading()
-                                        if (message != null) {
-                                            errTextPassword = message
-                                        } else {
-                                            // Done
-                                            NPayLibrary.getInstance().listener.onPaySuccessful()
-                                        }
-                                    })
+                                        errTextPassword = it
+                                        return@CallbackVerifyPassword
+                                    } else {
+                                        // Khong co loi gi, tao order
+                                        createOrderWallet(context, inputViewModel, appViewModel, passwordSaved,
+                                            messageError = { callback ->
+                                                inputViewModel.showNotification.value = true
+                                                inputViewModel.stringDialog.value = callback
+                                            })
+                                    }
+                                })
                             }
                         }, errTextPassword)
                     }
@@ -145,25 +142,31 @@ class PasswordActivity : ComponentActivity() {
             Footer(
                 modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(horizontal = 12.dp),
                 clickContinue = {
+                    if (appViewModel.isShowLoading) {
+                        return@Footer
+                    }
                     if (passwordSaved.length < 6) {
                         errTextPassword = "Vui lòng nhập mật khẩu để tiếp tục!"
                         return@Footer
                     }
-                    // Verify password
+                    // Verify password and create order, payment.
                     appViewModel.showLoading()
-                    VerifyPayment().create(
-                        context,
-                        paymentId,
-                        passwordSaved,
-                        CallbackVerifyPayment { message: String? ->
+                    VerifyPassword().check(context, passwordSaved, CallbackVerifyPassword {
+                        // Message khac null tuc la co loi xay ra, show loi ra man hinh
+                        if (it != null) {
                             appViewModel.hideLoading()
-                            if (message != null) {
-                                errTextPassword = message
-                            } else {
-                                // Done
-                                NPayLibrary.getInstance().listener.onPaySuccessful()
-                            }
-                        })
+                            errTextPassword = it
+                            return@CallbackVerifyPassword
+                        } else {
+                            // Khong co loi gi, tao order
+                            createOrderWallet(context, inputViewModel, appViewModel, passwordSaved,
+                                messageError = { callback ->
+                                    inputViewModel.showNotification.value = true
+                                    inputViewModel.stringDialog.value = callback
+                                })
+                        }
+                    })
+
                 })
         }
     }
@@ -176,6 +179,14 @@ class PasswordActivity : ComponentActivity() {
         val focusRequester = remember { FocusRequester() }
         var passwordStr by remember {
             mutableStateOf("")
+        }
+
+        LaunchedEffect(errTextPassword) {
+            if (errTextPassword.isNotBlank()) {
+                if (errTextPassword != "Vui lòng nhập mật khẩu để tiếp tục!") {
+                    passwordStr = ""
+                }
+            }
         }
 
         Box(
@@ -241,6 +252,7 @@ class PasswordActivity : ComponentActivity() {
 
                 Text(
                     modifier = Modifier.clickableWithoutRipple {
+                        DataOrder.isProgressing = true
                         // Gọi sang webview login
                         val phone = Preference.getString(context, Flavor.prefKey + Constants.PHONE, "")
                         NPayLibrary.getInstance().openWallet(Actions.forgotPassword(phone))
@@ -304,5 +316,56 @@ class PasswordActivity : ComponentActivity() {
             Spacer(modifier = Modifier.height(12.dp))
 
         }
+    }
+
+    private fun createOrderWallet(
+        context: Context,
+        inputView: InputViewModel,
+        appViewModel: AppViewModel,
+        password: String,
+        messageError: (String) -> Unit
+    ) {
+        appViewModel.showLoading()
+        val params = CreateOrderParamsWallet(
+            url = DataOrder.urlData, method = "WALLET"
+        )
+        CreateOrderWalletRepo().create(context, params, CallbackCreateOrder {
+
+            it.message?.let { it1 ->
+                if (it.errorCode == 1) {
+                    appViewModel.hideLoading()
+                    inputView.showNotification.value = true
+                    inputView.stringDialog.value = it1
+                } else if (it.errorCode == 0) {
+                    val orderId = Utils.convertUrlToOrderId(it.data!!.redirectUrl!!)
+                    CreatePayment().create(context, orderId, CallbackCreatePayment { paymentId, message ->
+                        run {
+                            if (paymentId == null) {
+                                appViewModel.hideLoading()
+                                inputView.showNotification.value = true
+                                inputView.stringDialog.value = message
+                                return@run
+                            } else {
+                                // Tạo payment ví.
+                                VerifyPayment().create(
+                                    context,
+                                    paymentId,
+                                    password,
+                                    CallbackVerifyPayment { message: String? ->
+                                        appViewModel.hideLoading()
+                                        if (message != null) {
+                                            messageError(message)
+                                        } else {
+                                            // Done
+                                            NPayLibrary.getInstance().listener.onPaySuccessful()
+                                            (context as Activity).finish() // Close screen
+                                        }
+                                    })
+                            }
+                        }
+                    })
+                }
+            }
+        })
     }
 }

@@ -29,13 +29,13 @@ public class VerifyPayment extends BaseApiClient {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
                     if (response.code() == 200 && response.body() != null) {
+                        String objectDecrypt = EncryptServiceHelper.INSTANCE.decryptAesBase64(
+                                response.body(),
+                                EncryptServiceHelper.INSTANCE.getRandomkeyRaw()
+                        );
+                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        VerifyPaymentModel verifyPaymentModel = gson.fromJson(objectDecrypt, VerifyPaymentModel.class);
                         updateUI(() -> {
-                            String objectDecrypt = EncryptServiceHelper.INSTANCE.decryptAesBase64(
-                                    response.body(),
-                                    EncryptServiceHelper.INSTANCE.getRandomkeyRaw()
-                            );
-                            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                            VerifyPaymentModel verifyPaymentModel = gson.fromJson(objectDecrypt, VerifyPaymentModel.class);
                             if (verifyPaymentModel.getErrorCode() == 1) {
                                 callback.onSuccess(verifyPaymentModel.getMessage());
                             } else {

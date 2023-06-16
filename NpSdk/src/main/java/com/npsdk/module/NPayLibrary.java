@@ -117,7 +117,7 @@ public class NPayLibrary {
         activity.startActivity(intent);
     }
 
-    public void getUserInfoSendToPayment() {
+    public void getUserInfoSendToPayment(@Nullable Runnable afterSuccess) {
         DataOrder.Companion.setBalance(null);
         String token = Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
         String publickey = Preference.getString(activity, Flavor.prefKey + Constants.PUBLIC_KEY, "");
@@ -130,6 +130,9 @@ public class NPayLibrary {
             public void onGetInfoSuccess(String balance, String status, String phone) {
                 Preference.save(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PHONE, phone);
                 DataOrder.Companion.setBalance(Integer.parseInt(balance));
+                if (afterSuccess != null) {
+                    afterSuccess.run();
+                }
             }
 
             @Override
@@ -139,6 +142,7 @@ public class NPayLibrary {
                         @Override
                         public void run() {
                             // Đệ quy
+                            getUserInfoSendToPayment(null);
                         }
                     });
                 }
@@ -179,9 +183,11 @@ public class NPayLibrary {
         RefreshTokenTask refreshTokenTask = new RefreshTokenTask(activity, deviceId, UID, new RefreshTokenTask.OnRefreshListener() {
             @Override
             public void onRefreshSuccess() {
-                getInfoAccount();
+
                 if (runnable != null) {
                     runnable.run();
+                } else {
+                    getInfoAccount();
                 }
             }
 

@@ -9,7 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.npsdk.jetpack_sdk.base.api.BaseApiClient;
 import com.npsdk.jetpack_sdk.base.api.EncryptServiceHelper;
-import com.npsdk.jetpack_sdk.repository.model.PaymentModel;
+import com.npsdk.jetpack_sdk.repository.model.VerifyPaymentModel;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -17,14 +17,14 @@ import retrofit2.Response;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class CreatePayment extends BaseApiClient {
+public class VerifyPassword extends BaseApiClient {
 
     ExecutorService executor = Executors.newSingleThreadExecutor();
     Handler mainThread = new Handler(Looper.getMainLooper());
 
-    public void create(Context context, String orderId, CallbackCreatePayment callback) {
+    public void check(Context context, String password, CallbackVerifyPassword callback) {
         executor.execute(() -> {
-            Call<String> call = apiService.createPayment("1", orderId);
+            Call<String> call = apiService.verifyPassword(password);
             enqueue(call, new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
@@ -34,18 +34,22 @@ public class CreatePayment extends BaseApiClient {
                                 EncryptServiceHelper.INSTANCE.getRandomkeyRaw()
                         );
                         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                        PaymentModel paymentModel = gson.fromJson(objectDecrypt, PaymentModel.class);
+                        VerifyPaymentModel verifyPaymentModel = gson.fromJson(objectDecrypt, VerifyPaymentModel.class);
                         updateUI(() -> {
-                            callback.onSuccess(paymentModel.getData().getPaymentId(), paymentModel.getMessage());
+                            if (verifyPaymentModel.getErrorCode() == 1) {
+                                callback.onSuccess(verifyPaymentModel.getMessage());
+                            } else {
+                                callback.onSuccess(null);
+                            }
                         });
                     } else {
-                        Toast.makeText(context, "Đã có lỗi xảy ra, code 1004", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Đã có lỗi xảy ra, code 1005", Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-                    Toast.makeText(context, "Đã có lỗi xảy ra, code 1004", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Đã có lỗi xảy ra, code 1005", Toast.LENGTH_SHORT).show();
                 }
             });
         });
