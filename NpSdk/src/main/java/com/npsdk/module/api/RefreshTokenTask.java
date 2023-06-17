@@ -47,7 +47,7 @@ public class RefreshTokenTask extends AsyncTask<Void, Void, Void> {
                             if(model != null) {
                                 Preference.save(context, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN, model.getAccessToken());
                                 Preference.save(context, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.REFRESH_TOKEN, model.getRefreshToken());
-                                Preference.save(context, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.REFRESH_TOKEN, model.getPublicKey());
+                                Preference.save(context, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PUBLIC_KEY, model.getPublicKey());
                                 callback.onRefreshSuccess();
                             } else {
                                 Preference.remove(context, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN);
