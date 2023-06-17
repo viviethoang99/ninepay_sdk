@@ -100,7 +100,9 @@ public class NPayLibrary {
 
         if (type == null || type.equals("WALLET")) {
             if (type != null && type.equals("WALLET")) {
-                if (Preference.getString(activity, Flavor.prefKey + Constants.PUBLIC_KEY, "").isEmpty()) {
+                String pubKey = Preference.getString(activity, Flavor.prefKey + Constants.PUBLIC_KEY, "");
+                String token = Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
+                if (pubKey.isEmpty() || token.isEmpty()) {
                     DataOrder.Companion.setProgressing(true);
                     // Gọi sang webview login
                     NPayLibrary.getInstance().openWallet(Actions.LOGIN);

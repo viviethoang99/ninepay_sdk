@@ -12,6 +12,10 @@ public class RefreshTokenModel {
     @Expose
     private String refreshToken;
 
+    @SerializedName("public_key")
+    @Expose
+    private String publicKey;
+
     /**
      * No args constructor for use in serialization
      *
@@ -19,11 +23,6 @@ public class RefreshTokenModel {
     public RefreshTokenModel() {
     }
 
-    /**
-     *
-     * @param accessToken
-     * @param refreshToken
-     */
     public RefreshTokenModel(String accessToken, String refreshToken) {
         super();
         this.accessToken = accessToken;
@@ -46,4 +45,11 @@ public class RefreshTokenModel {
         this.refreshToken = refreshToken;
     }
 
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
+    }
 }
