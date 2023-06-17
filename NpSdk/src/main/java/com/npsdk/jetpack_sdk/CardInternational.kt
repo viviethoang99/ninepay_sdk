@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.npsdk.R
+import com.npsdk.jetpack_sdk.base.CardNumberMaskCustom
 import com.npsdk.jetpack_sdk.base.Validator
 import com.npsdk.jetpack_sdk.base.view.BaseDialog
 import com.npsdk.jetpack_sdk.base.view.DatePicker
@@ -27,7 +28,6 @@ import com.npsdk.jetpack_sdk.base.view.ExpandedRow
 import com.npsdk.jetpack_sdk.base.view.MyEdittext
 import com.npsdk.jetpack_sdk.theme.fontAppBold
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
-import com.steliospapamichail.creditcardmasker.viewtransformations.CardNumberMask
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -56,10 +56,10 @@ fun CardInternational(viewModel: InputViewModel) {
         LineCardLabel()
         MyEdittext("Số thẻ",
             keyboardType = KeyboardType.Number,
-            maxLength = 19,
-            tooltipsText = "Nhập đủ 15-19 số in nổi trên thẻ",
+            maxLength = 16,
+            tooltipsText = "Nhập đủ 16 số in nổi trên thẻ",
             errText = viewModel.numberOfCardErrorInter.value,
-            visualTransformation = CardNumberMask(" "),
+            visualTransformation = CardNumberMaskCustom(),
             onTextChanged = {
                 viewModel.numberOfCardInter.value = it
                 viewModel.numberOfCardErrorInter.value = Validator.validateNumberCardInter(it, viewModel)

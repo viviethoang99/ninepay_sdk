@@ -149,11 +149,11 @@ object Validator {
         currentCardInterMatch?.cardBrand?.let {
             inputViewModel.interCardDetect = currentCardInterMatch
             DataOrder.dataOrderSaved?.data?.allowedCreditCardBrand?.let { listAllow ->
-                if (listAllow.contains(currentCardInterMatch?.cardBrand)) isMatch = true
-            }
-
-            if (prefixString.length >= 6) {
-                isMatch = filterFeeInter(it, prefixString)
+                if (listAllow.contains(currentCardInterMatch?.cardBrand)) {
+                    if (prefixString.length >= 6) {
+                        isMatch = filterFeeInter(it, prefixString)
+                    }
+                }
             }
         }
         return isMatch
@@ -167,9 +167,11 @@ object Validator {
             // value = 99 thì cả IN và OUTLAND, = 1 thì INLAND, = 2 OUTLAND
             val splitPrefix: String = if (prefixString.length > 6) prefixString.substring(0, 6) else prefixString
             val createCard = listCreateCard?.single { it.cardBrand == nameCard }
+
 //            val x = listFeeBank.contains(splitPrefix)
 //            val y = intArrayOf(99, 1).contains(binLocaleAllow)
-            if (listFeeBank.contains(splitPrefix) && intArrayOf(99, 1).contains(binLocaleAllow)) {
+
+            if (intArrayOf(99, 1).contains(binLocaleAllow) && listFeeBank.contains(splitPrefix)) {
                 DataOrder.feeTemp = createCard?.inLand?.toInt()
                 return true
             } else if (intArrayOf(99, 2).contains(binLocaleAllow)) {
@@ -184,7 +186,6 @@ object Validator {
         list: ArrayList<INTERNATIONAL>, prefixNumber: BigInteger, inputViewModel: InputViewModel
     ): Boolean {
         var isMatch = false
-        inputViewModel.interCardDetect = null
         var currentCardMatch: INTERNATIONAL? = null
         list.forEach { element ->
             var itemByTypeDistance = element.distance
@@ -197,7 +198,6 @@ object Validator {
                     var numberSplit: BigInteger =
                         (prefixNumber.toString().substring(0, start.toString().length)).toBigInteger()
                     if (numberSplit in start..end) {
-                        isMatch = true
                         currentCardMatch = element
                         return@forEach
                     }
@@ -208,10 +208,11 @@ object Validator {
         currentCardMatch?.cardBrand?.let {
             inputViewModel.interCardDetect = currentCardMatch
             DataOrder.dataOrderSaved?.data?.allowedCreditCardBrand?.let { listAllow ->
-                if (listAllow.contains(currentCardMatch?.cardBrand)) isMatch = true
-            }
-            if (prefixNumber.toString().length >= 6) {
-                isMatch = filterFeeInter(it, prefixNumber.toString())
+                if (listAllow.contains(currentCardMatch?.cardBrand)) {
+                    if (prefixNumber.toString().length >= 6) {
+                        isMatch = filterFeeInter(it, prefixNumber.toString())
+                    }
+                }
             }
         }
         return isMatch
