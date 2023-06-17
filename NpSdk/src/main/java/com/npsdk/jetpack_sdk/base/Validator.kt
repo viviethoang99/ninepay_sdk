@@ -3,6 +3,7 @@ package com.npsdk.jetpack_sdk.base
 import com.npsdk.jetpack_sdk.DataOrder
 import com.npsdk.jetpack_sdk.repository.model.INTERNATIONAL
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
+import java.math.BigInteger
 
 object Validator {
 
@@ -27,7 +28,7 @@ object Validator {
                     val isMatchDistance =
                         checkMatchDistanceInter(
                             DataOrder.listBankModel!!.data!!.INTERNATIONAL,
-                            input.toLong(),
+                            input.toBigInteger(),
                             inputViewModel
                         )
                     if (!isMatchDistance) stringError =
@@ -133,14 +134,13 @@ object Validator {
     private fun checkMatchPrefixInter(
         list: ArrayList<INTERNATIONAL>, prefixString: String, inputViewModel: InputViewModel
     ): Boolean {
-        var isMatch: Boolean = false
+        var isMatch = false
         inputViewModel.interCardDetect = null
         var currentCardInterMatch: INTERNATIONAL? = null
         list.forEach { element ->
             var itemListPrefix: ArrayList<String> = element.prefix
             itemListPrefix.forEach { item ->
                 if (prefixString.startsWith(item)) {
-                    isMatch = true
                     currentCardInterMatch = element
                     return@forEach
                 }
@@ -148,40 +148,54 @@ object Validator {
         }
         currentCardInterMatch?.cardBrand?.let {
             inputViewModel.interCardDetect = currentCardInterMatch
-            if (prefixString.length >= 6) filterFeeInter(it, prefixString)
+            DataOrder.dataOrderSaved?.data?.allowedCreditCardBrand?.let { listAllow ->
+                if (listAllow.contains(currentCardInterMatch?.cardBrand)) isMatch = true
+            }
+
+            if (prefixString.length >= 6) {
+                isMatch = filterFeeInter(it, prefixString)
+            }
         }
         return isMatch
     }
 
-    private fun filterFeeInter(nameCard: String, prefixString: String) {
+    private fun filterFeeInter(nameCard: String, prefixString: String): Boolean {
         val listFeeBank = DataOrder.listBankModel?.data?.INTERNATIONALINLAND
         if (listFeeBank != null) {
             val listCreateCard = DataOrder.dataOrderSaved?.data?.feeData?.creditCard
+            val binLocaleAllow = DataOrder.dataOrderSaved!!.data!!.merchantInfo!!.binLocaleAllow
+            // value = 99 thì cả IN và OUTLAND, = 1 thì INLAND, = 2 OUTLAND
+            val splitPrefix: String = if (prefixString.length > 6) prefixString.substring(0, 6) else prefixString
             val createCard = listCreateCard?.single { it.cardBrand == nameCard }
-            if (listFeeBank.contains(prefixString)) {
+//            val x = listFeeBank.contains(splitPrefix)
+//            val y = intArrayOf(99, 1).contains(binLocaleAllow)
+            if (listFeeBank.contains(splitPrefix) && intArrayOf(99, 1).contains(binLocaleAllow)) {
                 DataOrder.feeTemp = createCard?.inLand?.toInt()
-            } else {
+                return true
+            } else if (intArrayOf(99, 2).contains(binLocaleAllow)) {
                 DataOrder.feeTemp = createCard?.outLand?.toInt()
+                return true
             }
-
         }
+        return false
     }
 
     private fun checkMatchDistanceInter(
-        list: ArrayList<INTERNATIONAL>, prefixNumber: Long, inputViewModel: InputViewModel
+        list: ArrayList<INTERNATIONAL>, prefixNumber: BigInteger, inputViewModel: InputViewModel
     ): Boolean {
-        var isMatch: Boolean = false
+        var isMatch = false
         inputViewModel.interCardDetect = null
         var currentCardMatch: INTERNATIONAL? = null
         list.forEach { element ->
             var itemByTypeDistance = element.distance
 
             itemByTypeDistance.forEach { itemDistance ->
-                val start: Int = itemDistance.first().toInt()
-                val end: Int = itemDistance.last().toInt()
+                val start: BigInteger = itemDistance.first().toBigInteger()
+                val end: BigInteger = itemDistance.last().toBigInteger()
                 // Chỉ so sánh trong 1 khoảng đủ số ký tự đầu mà model có.
                 if (prefixNumber.toString().length >= start.toString().length) {
-                    var numberSplit: Long = (prefixNumber.toString().substring(0, start.toString().length)).toLong()
+                    var numberSplit: BigInteger =
+                        (prefixNumber.toString().substring(0, start.toString().length)).toBigInteger()
                     if (numberSplit in start..end) {
                         isMatch = true
                         currentCardMatch = element
@@ -193,7 +207,12 @@ object Validator {
         }
         currentCardMatch?.cardBrand?.let {
             inputViewModel.interCardDetect = currentCardMatch
-            if (prefixNumber.toString().length >= 6) filterFeeInter(it, prefixNumber.toString())
+            DataOrder.dataOrderSaved?.data?.allowedCreditCardBrand?.let { listAllow ->
+                if (listAllow.contains(currentCardMatch?.cardBrand)) isMatch = true
+            }
+            if (prefixNumber.toString().length >= 6) {
+                isMatch = filterFeeInter(it, prefixNumber.toString())
+            }
         }
         return isMatch
     }

@@ -98,7 +98,7 @@ class InputCardActivity : ComponentActivity() {
                 DataOrder.amount = data!!.data.feeData.wallet.toInt()
                 setDefaultAmount()
                 if (method == "ATM_CARD") {
-                    setDefaultAmount()
+                    DataOrder.feeTemp = data!!.data.feeData.atmCard.toInt()
                 }
             })
         }
@@ -211,7 +211,7 @@ fun createOrderInternational(viewModel: InputViewModel, context: Context, appVie
     val expCardStr = viewModel.expirationDateCardInter.value.split("/")
     val month: String = expCardStr.first()
     val year: String = expCardStr[1]
-    var amount: Any? = DataOrder.amount
+    var amount: Any? = DataOrder.feeTemp
     if (amount is Double) amount = amount.toInt()
     val params = CreateOrderParamsInter(
         url = DataOrder.urlData,
@@ -268,7 +268,7 @@ fun createOrderInland(viewModel: InputViewModel, context: Context, appViewModel:
     val expCardStr = dateCard.split("/")
     val month: String = expCardStr.first()
     val year: String = expCardStr[1]
-    var amount: Any? = DataOrder.amount
+    var amount: Any? = DataOrder.feeTemp
     if (amount is Double) amount = amount.toInt()
     val params = CreateOrderParamsInland(
         url = DataOrder.urlData,
