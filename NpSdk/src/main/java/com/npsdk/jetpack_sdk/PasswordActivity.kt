@@ -54,13 +54,15 @@ import com.npsdk.module.utils.*
 class PasswordActivity : ComponentActivity() {
 
 
+    var showDialog by mutableStateOf(false)
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DataOrder.isProgressing = false
         val callback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-
+                showDialog = true
             }
         }
         onBackPressedDispatcher.addCallback(this, callback)
@@ -71,7 +73,7 @@ class PasswordActivity : ComponentActivity() {
                     Scaffold(topBar = {
                         TopAppBarApp(
                             onBack = {
-                                showDialogConfirm(this)
+                                showDialog = true
                             }
                         )
                     }, content = { paddingValues ->
@@ -83,6 +85,7 @@ class PasswordActivity : ComponentActivity() {
     }
 
     override fun onBackPressed() {
+        showDialog = true
     }
 
     @Composable
@@ -168,6 +171,13 @@ class PasswordActivity : ComponentActivity() {
                     })
 
                 })
+
+            if (showDialog) ShowBackDialog(onBack = {
+                showDialog = false
+                finish()
+            }, onContinue = {
+                showDialog = false
+            })
         }
     }
 

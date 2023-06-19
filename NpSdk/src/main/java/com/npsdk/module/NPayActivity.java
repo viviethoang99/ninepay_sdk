@@ -125,6 +125,7 @@ public class NPayActivity extends AppCompatActivity {
                     webView2.setVisibility(View.GONE);
                     webView.setVisibility(View.VISIBLE);
                     webView.loadUrl(route, headerWebView);
+                    System.out.println("Webview 1 load url " + route);
                     return;
                 }
                 builder.scheme("https")

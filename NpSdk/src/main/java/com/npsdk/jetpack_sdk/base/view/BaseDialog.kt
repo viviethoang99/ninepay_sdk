@@ -18,11 +18,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.npsdk.R
 import com.npsdk.jetpack_sdk.theme.fontAppBold
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
-import kotlinx.coroutines.*
-import com.npsdk.R
 import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
+import kotlinx.coroutines.*
 
 @Composable
 fun BaseDialog(content: @Composable () -> Unit, onClose: () -> Unit) {
@@ -41,7 +41,7 @@ fun DialogNotification(contextString: String, onDismiss: () -> Unit, titleButon:
                 .fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Thông báo", color = Color.Black, fontSize = 18.sp, fontFamily = fontAppBold
+                text = "Thông báo", color = Color.Black, fontSize = 14.sp, fontFamily = fontAppBold
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
@@ -96,4 +96,77 @@ fun LoadingView() {
 //            modifier = Modifier.clip(RoundedCornerShape(8.dp)).size(150.dp).background(Color.Transparent)
 //        )
 //    }
+}
+
+@Composable
+fun ShowBackDialog(onBack: () -> Unit = {}, onContinue: () -> Unit = {}) {
+    Dialog(onDismissRequest = {
+        onContinue()
+    }) {
+        Column(
+            modifier = Modifier.clip(RoundedCornerShape(12.dp)).background(color = Color.White).padding(12.dp)
+                .fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            androidx.compose.material3.Text(
+                text = "Bạn có chắc chắn muốn quay lại?",
+                color = colorResource(R.color.black),
+                fontSize = 14.sp,
+                fontFamily = fontAppBold
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            androidx.compose.material3.Text(
+                text = "Giao dịch thanh toán của bạn sẽ bị hủy nếu bạn thực hiện quay lại.",
+                color = colorResource(R.color.titleText),
+                fontSize = 12.sp,
+                lineHeight = 18.sp,
+                textAlign = TextAlign.Center,
+                fontFamily = fontAppDefault
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.weight(1f).clip(RoundedCornerShape(8.dp)).fillMaxWidth().height(36.dp)
+                        .background(
+                            colorResource(R.color.background)
+                        ).clickableWithoutRipple{
+                            onBack()
+                        }
+                ) {
+                    androidx.compose.material3.Text(
+                        "Quay lại",
+                        textAlign = TextAlign.Center,
+                        fontFamily = fontAppBold,
+                        fontSize = 12.sp,
+                        color = colorResource(R.color.green)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.weight(1f).clip(RoundedCornerShape(8.dp)).fillMaxWidth().height(36.dp)
+                        .background(
+                            colorResource(R.color.green)
+                        ).clickableWithoutRipple{
+                            onContinue()
+                        }
+                ) {
+                    androidx.compose.material3.Text(
+                        "Không",
+                        textAlign = TextAlign.Center,
+                        fontFamily = fontAppBold,
+                        fontSize = 12.sp,
+                        color = colorResource(R.color.white)
+                    )
+                }
+            }
+
+        }
+    }
 }

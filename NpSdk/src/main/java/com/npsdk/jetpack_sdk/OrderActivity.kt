@@ -25,8 +25,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.npsdk.R
 import com.npsdk.jetpack_sdk.base.Utils
@@ -101,6 +103,10 @@ class OrderActivity : ComponentActivity() {
         val appViewModel: AppViewModel = viewModel()
         val context = LocalContext.current
 
+        var showDialogDeposit by remember {
+            mutableStateOf(false)
+        }
+
         LaunchedEffect(true) {
 
             // Get detail payment
@@ -147,6 +153,15 @@ class OrderActivity : ComponentActivity() {
                 item {
                     if (appViewModel.isShowLoading) LoadingView()
                 }
+                item {
+                    if (showDialogDeposit) ShowDepositDialog(onDismiss = {
+                        showDialogDeposit = !showDialogDeposit
+                    }, onDeposit = {
+                        DataOrder.isProgressing = true
+                        val phone = Preference.getString(context, Flavor.prefKey + Constants.PHONE, "")
+                        NPayLibrary.getInstance().openWallet(Actions.deposit(phone, null))
+                    })
+                }
             }
             Footer(modifier = Modifier.align(Alignment.BottomCenter).padding(horizontal = 16.dp),
 
@@ -160,9 +175,7 @@ class OrderActivity : ComponentActivity() {
                         DataOrder.balance?.let { it1 ->
                             DataOrder.feeTemp?.let { it2 ->
                                 if (it1 < it2) {
-                                    inputViewModel.showNotification.value = true
-                                    inputViewModel.stringDialog.value =
-                                        "Số dư không đủ để thực hiện giao dịch, vui lòng nạp thêm tiền!"
+                                    showDialogDeposit = true
                                     return@Footer
                                 }
                             }
@@ -177,8 +190,6 @@ class OrderActivity : ComponentActivity() {
                     context.startActivity(intent)
                 })
         }
-
-
     }
 
 
@@ -321,6 +332,67 @@ class OrderActivity : ComponentActivity() {
                         contentDescription = null,
                         modifier = Modifier.size(20.dp)
                     )
+            }
+        }
+    }
+
+    @Composable
+    private fun ShowDepositDialog(onDismiss: () -> Unit = {}, onDeposit: () -> Unit = {}) {
+        Dialog(onDismissRequest = {
+            onDismiss()
+        }) {
+            Column(
+                modifier = Modifier.clip(RoundedCornerShape(12.dp)).background(color = Color.White).padding(12.dp)
+                    .fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Số dư trong ví không đủ", color = Color.Black, fontSize = 14.sp, fontFamily = fontAppBold
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = "Số dư trong ví của bạn không đủ để thực hiện giao dịch, vui lòng nạp tiền để tiếp tục.",
+                    color = colorResource(R.color.titleText),
+                    fontSize = 12.sp,
+                    lineHeight = 18.sp,
+                    textAlign = TextAlign.Center,
+                    fontFamily = fontAppDefault
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "Quay lại",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.weight(1f).clickableWithoutRipple(onDismiss),
+                        fontFamily = fontAppBold,
+                        fontSize = 12.sp,
+                        color = colorResource(R.color.black)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.weight(1f).clip(RoundedCornerShape(8.dp)).fillMaxWidth().height(40.dp)
+                            .background(
+                                colorResource(R.color.green)
+                            ).clickableWithoutRipple{
+                                onDismiss()
+                                onDeposit()
+                            }
+                    ) {
+                        Text(
+                            "Nạp tiền",
+                            textAlign = TextAlign.Center,
+                            fontFamily = fontAppBold,
+                            fontSize = 12.sp,
+                            color = colorResource(R.color.white)
+                        )
+                    }
+                }
+
             }
         }
     }

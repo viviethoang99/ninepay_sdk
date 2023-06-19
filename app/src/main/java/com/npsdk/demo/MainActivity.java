@@ -1,6 +1,7 @@
 package com.npsdk.demo;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -11,6 +12,9 @@ import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.npsdk.LibListener;
+import com.npsdk.jetpack_sdk.PasswordActivity;
+import com.npsdk.jetpack_sdk.WebviewActivity;
+import com.npsdk.jetpack_sdk.WebviewComposeActivity;
 import com.npsdk.module.NPayLibrary;
 import com.npsdk.module.model.Bank;
 import com.npsdk.module.model.SdkConfig;
@@ -136,11 +140,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         String url = edtUrlPaygate.getText().toString();
         if (url.isEmpty())
-            url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODY5MTIyNDEsImludm9pY2Vfbm8iOiJSZWk0RmpESiIsImFtb3VudCI6MTAwMDAwLCJkZXNjcmlwdGlvbiI6Ik11YSBoYW5nIDlQYXkiLCJyZXR1cm5fdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJiYWNrX3VybCI6Imh0dHA6Ly9mY2RjYzQ3NjdhY2Iubmdyb2suaW8vIiwibWV0aG9kIjoiOVBBWSIsImlzX2N1c3RvbWVyX3BheV9mZWUiOjF9&signature=RwvXRUzFNez5KJG6yWDoFdjPGGnK6syy%2B421jMpUkSg%3D";
+            url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODcxNTI2NjAsImludm9pY2Vfbm8iOiJ6TXlES1R3TyIsImFtb3VudCI6MTAwMDAwLCJkZXNjcmlwdGlvbiI6Ik11YSBoYW5nIDlQYXkiLCJyZXR1cm5fdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJiYWNrX3VybCI6Imh0dHA6Ly9mY2RjYzQ3NjdhY2Iubmdyb2suaW8vIiwibWV0aG9kIjoiOVBBWSIsImlzX2N1c3RvbWVyX3BheV9mZWUiOjF9&signature=HR%2BuDVkXFtjILgQGdwSxCc5NZs%2BmTu2ejF425T5jc4k%3D";
         switch (v.getId()) {
             case R.id.ll_quet_ma:
                 Log.d(TAG, "onClick: ll_rut_tien");
-//                NPayLibrary.getInstance().openWallet(Actions.QR);
+                NPayLibrary.getInstance().openWallet(Actions.WITHDRAW);
                 break;
             case R.id.ll_nap_tien:
                 Log.d(TAG, "onClick: ll_nap_tien");
@@ -153,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.ll_lich_su:
                 Log.d(TAG, "onClick: ll_lich_su");
-//                NPayLibrary.getInstance().openWallet(Actions.HISTORY);
+                NPayLibrary.getInstance().openWallet(Actions.HISTORY);
                 break;
             case R.id.ll_thanh_toan_hoa_don:
                 Log.d(TAG, "onClick: ll_thanh_toan_hoa_don");
@@ -228,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                NPayLibrary.getInstance().openWallet(url);
 //                String old = Preference.getString(this, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
 //                Preference.save(this, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN, old + "a");
-//                Intent i = new Intent(this, WebviewActivity.class);
+//                Intent i = new Intent(this, WebviewComposeActivity.class);
 //                i.putExtra("url", "https://zing.vn");
 //                startActivity(i);
                 break;

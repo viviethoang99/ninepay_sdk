@@ -9,6 +9,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
@@ -24,7 +25,7 @@ import com.npsdk.jetpack_sdk.theme.fontAppBold
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBarApp(title: String = "Thanh toán", isShowBack: Boolean? = true, onBack: () -> Unit = {}) {
+fun TopAppBarApp(title: String = "Thanh toán", isShowBack: Boolean? = true, onBack: () -> Unit = {}, isCloseButton: Boolean? = false) {
     var context = LocalContext.current
     Row(modifier = Modifier.height(50.dp).fillMaxWidth()) {
         CenterAlignedTopAppBar(
@@ -39,7 +40,7 @@ fun TopAppBarApp(title: String = "Thanh toán", isShowBack: Boolean? = true, onB
                     onBack()
                 }) {
                     Icon(
-                        imageVector = Icons.Filled.ArrowBack, contentDescription = "Back"
+                        imageVector = if (isCloseButton!!) Icons.Filled.Close else Icons.Filled.ArrowBack, contentDescription = "Back"
                     )
                 }
             }

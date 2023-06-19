@@ -8,8 +8,9 @@ import java.util.Arrays;
 public class Actions {
     public static final String OPEN_WALLET = "direct";
     public static final String LOGIN = Flavor.baseUrl + "/v1/dang-nhap";
-    public static final String HISTORY = "history";
-    public static final String TRANSFER = "transfer";
+    public static final String HISTORY = Flavor.baseUrl + "/v1/lich-su-chuyen-tien";
+    public static final String TRANSFER = Flavor.baseUrl + "/v1/chuyen-tien?phone=";
+    public static final String WITHDRAW = Flavor.baseUrl + "/v1/rut-tien?phone=";
     public static final String QR = "scan_qr_code";
 
     // DANH MUC HOA DON
