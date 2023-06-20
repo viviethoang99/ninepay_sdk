@@ -62,6 +62,7 @@ class DataOrder {
 
         var feeTemp by mutableStateOf<Int?>(null)
         var isProgressing = false
+        var isStartScreen = false
     }
 }
 
@@ -76,6 +77,7 @@ class OrderActivity : ComponentActivity() {
         DataOrder.feeTemp = null
         DataOrder.dataOrderSaved = null
         DataOrder.selectedItemMethod = null
+        DataOrder.isStartScreen = false
 
         DataOrder.activityOrder = this
         val bundle = intent.extras

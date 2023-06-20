@@ -104,6 +104,7 @@ public class NPayLibrary {
                 String token = Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
                 if (pubKey.isEmpty() || token.isEmpty()) {
                     DataOrder.Companion.setProgressing(true);
+                    DataOrder.Companion.setStartScreen(true);
                     // Gọi sang webview login
                     NPayLibrary.getInstance().openWallet(Actions.LOGIN);
                     return;
