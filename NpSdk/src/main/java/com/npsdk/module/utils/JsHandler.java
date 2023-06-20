@@ -176,7 +176,7 @@ public class JsHandler {
 						if (DataOrder.Companion.isStartScreen()) {
 							// Co the la login den tu viec
 							Intent intent = new Intent(activity, OrderActivity.class);
-							intent.putExtra("method", "WALLET");
+							intent.putExtra("method", Constants.WALLET);
 							intent.putExtra("url", DataOrder.Companion.getUrlData());
 							activity.startActivity(intent);
 						}
