@@ -31,14 +31,14 @@ public class CreateOrderWalletRepo extends BaseApiClient {
                             callbackCreateOrder.onSuccess(response.body());
                         });
                     } else {
-                        Toast.makeText(context, "Đã có lỗi xảy ra, code 1003", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Đã có lỗi xảy ra, code 1003", Toast.LENGTH_LONG).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<CreateOrderCardModel> call, Throwable t) {
                     System.out.println(t.getMessage());
-                    Toast.makeText(context, "Đã có lỗi xảy ra, code 1003", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Đã có lỗi xảy ra, code 1003", Toast.LENGTH_LONG).show();
                 }
             });
         });

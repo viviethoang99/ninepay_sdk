@@ -30,13 +30,13 @@ public class GetListBank extends BaseApiClient {
                             callbackListBank.onSuccess(response.body());
                         });
                     } else {
-                        Toast.makeText(context, "Đã có lỗi xảy ra, code 10011", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Đã có lỗi xảy ra, code 10011", Toast.LENGTH_LONG).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ListBankModel> call, Throwable t) {
-                    Toast.makeText(context, "Đã có lỗi xảy ra, code 1001", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Đã có lỗi xảy ra, code 1001", Toast.LENGTH_LONG).show();
                 }
             });
         });

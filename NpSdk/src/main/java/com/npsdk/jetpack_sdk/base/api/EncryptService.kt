@@ -36,8 +36,8 @@ object EncryptServiceHelper {
 
     fun getRandomkeyEncrypt(): String? {
         try {
-            val myRandomkey = getPublicKeySaved() ?: return null
-            randomKeyEncrypt = encryptRandomkey(getRandomkeyRaw(), myRandomkey)
+            val myPublicKey = getPublicKeySaved() ?: return null
+            randomKeyEncrypt = encryptRandomkey(getRandomkeyRaw(), myPublicKey)
             return randomKeyEncrypt!!
         } catch (e: Exception) {
             return null
@@ -108,7 +108,7 @@ object EncryptServiceHelper {
         return jsonEncoded
     }
 
-    fun encryptRandomkey(data: String, publicKey: String): String {
+    private fun encryptRandomkey(data: String, publicKey: String): String {
         val publicKeyRaw = "-----BEGIN PUBLIC KEY-----$publicKey-----END PUBLIC KEY-----"
         val reader = PemReader(StringReader(publicKeyRaw))
         val pemObject = reader.readPemObject()

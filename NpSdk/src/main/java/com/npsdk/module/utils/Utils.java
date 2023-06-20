@@ -17,7 +17,8 @@ public class Utils {
         String path = null;
         switch (action) {
             case Actions.SHOP:
-                return "/hoa-don-thanh-toan?is_start=1";
+                path = "/hoa-don-thanh-toan?is_start=1";
+                break;
             case Actions.BILLING_DIEN:
                 path = "/hoa-don/hoa-don-tien-dien";
                 break;

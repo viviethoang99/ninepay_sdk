@@ -33,6 +33,7 @@ import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamsInter
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
 import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
+import com.npsdk.module.utils.Constants
 
 class InputCardActivity : ComponentActivity() {
 
@@ -97,7 +98,7 @@ class InputCardActivity : ComponentActivity() {
                 // Default wallet
                 DataOrder.amount = data!!.data.feeData.wallet.toInt()
                 setDefaultAmount()
-                if (method == "ATM_CARD") {
+                if (method == Constants.ATM_CARD) {
                     DataOrder.feeTemp = data!!.data.feeData.atmCard.toInt()
                 }
             })
@@ -127,7 +128,7 @@ class InputCardActivity : ComponentActivity() {
                 }
 
                 item {
-                    if (method == "ATM_CARD") CardInland(viewModel = inputViewModel) else if (method == "CREDIT_CARD") CardInternational(
+                    if (method == Constants.ATM_CARD) CardInland(viewModel = inputViewModel) else if (method == Constants.CREDIT_CARD) CardInternational(
                         viewModel = inputViewModel
                     )
                 }
@@ -141,7 +142,7 @@ class InputCardActivity : ComponentActivity() {
                 }
 
                 item {
-                    if (method == "CREDIT_CARD" && DataOrder.dataOrderSaved != null) PolicyView(callBack = {
+                    if (method == Constants.CREDIT_CARD && DataOrder.dataOrderSaved != null) PolicyView(callBack = {
                         isSelectedPolicy = it
                     })
                 }
@@ -168,8 +169,8 @@ class InputCardActivity : ComponentActivity() {
                 DataOrder.activityOrder?.finish() // Close order activity
 
                 when (method) {
-                    "CREDIT_CARD" -> createOrderInternational(inputViewModel, context, appViewModel)
-                    "ATM_CARD" -> createOrderInland(inputViewModel, context, appViewModel)
+                    Constants.CREDIT_CARD -> createOrderInternational(inputViewModel, context, appViewModel)
+                    Constants.ATM_CARD -> createOrderInland(inputViewModel, context, appViewModel)
                 }
 
             }, modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter).padding(12.dp)
@@ -221,7 +222,7 @@ fun createOrderInternational(viewModel: InputViewModel, context: Context, appVie
         expireYear = year,
         cvc = viewModel.cvvCardInter.value,
         amount = amount.toString(),
-        method = "CREDIT_CARD"
+        method = Constants.CREDIT_CARD
     )
 
     appViewModel.showLoading()
@@ -277,7 +278,7 @@ fun createOrderInland(viewModel: InputViewModel, context: Context, appViewModel:
         expireMonth = month,
         expireYear = year,
         amount = amount.toString(),
-        method = "ATM_CARD"
+        method = Constants.ATM_CARD
     )
 
     appViewModel.showLoading()

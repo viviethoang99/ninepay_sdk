@@ -48,6 +48,7 @@ public class Actions {
     }
 
     public static String forgotPassword(@Nullable String phone) {
+        if (phone == null) phone = "";
         return Flavor.baseUrl + "/v1/quen-mat-khau?phone=" + phone;
     }
 

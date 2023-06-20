@@ -34,13 +34,13 @@ public class CheckValidatePayment extends BaseApiClient {
 							callbackOrder.onSuccess(response.body());
 						});
 					} else {
-						Toast.makeText(context, "Đã có lỗi xảy ra, code 100000", Toast.LENGTH_SHORT).show();
+						Toast.makeText(context, "Đã có lỗi xảy ra, code 100000", Toast.LENGTH_LONG).show();
 					}
 				}
 
 				@Override
 				public void onFailure(Call<ValidatePaymentModel> call, Throwable t) {
-					Toast.makeText(context, "Đã có lỗi xảy ra, code 1000", Toast.LENGTH_SHORT).show();
+					Toast.makeText(context, "Đã có lỗi xảy ra, code 1000", Toast.LENGTH_LONG).show();
 					System.out.println(t.getMessage());
 				}
 			});

@@ -98,8 +98,8 @@ public class NPayLibrary {
     public void payWithWallet(String url, @Nullable String type) {
         DataOrder.Companion.setUrlData(url);
 
-        if (type == null || type.equals("WALLET")) {
-            if (type != null && type.equals("WALLET")) {
+        if (type == null || type.equals(Constants.WALLET)) {
+            if (type != null && type.equals(Constants.WALLET)) {
                 String pubKey = Preference.getString(activity, Flavor.prefKey + Constants.PUBLIC_KEY, "");
                 String token = Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
                 if (pubKey.isEmpty() || token.isEmpty()) {

@@ -166,20 +166,12 @@ public class JsHandler {
 			if (isResetPassword || isDeposit || isLoginSuccess) {
 				if (DataOrder.Companion.isProgressing()) {
 					DataOrder.Companion.setProgressing(false);
-					if (isDeposit) {
-						NPayLibrary.getInstance().getUserInfoSendToPayment(new Runnable() {
-							@Override
-							public void run() {
-								NPayLibrary.getInstance().close();
-							}
-						});
-					} else if (isLoginSuccess) {
-						NPayLibrary.getInstance().close();
-						Intent intent = new Intent(activity, OrderActivity.class);
-						intent.putExtra("method", "WALLET");
-						intent.putExtra("url", DataOrder.Companion.getUrlData());
-						activity.startActivity(intent);
-					}
+					NPayLibrary.getInstance().getUserInfoSendToPayment(new Runnable() {
+						@Override
+						public void run() {
+							NPayLibrary.getInstance().close();
+						}
+					});
 				}
 			}
 		} catch (JSONException jsonException) {

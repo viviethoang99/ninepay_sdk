@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         String url = edtUrlPaygate.getText().toString();
         if (url.isEmpty())
-            url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODcxNTI2NjAsImludm9pY2Vfbm8iOiJ6TXlES1R3TyIsImFtb3VudCI6MTAwMDAwLCJkZXNjcmlwdGlvbiI6Ik11YSBoYW5nIDlQYXkiLCJyZXR1cm5fdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJiYWNrX3VybCI6Imh0dHA6Ly9mY2RjYzQ3NjdhY2Iubmdyb2suaW8vIiwibWV0aG9kIjoiOVBBWSIsImlzX2N1c3RvbWVyX3BheV9mZWUiOjF9&signature=HR%2BuDVkXFtjILgQGdwSxCc5NZs%2BmTu2ejF425T5jc4k%3D";
+            url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODcyNDA2MDQsImludm9pY2Vfbm8iOiJ4NzRTT216bSIsImFtb3VudCI6MTAwMDAwLCJkZXNjcmlwdGlvbiI6Ik11YSBoYW5nIDlQYXkiLCJyZXR1cm5fdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJiYWNrX3VybCI6Imh0dHA6Ly9mY2RjYzQ3NjdhY2Iubmdyb2suaW8vIiwibWV0aG9kIjoiOVBBWSIsImlzX2N1c3RvbWVyX3BheV9mZWUiOjF9&signature=H9B%2B0ujl3D4joXSr3Eno5u0L%2FgHPnXn8obKNbqaHW1I%3D";
         switch (v.getId()) {
             case R.id.ll_quet_ma:
                 Log.d(TAG, "onClick: ll_rut_tien");
@@ -216,16 +216,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_thanh_toan:
                 //paste url thanh toán vào hàm pay
 
-                NPayLibrary.getInstance().payWithWallet(url, "WALLET");
+                NPayLibrary.getInstance().payWithWallet(url, Constants.WALLET);
                 edtUrlPaygate.setText("");
                 break;
             case R.id.btn_thanh_toan2:
-                NPayLibrary.getInstance().payWithWallet(url, "ATM_CARD");
+                NPayLibrary.getInstance().payWithWallet(url, Constants.ATM_CARD);
                 edtUrlPaygate.setText("");
                 break;
             case R.id.btn_thanh_toan3:
                 //paste url thanh toán vào hàm pay
-                NPayLibrary.getInstance().payWithWallet(url, "CREDIT_CARD");
+                NPayLibrary.getInstance().payWithWallet(url, Constants.CREDIT_CARD);
                 break;
             case R.id.test_click:
                 NPayLibrary.getInstance().payWithWallet(url, null);

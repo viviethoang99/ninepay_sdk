@@ -166,7 +166,7 @@ class OrderActivity : ComponentActivity() {
             Footer(modifier = Modifier.align(Alignment.BottomCenter).padding(horizontal = 16.dp),
 
                 clickContinue = { ->
-                    if (methodDefault == "WALLET" || DataOrder.selectedItemMethod == "WALLET") {
+                    if (methodDefault == Constants.WALLET || DataOrder.selectedItemMethod == Constants.WALLET) {
                         if (DataOrder.balance == null) {
                             inputViewModel.showNotification.value = true
                             inputViewModel.stringDialog.value = "Không thể lấy dữ liệu tài khoản ví!!!"
@@ -221,7 +221,7 @@ class OrderActivity : ComponentActivity() {
 
         Column(modifier = Modifier.fillMaxWidth()) {
             Spacer(modifier = Modifier.height(16.dp))
-            if (methodDefault == "WALLET") Text(
+            if (methodDefault == Constants.WALLET) Text(
                 text = "Phương thức thanh toán", style = TextStyle(
                     fontWeight = FontWeight.W600, fontSize = 12.sp, fontFamily = fontAppBold
                 )
@@ -288,7 +288,7 @@ class OrderActivity : ComponentActivity() {
                         style = TextStyle(fontWeight = FontWeight.W600, fontSize = 13.sp, fontFamily = fontAppDefault)
                     )
                     DataOrder.balance?.let {
-                        if (it < parseAmount && item.code.equals("WALLET")) Text(
+                        if (it < parseAmount && item.code.equals(Constants.WALLET)) Text(
                             "${Utils.formatMoney(it)} - Không đủ",
                             style = TextStyle(
                                 fontWeight = FontWeight.W400,
@@ -296,7 +296,7 @@ class OrderActivity : ComponentActivity() {
                                 fontFamily = fontAppDefault,
                                 color = colorResource(R.color.yellow)
                             )
-                        ) else if (item.code.equals("WALLET")) Text(
+                        ) else if (item.code.equals(Constants.WALLET)) Text(
                             "Số dư ${Utils.formatMoney(it)}",
                             style = TextStyle(
                                 fontWeight = FontWeight.W400,
@@ -308,7 +308,7 @@ class OrderActivity : ComponentActivity() {
                     }
                 }
 
-                if (DataOrder.balance != null && DataOrder.balance!! < parseAmount && item.code.equals("WALLET")) Box(
+                if (DataOrder.balance != null && DataOrder.balance!! < parseAmount && item.code.equals(Constants.WALLET)) Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.width(80.dp).height(28.dp).clip(RoundedCornerShape(14.dp))
                         .background(colorResource(R.color.background)).clickableWithoutRipple {

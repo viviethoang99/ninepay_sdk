@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.npsdk.jetpack_sdk.base.api.BaseApiClient;
 import com.npsdk.jetpack_sdk.base.api.EncryptServiceHelper;
 import com.npsdk.jetpack_sdk.repository.model.PaymentModel;
@@ -34,18 +35,22 @@ public class CreatePayment extends BaseApiClient {
                                 EncryptServiceHelper.INSTANCE.getRandomkeyRaw()
                         );
                         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                        PaymentModel paymentModel = gson.fromJson(objectDecrypt, PaymentModel.class);
-                        updateUI(() -> {
-                            callback.onSuccess(paymentModel.getData().getPaymentId(), paymentModel.getMessage());
-                        });
+                        try {
+                            PaymentModel paymentModel = gson.fromJson(objectDecrypt, PaymentModel.class);
+                            updateUI(() -> {
+                                callback.onSuccess(paymentModel.getData().getPaymentId(), paymentModel.getMessage());
+                            });
+                        } catch (JsonSyntaxException e) {
+                            Toast.makeText(context, "Đã có lỗi phân tích cú pháp create payment.", Toast.LENGTH_LONG).show();
+                        }
                     } else {
-                        Toast.makeText(context, "Đã có lỗi xảy ra, code 1004", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Đã có lỗi xảy ra, code 1004", Toast.LENGTH_LONG).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-                    Toast.makeText(context, "Đã có lỗi xảy ra, code 1004", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Đã có lỗi xảy ra, code 1004", Toast.LENGTH_LONG).show();
                 }
             });
         });

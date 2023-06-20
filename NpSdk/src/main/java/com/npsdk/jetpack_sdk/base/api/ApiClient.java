@@ -59,7 +59,6 @@ public class ApiClient {
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient httpClient = null;
         try {
-            String Rke = EncryptServiceHelper.INSTANCE.getRandomkeyEncrypt();
             httpClient = new OkHttpClient.Builder()
                     .addInterceptor(chain -> {
                         Request.Builder builder = chain.request()
@@ -67,6 +66,7 @@ public class ApiClient {
                                 .addHeader("Merchant-Code", NPayLibrary.getInstance().sdkConfig.getMerchantCode())
                                 .addHeader("App-version-Code", "400")
                                 .addHeader("App-Type", "SDK");
+                        String Rke = EncryptServiceHelper.INSTANCE.getRandomkeyEncrypt();
                         if (getToken() != null && Rke != null) {
                             builder.addHeader("Authorization", getToken())
                                     .addHeader("Rke", Rke);

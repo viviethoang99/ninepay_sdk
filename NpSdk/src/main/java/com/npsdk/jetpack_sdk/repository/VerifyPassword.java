@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.npsdk.jetpack_sdk.base.api.BaseApiClient;
 import com.npsdk.jetpack_sdk.base.api.EncryptServiceHelper;
 import com.npsdk.jetpack_sdk.repository.model.VerifyPaymentModel;
@@ -34,22 +35,26 @@ public class VerifyPassword extends BaseApiClient {
                                 EncryptServiceHelper.INSTANCE.getRandomkeyRaw()
                         );
                         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                        VerifyPaymentModel verifyPaymentModel = gson.fromJson(objectDecrypt, VerifyPaymentModel.class);
-                        updateUI(() -> {
-                            if (verifyPaymentModel.getErrorCode() == 1) {
-                                callback.onSuccess(verifyPaymentModel.getMessage());
-                            } else {
-                                callback.onSuccess(null);
-                            }
-                        });
+                        try {
+                            VerifyPaymentModel verifyPaymentModel = gson.fromJson(objectDecrypt, VerifyPaymentModel.class);
+                            updateUI(() -> {
+                                if (verifyPaymentModel.getErrorCode() == 1) {
+                                    callback.onSuccess(verifyPaymentModel.getMessage());
+                                } else {
+                                    callback.onSuccess(null);
+                                }
+                            });
+                        } catch (JsonSyntaxException e) {
+                            Toast.makeText(context, "Đã có lỗi phân tích cú pháp password", Toast.LENGTH_LONG).show();
+                        }
                     } else {
-                        Toast.makeText(context, "Đã có lỗi xảy ra, code 1005", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Đã có lỗi xảy ra, code 1005", Toast.LENGTH_LONG).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-                    Toast.makeText(context, "Đã có lỗi xảy ra, code 1005", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Đã có lỗi xảy ra, code 1005", Toast.LENGTH_LONG).show();
                 }
             });
         });
