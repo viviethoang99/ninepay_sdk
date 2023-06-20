@@ -74,12 +74,12 @@ class OrderActivity : ComponentActivity() {
     private var methodDefault: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        DataOrder.isProgressing = false
+        isProgressing = false
+        isStartScreen = false
         DataOrder.amount = null
         DataOrder.feeTemp = null
         DataOrder.dataOrderSaved = null
         DataOrder.selectedItemMethod = null
-        DataOrder.isStartScreen = false
 
         DataOrder.activityOrder = this
         val bundle = intent.extras
@@ -106,6 +106,9 @@ class OrderActivity : ComponentActivity() {
         val inputViewModel: InputViewModel = viewModel()
         val appViewModel: AppViewModel = viewModel()
         val context = LocalContext.current
+        val publicKey: String = Preference.getString(
+            NPayLibrary.getInstance().activity,
+            NPayLibrary.getInstance().sdkConfig.env + Constants.PUBLIC_KEY, "")
 
         var showDialogDeposit by remember {
             mutableStateOf(false)
@@ -122,7 +125,7 @@ class OrderActivity : ComponentActivity() {
                 setDefaultAmount()
             })
 
-            if (methodDefault != null) {
+            if (!publicKey.isNullOrBlank()) {
                 // Get user info
                 NPayLibrary.getInstance().getUserInfoSendToPayment(null)
             }
@@ -163,7 +166,7 @@ class OrderActivity : ComponentActivity() {
                     if (showDialogDeposit) ShowDepositDialog(onDismiss = {
                         showDialogDeposit = !showDialogDeposit
                     }, onDeposit = {
-                        DataOrder.isProgressing = true
+                        isProgressing = true
                         val phone = Preference.getString(context, Flavor.prefKey + Constants.PHONE, "")
                         NPayLibrary.getInstance().openWallet(Actions.deposit(phone, null))
                     })
@@ -174,9 +177,7 @@ class OrderActivity : ComponentActivity() {
                 clickContinue = { ->
                     if (methodDefault == Constants.WALLET || DataOrder.selectedItemMethod == Constants.WALLET) {
                         if (DataOrder.balance == null) {
-                            val publicKey: String = Preference.getString(
-                                NPayLibrary.getInstance().activity,
-                                NPayLibrary.getInstance().sdkConfig.env + Constants.PUBLIC_KEY, "")
+
                             if (publicKey.isNullOrBlank()) {
                                 isProgressing = true
                                 isStartScreen = false
@@ -328,7 +329,7 @@ class OrderActivity : ComponentActivity() {
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.width(80.dp).height(28.dp).clip(RoundedCornerShape(14.dp))
                         .background(colorResource(R.color.background)).clickableWithoutRipple {
-                            DataOrder.isProgressing = true
+                            isProgressing = true
                             val phone = Preference.getString(context, Flavor.prefKey + Constants.PHONE, "")
                             NPayLibrary.getInstance().openWallet(Actions.deposit(phone, null))
                         }
