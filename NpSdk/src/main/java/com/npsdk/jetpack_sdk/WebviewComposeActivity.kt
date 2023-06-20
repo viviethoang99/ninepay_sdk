@@ -3,12 +3,14 @@ package com.npsdk.jetpack_sdk
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
 import android.widget.Toast
+import android.window.OnBackInvokedDispatcher
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
@@ -50,6 +52,7 @@ class WebviewComposeActivity : ComponentActivity() {
     private val WEBVIEW_STATUS_PROCESSED = 1
     var showDialog by mutableStateOf(false)
 
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +64,15 @@ class WebviewComposeActivity : ComponentActivity() {
         }
 
         OnBackPressedDispatcher().addCallback(this, callback)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            onBackInvokedDispatcher.registerOnBackInvokedCallback(
+                OnBackInvokedDispatcher.PRIORITY_DEFAULT
+            ) {
+                showDialog = true
+            }
+        }
+
 
         val intent = intent.extras
 

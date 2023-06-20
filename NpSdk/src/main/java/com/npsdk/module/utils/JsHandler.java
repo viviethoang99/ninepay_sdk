@@ -145,6 +145,14 @@ public class JsHandler {
                 case callbackToApp:
                     handleCallbackToApp(paramJson);
                     break;
+                case send_email:
+                    try {
+                        String email  = paramJson.getString("email");
+                        Intent intentEmail = new Intent(Intent.ACTION_SENDTO);
+                        intentEmail.setData(Uri.parse("mailto:"+email));
+                        activity.startActivity(intentEmail);
+                    } catch (Exception e) {}
+                    break;
                 default:
             }
         } catch (Exception e) {
@@ -244,6 +252,6 @@ public class JsHandler {
         onError, getAllToken, getDeviceID, requestCamera,
         openSchemaApp, showKeyboard, requestGallery,
         backToApp,
-        callbackToApp
+        callbackToApp, send_email
     }
 }
