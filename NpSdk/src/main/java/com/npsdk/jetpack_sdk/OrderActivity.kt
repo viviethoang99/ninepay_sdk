@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.npsdk.R
+import com.npsdk.jetpack_sdk.DataOrder.Companion.isProgressing
+import com.npsdk.jetpack_sdk.DataOrder.Companion.isStartScreen
 import com.npsdk.jetpack_sdk.base.Utils
 import com.npsdk.jetpack_sdk.base.view.*
 import com.npsdk.jetpack_sdk.repository.*
@@ -120,8 +122,10 @@ class OrderActivity : ComponentActivity() {
                 setDefaultAmount()
             })
 
-            // Get user info
-            NPayLibrary.getInstance().getUserInfoSendToPayment(null)
+            if (methodDefault != null) {
+                // Get user info
+                NPayLibrary.getInstance().getUserInfoSendToPayment(null)
+            }
         }
 
         if (modalOrderData == null) {
@@ -170,8 +174,18 @@ class OrderActivity : ComponentActivity() {
                 clickContinue = { ->
                     if (methodDefault == Constants.WALLET || DataOrder.selectedItemMethod == Constants.WALLET) {
                         if (DataOrder.balance == null) {
+                            val publicKey: String = Preference.getString(
+                                NPayLibrary.getInstance().activity,
+                                NPayLibrary.getInstance().sdkConfig.env + Constants.PUBLIC_KEY, "")
+                            if (publicKey.isNullOrBlank()) {
+                                isProgressing = true
+                                isStartScreen = false
+                                // Gọi sang webview login
+                                NPayLibrary.getInstance().openWallet(Actions.LOGIN)
+                                return@Footer
+                            }
                             inputViewModel.showNotification.value = true
-                            inputViewModel.stringDialog.value = "Không thể lấy dữ liệu tài khoản ví!!!"
+                            inputViewModel.stringDialog.value = "Đang lấy dữ liệu tài khoản ví!!!"
                             return@Footer
                         }
                         DataOrder.balance?.let { it1 ->

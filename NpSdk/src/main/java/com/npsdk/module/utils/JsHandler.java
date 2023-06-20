@@ -174,7 +174,7 @@ public class JsHandler {
                         });
                     } else if (isLoginSuccess) {
 						if (DataOrder.Companion.isStartScreen()) {
-							// Co the la login den tu viec
+							// Co the la login den tu viec nap tien
 							Intent intent = new Intent(activity, OrderActivity.class);
 							intent.putExtra("method", Constants.WALLET);
 							intent.putExtra("url", DataOrder.Companion.getUrlData());

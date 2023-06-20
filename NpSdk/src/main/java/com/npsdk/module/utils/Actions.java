@@ -43,7 +43,7 @@ public class Actions {
                 BILLING_INTERNET, BILLING_NUOC, BILLING_BAO_HIEM, BILLING_TAI_CHINH,
                 BILLING_TRA_SAU, BILLING_HOC_PHI,
                 BILLING_TRA_GOP, BILLING_VE_TAU_XE, BILLING_VETC, TOPUP,
-                PHONE_CARD, GAME, SERVICE_CARD));
+                DATA_CARD, PHONE_CARD, GAME, SERVICE_CARD));
         return listTemp;
     }
 
