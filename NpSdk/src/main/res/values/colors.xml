@@ -8,4 +8,5 @@
     <color name="black">#25282B</color>
     <color name="titleText">#52575C</color>
     <color name="yellow">#F6B70F</color>
+    <color name="divider">#F2F3F4</color>
 </resources>

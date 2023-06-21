@@ -17,4 +17,5 @@ public interface LibListener {
 	public void onLogoutSuccessful();
 
 	public void onCloseSDK();
+	public void onPaymentFailed();
 }

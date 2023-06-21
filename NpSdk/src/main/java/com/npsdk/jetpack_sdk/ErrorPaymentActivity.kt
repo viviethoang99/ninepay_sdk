@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import com.npsdk.R
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
+import com.npsdk.module.NPayLibrary
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
@@ -32,6 +33,7 @@ class ErrorPaymentActivity : ComponentActivity() {
     private val keyBundle = "message"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        NPayLibrary.getInstance().listener.onPaymentFailed();
         val bundle = intent.extras
         if (bundle != null) {
             if (bundle.containsKey(keyBundle)) {

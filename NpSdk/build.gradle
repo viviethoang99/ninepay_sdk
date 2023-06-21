@@ -28,6 +28,10 @@ android {
         }
     }
 
+    buildFeatures {
+        compose true
+    }
+
     buildTypes {
         release {
             minifyEnabled false

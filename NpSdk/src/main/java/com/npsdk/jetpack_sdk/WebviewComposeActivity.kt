@@ -9,7 +9,6 @@ import android.os.Handler
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
-import android.widget.Toast
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
@@ -131,9 +130,8 @@ class WebviewComposeActivity : ComponentActivity() {
                                     if (status.toInt() == WEBVIEW_STATUS_PROCESSED) {
                                         if (NPayLibrary.getInstance().listener != null) {
                                             NPayLibrary.getInstance().listener.onPaySuccessful()
-                                            showMessage(activity!!, "Thanh toán thành công!")
-                                        } else {
-                                            showMessage(activity!!, "Bạn chưa khởi tạo SDK.")
+                                            // Move to result screen
+                                            context.startActivity(Intent(context, ResultPayment::class.java))
                                         }
                                     } else {
                                         // Move to error page
@@ -144,6 +142,7 @@ class WebviewComposeActivity : ComponentActivity() {
                             }
 
                             if (url.contains("error/payment")) {
+                                NPayLibrary.getInstance().listener.onPaymentFailed()
                                 finish()
                                 moveToErrorPage(view!!.context, "Payment failed")
                                 return false
@@ -175,15 +174,12 @@ class WebviewComposeActivity : ComponentActivity() {
 
             if (showDialog) ShowBackDialog(onBack = {
                 showDialog = false
+                NPayLibrary.getInstance().listener.onPaymentFailed()
                 finish()
             }, onContinue = {
                 showDialog = false
             })
         }
-    }
-
-    private fun showMessage(activity: Activity, message: String) {
-        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun moveToErrorPage(context: Context, error: String) {

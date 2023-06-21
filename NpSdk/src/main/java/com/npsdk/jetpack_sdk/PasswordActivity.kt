@@ -2,6 +2,7 @@ package com.npsdk.jetpack_sdk
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.window.OnBackInvokedDispatcher
@@ -183,6 +184,7 @@ class PasswordActivity : ComponentActivity() {
 
             if (showDialog) ShowBackDialog(onBack = {
                 showDialog = false
+                NPayLibrary.getInstance().listener.onPaymentFailed();
                 finish()
             }, onContinue = {
                 showDialog = false
@@ -352,6 +354,7 @@ class PasswordActivity : ComponentActivity() {
 
             it.message?.let { it1 ->
                 if (it.errorCode == 1) {
+                    NPayLibrary.getInstance().listener.onPaymentFailed();
                     appViewModel.hideLoading()
                     inputView.showNotification.value = true
                     inputView.stringDialog.value = it1
@@ -360,6 +363,7 @@ class PasswordActivity : ComponentActivity() {
                     CreatePayment().create(context, orderId, CallbackCreatePayment { paymentId, message ->
                         run {
                             if (paymentId == null) {
+                                NPayLibrary.getInstance().listener.onPaymentFailed();
                                 appViewModel.hideLoading()
                                 inputView.showNotification.value = true
                                 inputView.stringDialog.value = message
@@ -373,12 +377,15 @@ class PasswordActivity : ComponentActivity() {
                                     CallbackVerifyPayment { message: String? ->
                                         appViewModel.hideLoading()
                                         if (message != null) {
+                                            NPayLibrary.getInstance().listener.onPaymentFailed();
                                             messageError(message)
                                         } else {
                                             // Done
                                             NPayLibrary.getInstance().listener.onPaySuccessful()
                                             (context as Activity).finish() // Close screen
                                             DataOrder.activityOrder?.finish()
+                                            // Move to result screen
+                                            context.startActivity(Intent(context, ResultPayment::class.java))
                                         }
                                     })
                             }

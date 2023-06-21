@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.npsdk.LibListener;
 import com.npsdk.jetpack_sdk.PasswordActivity;
+import com.npsdk.jetpack_sdk.ResultPayment;
 import com.npsdk.jetpack_sdk.WebviewActivity;
 import com.npsdk.jetpack_sdk.WebviewComposeActivity;
 import com.npsdk.module.NPayLibrary;
@@ -131,6 +132,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onCloseSDK() {
 
             }
+
+            @Override
+            public void onPaymentFailed() {
+                Toast.makeText(MainActivity.this, "Thanh toán thất bại", Toast.LENGTH_SHORT).show();
+            }
         });
 
     }
@@ -140,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         String url = edtUrlPaygate.getText().toString();
         if (url.isEmpty())
-            url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODcyNDA2MDQsImludm9pY2Vfbm8iOiJ4NzRTT216bSIsImFtb3VudCI6MTAwMDAwLCJkZXNjcmlwdGlvbiI6Ik11YSBoYW5nIDlQYXkiLCJyZXR1cm5fdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJiYWNrX3VybCI6Imh0dHA6Ly9mY2RjYzQ3NjdhY2Iubmdyb2suaW8vIiwibWV0aG9kIjoiOVBBWSIsImlzX2N1c3RvbWVyX3BheV9mZWUiOjF9&signature=H9B%2B0ujl3D4joXSr3Eno5u0L%2FgHPnXn8obKNbqaHW1I%3D";
+            url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODczMjM5NTMsImludm9pY2Vfbm8iOiJidXhxZjB0RiIsImFtb3VudCI6MTAwMDAwLCJkZXNjcmlwdGlvbiI6Ik11YSBoYW5nIDlQYXkiLCJyZXR1cm5fdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJiYWNrX3VybCI6Imh0dHA6Ly9mY2RjYzQ3NjdhY2Iubmdyb2suaW8vIiwibWV0aG9kIjoiOVBBWSIsImlzX2N1c3RvbWVyX3BheV9mZWUiOjF9&signature=oCuBF432uN3vSy0U%2B21ZlfVnEF%2FbMXR8wWZFDB286l4%3D";
         switch (v.getId()) {
             case R.id.ll_quet_ma:
                 Log.d(TAG, "onClick: ll_rut_tien");

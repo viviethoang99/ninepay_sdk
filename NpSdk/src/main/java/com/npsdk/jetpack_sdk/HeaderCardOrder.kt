@@ -194,7 +194,7 @@ fun HeaderOrder(data: ValidatePaymentModel) {
     }
 }
 
-private data class DottedShape(
+data class DottedShape(
     val step: Dp,
 ) : Shape {
     override fun createOutline(
