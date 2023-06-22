@@ -21,6 +21,7 @@ public class SdkConfig implements Serializable {
     }
 
     public String getMerchantCode() {
+        if (merchantCode == null) return "";
         return merchantCode;
     }
 

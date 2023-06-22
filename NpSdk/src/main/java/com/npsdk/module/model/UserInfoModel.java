@@ -1,5 +1,6 @@
 package com.npsdk.module.model;
 
+import androidx.annotation.Nullable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -10,6 +11,9 @@ public class UserInfoModel {
     @SerializedName("phone")
     @Expose
     private String phone;
+    @SerializedName("name")
+    @Expose
+    private String name;
     @SerializedName("status")
     @Expose
     private Integer status;
@@ -26,14 +30,10 @@ public class UserInfoModel {
     public UserInfoModel() {
     }
 
-    /**
-     * @param balance
-     * @param phone
-     * @param status
-     */
-    public UserInfoModel(String phone, Integer status, Integer balance) {
+    public UserInfoModel(String phone, @Nullable String name, Integer status, Integer balance) {
         super();
         this.phone = phone;
+        this.name = name;
         this.status = status;
         this.balance = balance;
     }
@@ -44,6 +44,14 @@ public class UserInfoModel {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Integer getStatus() {

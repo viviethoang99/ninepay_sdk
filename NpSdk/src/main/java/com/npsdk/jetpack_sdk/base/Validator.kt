@@ -31,7 +31,7 @@ object Validator {
                             input.toBigInteger(),
                             inputViewModel
                         )
-                    if (!isMatchDistance) stringError =
+                    if (!isMatchDistance && input.length >=6 ) stringError =
                         "Thẻ này chưa được hỗ trợ thanh toán. Vui lòng thanh toán thẻ khác."
                 }
             }

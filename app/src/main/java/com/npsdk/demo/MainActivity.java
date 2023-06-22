@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
 
             @Override
-            public void getInfoSuccess(String phone, String balance, String ekycStatus, List<Bank> listBank) {
+            public void getInfoSuccess(String phone, String balance, String ekycStatus, List<Bank> listBank, String name) {
                 userInfo.setText("Hi," + phone);
                 txtMoney.setText(balance + "đ");
             }

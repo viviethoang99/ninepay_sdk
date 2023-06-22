@@ -206,8 +206,27 @@ public class NPayActivity extends AppCompatActivity {
                 super.onPageFinished(view, url);
             }
         });
+        setCookieRefreshToken();
     }
 
+    private void setCookieRefreshToken() {
+        String accessToken = Preference.getString(this, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
+        String refreshToken = Preference.getString(this, Flavor.prefKey + Constants.REFRESH_TOKEN, "");
+        String publicKey = Preference.getString(this, Flavor.prefKey + Constants.PUBLIC_KEY, "");
+        if (!accessToken.isEmpty() && !refreshToken.isEmpty() && !publicKey.isEmpty()) {
+            String cookieAcccessToken = "actk="+ accessToken +"; path=/v1";
+            CookieManager.getInstance().setCookie(Flavor.baseUrl.replaceAll("https://", ""), cookieAcccessToken);
+
+            String cookieRefreshToken = "rtk="+ refreshToken +"; path=/v1";
+            CookieManager.getInstance().setCookie(Flavor.baseUrl.replaceAll("https://", ""), cookieRefreshToken);
+
+            String publicKeyString = "pk="+ publicKey +"; path=/v1";
+            CookieManager.getInstance().setCookie(Flavor.baseUrl.replaceAll("https://", ""), publicKeyString);
+
+            CookieManager.getInstance().setAcceptThirdPartyCookies(webView,true);
+            CookieManager.getInstance().setAcceptThirdPartyCookies(webView2,true);
+        }
+    }
     private void setUpweb1Client() {
         webView.setWebViewClient(new WebViewClient() {
 
@@ -276,6 +295,7 @@ public class NPayActivity extends AppCompatActivity {
             }
 
         });
+        setCookieRefreshToken();
     }
 
     private void listentChangeUrlBroadcast() {

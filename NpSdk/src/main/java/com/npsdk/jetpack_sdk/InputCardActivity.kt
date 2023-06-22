@@ -116,7 +116,9 @@ class InputCardActivity : ComponentActivity() {
         }
 
         if (DataOrder.dataOrderSaved == null) {
-            ShimmerLoading()
+            Box(modifier = Modifier.padding(top = 40.dp)) {
+                ShimmerLoading()
+            }
             return
         }
         Box(

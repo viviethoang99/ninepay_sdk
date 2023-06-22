@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.WebStorage;
 import android.webkit.WebView;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -18,6 +17,8 @@ import com.npsdk.module.api.GetInfoTask;
 import com.npsdk.module.api.RefreshTokenTask;
 import com.npsdk.module.model.Bank;
 import com.npsdk.module.model.SdkConfig;
+import com.npsdk.module.model.UserInfoModel;
+import com.npsdk.module.model.UserInfoResponse;
 import com.npsdk.module.utils.*;
 import org.json.JSONObject;
 
@@ -124,7 +125,7 @@ public class NPayLibrary {
     }
 
     public void getUserInfoSendToPayment(@Nullable Runnable afterSuccess) {
-        DataOrder.Companion.setBalance(null);
+        DataOrder.Companion.setUserInfo(null);
         String token = Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
         String publickey = Preference.getString(activity, Flavor.prefKey + Constants.PUBLIC_KEY, "");
         String deviceId = DeviceUtils.getDeviceID(activity);
@@ -133,9 +134,8 @@ public class NPayLibrary {
         // Get user info
         GetInfoTask getInfoTask = new GetInfoTask(activity, "Bearer " + token, new GetInfoTask.OnGetInfoListener() {
             @Override
-            public void onGetInfoSuccess(String balance, String status, String phone, List<Bank> listBank) {
-                Preference.save(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PHONE, phone);
-                DataOrder.Companion.setBalance(Integer.parseInt(balance));
+            public void onGetInfoSuccess(UserInfoModel userInfo) {
+                Preference.save(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PHONE, userInfo.getPhone());
                 if (afterSuccess != null) {
                     afterSuccess.run();
                 }
@@ -169,8 +169,8 @@ public class NPayLibrary {
         Log.d(TAG, "device id : " + deviceId + " , UID : " + UID);
         GetInfoTask getInfoTask = new GetInfoTask(activity, "Bearer " + token, new GetInfoTask.OnGetInfoListener() {
             @Override
-            public void onGetInfoSuccess(String balance, String status, String phone, List<Bank> listBank) {
-                listener.getInfoSuccess(phone, status, balance, listBank);
+            public void onGetInfoSuccess(UserInfoModel userInfo) {
+                listener.getInfoSuccess(userInfo.getPhone(), userInfo.getBalance().toString(), userInfo.getStatus().toString(),  userInfo.getBanks(), userInfo.getName());
             }
 
             @Override

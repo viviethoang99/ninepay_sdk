@@ -1,15 +1,12 @@
 package com.npsdk.jetpack_sdk.base.view
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,29 +22,37 @@ fun ShimmerLoading() {
             .background(color = Color.White)
             .padding(24.dp)
     ) {
-        Line()
+        Line(150)
+        Spacer(modifier = Modifier.height(24.dp))
+        Line(40)
+        Spacer(modifier = Modifier.height(40.dp))
+        Line(40)
         Spacer(modifier = Modifier.height(6.dp))
-        Line()
+        Line(40)
         Spacer(modifier = Modifier.height(6.dp))
-        Line()
+        Line(40)
     }
 }
 
 @Composable
-private fun Line() {
+private fun Line(height: Int) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(244.dp)
-            .background(colorResource(id = R.color.background))
+            .clip(shape = RoundedCornerShape(6.dp))
+            .height(height.dp)
             .shimmer(),
         contentAlignment = Alignment.Center
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
-                .background(Color.LightGray)
-        )
+                .clip(shape = RoundedCornerShape(6.dp))
+                .height(height.dp)
+                .background(colorResource(id = R.color.grey)),
+            contentAlignment = Alignment.Center
+        ) {
+
+        }
     }
 }

@@ -10,7 +10,7 @@ public interface LibListener {
 
 	public void onPaySuccessful();
 
-	public void getInfoSuccess(String phone, String balance, String ekycStatus, List<Bank> listBank);
+	public void getInfoSuccess(String phone, String balance, String ekycStatus, List<Bank> listBank, String name);
 
 	public void onError(int errorCode, String message);
 

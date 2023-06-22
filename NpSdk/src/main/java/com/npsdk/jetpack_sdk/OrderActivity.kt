@@ -45,6 +45,7 @@ import com.npsdk.jetpack_sdk.theme.fontAppDefault
 import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.npsdk.module.NPayLibrary
+import com.npsdk.module.model.UserInfoResponse
 import com.npsdk.module.utils.Actions
 import com.npsdk.module.utils.Constants
 import com.npsdk.module.utils.Flavor
@@ -60,7 +61,7 @@ class DataOrder {
         @SuppressLint("StaticFieldLeak")
         var activityOrder: Activity? = null
         var selectedItemMethod by mutableStateOf<String?>(null)
-        var balance by mutableStateOf<Int?>(null)
+        var userInfo by mutableStateOf<UserInfoResponse?>(null)
 
         var feeTemp by mutableStateOf<Int?>(null)
         var isProgressing = false
@@ -100,15 +101,18 @@ class OrderActivity : ComponentActivity() {
 
     }
 
+    private fun isHavePublicKey(): String {
+       return Preference.getString(
+            NPayLibrary.getInstance().activity,
+            NPayLibrary.getInstance().sdkConfig.env + Constants.PUBLIC_KEY, "")
+    }
+
     @Composable
     private fun Body() {
         var modalOrderData by remember { mutableStateOf<ValidatePaymentModel?>(null) }
         val inputViewModel: InputViewModel = viewModel()
         val appViewModel: AppViewModel = viewModel()
         val context = LocalContext.current
-        val publicKey: String = Preference.getString(
-            NPayLibrary.getInstance().activity,
-            NPayLibrary.getInstance().sdkConfig.env + Constants.PUBLIC_KEY, "")
 
         var showDialogDeposit by remember {
             mutableStateOf(false)
@@ -125,7 +129,7 @@ class OrderActivity : ComponentActivity() {
                 setDefaultAmount()
             })
 
-            if (!publicKey.isNullOrBlank()) {
+            if (!isHavePublicKey().isNullOrBlank()) {
                 // Get user info
                 NPayLibrary.getInstance().getUserInfoSendToPayment(null)
             }
@@ -176,9 +180,9 @@ class OrderActivity : ComponentActivity() {
 
                 clickContinue = { ->
                     if (methodDefault == Constants.WALLET || DataOrder.selectedItemMethod == Constants.WALLET) {
-                        if (DataOrder.balance == null) {
+                        if (DataOrder.userInfo == null) {
 
-                            if (publicKey.isNullOrBlank()) {
+                            if (isHavePublicKey().isNullOrBlank()) {
                                 isProgressing = true
                                 isStartScreen = false
                                 // Gọi sang webview login
@@ -189,9 +193,9 @@ class OrderActivity : ComponentActivity() {
                             inputViewModel.stringDialog.value = "Đang lấy dữ liệu tài khoản ví!!!"
                             return@Footer
                         }
-                        DataOrder.balance?.let { it1 ->
+                        DataOrder.userInfo?.let { it1 ->
                             DataOrder.feeTemp?.let { it2 ->
-                                if (it1 < it2) {
+                                if (it1.data.balance < it2) {
                                     showDialogDeposit = true
                                     return@Footer
                                 }
@@ -299,14 +303,15 @@ class OrderActivity : ComponentActivity() {
             ) {
                 val parseAmount: Int =
                     if (DataOrder.amount is Double) (DataOrder.amount as Double).toInt() else (DataOrder.amount as Int)
+                    val phone = DataOrder.userInfo?.data?.phone
                 Column {
                     Text(
-                        item.name,
+                        if (item.code.equals(Constants.WALLET) && phone != null) "Ví 9Pay: $phone" else item.name,
                         style = TextStyle(fontWeight = FontWeight.W600, fontSize = 13.sp, fontFamily = fontAppDefault)
                     )
-                    DataOrder.balance?.let {
-                        if (it < parseAmount && item.code.equals(Constants.WALLET)) Text(
-                            "${Utils.formatMoney(it)} - Không đủ",
+                    DataOrder.userInfo?.let {
+                        if (it.data.balance < parseAmount && item.code.equals(Constants.WALLET)) Text(
+                            "${Utils.formatMoney(it.data.balance)} - Không đủ",
                             style = TextStyle(
                                 fontWeight = FontWeight.W400,
                                 fontSize = 12.sp,
@@ -314,7 +319,7 @@ class OrderActivity : ComponentActivity() {
                                 color = colorResource(R.color.yellow)
                             )
                         ) else if (item.code.equals(Constants.WALLET)) Text(
-                            "Số dư ${Utils.formatMoney(it)}",
+                            "Số dư ${Utils.formatMoney(it.data.balance)}",
                             style = TextStyle(
                                 fontWeight = FontWeight.W400,
                                 fontSize = 12.sp,
@@ -325,7 +330,7 @@ class OrderActivity : ComponentActivity() {
                     }
                 }
 
-                if (DataOrder.balance != null && DataOrder.balance!! < parseAmount && item.code.equals(Constants.WALLET)) Box(
+                if (DataOrder.userInfo != null && DataOrder!!.userInfo!!.data.balance!! < parseAmount && item.code.equals(Constants.WALLET)) Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.width(80.dp).height(28.dp).clip(RoundedCornerShape(14.dp))
                         .background(colorResource(R.color.background)).clickableWithoutRipple {

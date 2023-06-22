@@ -6,13 +6,12 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.npsdk.module.NPayLibrary;
+import androidx.annotation.Nullable;
+import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.module.model.Bank;
+import com.npsdk.module.model.UserInfoModel;
 import com.npsdk.module.model.UserInfoResponse;
-import com.npsdk.module.utils.Constants;
-import com.npsdk.module.utils.Preference;
 
-import java.io.IOException;
 import java.util.List;
 
 import retrofit2.Call;
@@ -46,11 +45,14 @@ public class GetInfoTask extends AsyncTask<Void, Void, Void> {
                     UserInfoResponse data = response.body();
                     if (data != null) {
                         if (data.getErrorCode() == 0) {
-                            callback.onGetInfoSuccess(data.getData().getBalance().toString(), data.getData().getStatus().toString(), data.getData().getPhone(), data.getData().getBanks());
+                            DataOrder.Companion.setUserInfo(data);
+                            callback.onGetInfoSuccess(data.getData());
                         } else {
+                            DataOrder.Companion.setUserInfo(null);
                             callback.onError(data.getErrorCode(), data.getMessage());
                         }
                     } else {
+                        DataOrder.Companion.setUserInfo(null);
                         callback.onError(500, "Có lỗi xảy ra");
                     }
                 }
@@ -73,7 +75,7 @@ public class GetInfoTask extends AsyncTask<Void, Void, Void> {
     }
 
     public interface OnGetInfoListener {
-        void onGetInfoSuccess(String balance, String status, String phone, List<Bank> listBank);
+        void onGetInfoSuccess(UserInfoModel userInfoModel);
 
         void onError(int errorCode, String message);
     }
