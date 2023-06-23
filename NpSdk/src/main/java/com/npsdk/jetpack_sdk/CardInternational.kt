@@ -65,7 +65,7 @@ fun CardInternational(viewModel: InputViewModel) {
             },
             onTextChanged = {
                 viewModel.numberOfCardInter.value = it
-                viewModel.numberOfCardErrorInter.value = Validator.validateNumberCardInter(it, viewModel)
+                viewModel.numberOfCardErrorInter.value = Validator.validateNumberCardInter(it, viewModel, showError = false)
             })
         Spacer(modifier = Modifier.height(12.dp))
         MyEdittext("Họ và tên chủ thẻ",

@@ -56,7 +56,7 @@ fun CardInland(viewModel: InputViewModel) {
             },
             onTextChanged = {
                 viewModel.numberCardInLand.value = it
-                viewModel.numberCardErrorInLand.value = Validator.validateNumberCardATM(it, inputViewModel = viewModel)
+                viewModel.numberCardErrorInLand.value = Validator.validateNumberCardATM(it, inputViewModel = viewModel, showError = false)
             })
         Spacer(modifier = Modifier.height(12.dp))
         MyEdittext(

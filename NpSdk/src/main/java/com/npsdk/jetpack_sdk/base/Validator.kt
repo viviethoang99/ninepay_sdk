@@ -7,7 +7,7 @@ import java.math.BigInteger
 
 object Validator {
 
-    fun validateNumberCardInter(input: String, inputViewModel: InputViewModel, showError: Boolean? = false): String {
+    fun validateNumberCardInter(input: String, inputViewModel: InputViewModel, showError: Boolean? = true): String {
         var stringError = ""
 
         if (input.isBlank()) {
@@ -43,7 +43,7 @@ object Validator {
         return stringError
     }
 
-    fun validateNumberCardATM(input: String, inputViewModel: InputViewModel, showError: Boolean? = false): String {
+    fun validateNumberCardATM(input: String, inputViewModel: InputViewModel, showError: Boolean? = true): String {
         var stringError = ""
 
         if (showError!!) {
