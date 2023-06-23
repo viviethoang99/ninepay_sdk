@@ -185,9 +185,9 @@ fun MyEdittext(
                 }
             }
 
-            if (isFocused) Box(
+            if (isFocused || !errText.isNullOrBlank()) Box(
                 modifier = Modifier.align(Alignment.BottomStart).height(2.dp).padding(horizontal = 12.dp).fillMaxWidth()
-                    .background(initColor())
+                    .background(if (errText!!.isNotBlank()) colorResource(R.color.red) else initColor())
             )
         }
         Spacer(modifier = Modifier.height(3.dp))

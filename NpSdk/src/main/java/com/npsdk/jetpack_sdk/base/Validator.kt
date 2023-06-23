@@ -7,15 +7,17 @@ import java.math.BigInteger
 
 object Validator {
 
-    fun validateNumberCardInter(input: String, inputViewModel: InputViewModel): String {
+    fun validateNumberCardInter(input: String, inputViewModel: InputViewModel, showError: Boolean? = false): String {
         var stringError = ""
 
         if (input.isBlank()) {
             inputViewModel.interCardDetect = null
         }
-        when {
-            input.isBlank() -> stringError = "Số thẻ không được để trống."
-            input.length < 16 -> stringError = "Số thẻ không hợp lệ. Vui lòng kiểm tra lại."
+        if (showError!!) {
+            when {
+                input.isBlank() -> stringError = "Số thẻ không được để trống."
+                input.length < 16 -> stringError = "Số thẻ không hợp lệ. Vui lòng kiểm tra lại."
+            }
         }
 
         DataOrder.listBankModel?.data?.INTERNATIONAL?.isNotEmpty().let {
@@ -31,20 +33,24 @@ object Validator {
                             input.toBigInteger(),
                             inputViewModel
                         )
-                    if (!isMatchDistance && input.length >=6 ) stringError =
-                        "Thẻ này chưa được hỗ trợ thanh toán. Vui lòng thanh toán thẻ khác."
+                    if (showError!!) {
+                        if (!isMatchDistance && input.length >=6 ) stringError =
+                            "Thẻ này chưa được hỗ trợ thanh toán. Vui lòng thanh toán thẻ khác."
+                    }
                 }
             }
         }
         return stringError
     }
 
-    fun validateNumberCardATM(input: String, inputViewModel: InputViewModel): String {
+    fun validateNumberCardATM(input: String, inputViewModel: InputViewModel, showError: Boolean? = false): String {
         var stringError = ""
 
-        when {
-            input.isBlank() -> stringError = "Vui lòng nhập số thẻ ATM."
-            input.length < 15 -> stringError = "Số thẻ ATM không hợp lệ. Vui lòng kiểm tra lại."
+        if (showError!!) {
+            when {
+                input.isBlank() -> stringError = "Vui lòng nhập số thẻ ATM."
+                input.length < 15 -> stringError = "Số thẻ ATM không hợp lệ. Vui lòng kiểm tra lại."
+            }
         }
 
 
@@ -59,7 +65,7 @@ object Validator {
                     inputViewModel.inlandBankDetect = null
                 }
             }
-            if (!isSupport) stringError = "Số thẻ ATM không hợp lệ. Vui lòng kiểm tra lại."
+            if (showError!!) if (!isSupport) stringError = "Số thẻ ATM không hợp lệ. Vui lòng kiểm tra lại."
         }
 
         return stringError
