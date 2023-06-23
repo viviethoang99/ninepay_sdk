@@ -49,6 +49,7 @@ import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamsWallet
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
 import com.npsdk.jetpack_sdk.theme.fontAppBold
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
+import com.npsdk.jetpack_sdk.theme.initColor
 import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.npsdk.module.NPayLibrary
@@ -184,7 +185,7 @@ class PasswordActivity : ComponentActivity() {
 
             if (showDialog) ShowBackDialog(onBack = {
                 showDialog = false
-                NPayLibrary.getInstance().listener.onPaymentFailed();
+                NPayLibrary.getInstance().listener.onPaymentFailed()
                 finish()
             }, onContinue = {
                 showDialog = false
@@ -280,7 +281,7 @@ class PasswordActivity : ComponentActivity() {
                     },
                     text = "Quên mật khẩu?",
                     style = TextStyle(
-                        color = colorResource(R.color.green),
+                        color = initColor(),
                         fontSize = 13.sp,
                         fontFamily = fontAppBold
                     )
@@ -303,7 +304,7 @@ class PasswordActivity : ComponentActivity() {
             items(6) { index ->
                 Box(
                     modifier = Modifier.size(16.dp).background(
-                        colorResource(if (lengthPin <= index) R.color.grey else R.color.green),
+                        if (lengthPin <= index) colorResource(R.color.grey) else initColor(),
                         shape = CircleShape
                     ),
                 ) {
@@ -325,7 +326,7 @@ class PasswordActivity : ComponentActivity() {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.clip(RoundedCornerShape(8.dp)).fillMaxWidth().height(44.dp).background(
-                    colorResource(R.color.green)
+                    initColor()
                 ).clickable {
                     clickContinue()
                 },
@@ -354,7 +355,7 @@ class PasswordActivity : ComponentActivity() {
 
             it.message?.let { it1 ->
                 if (it.errorCode == 1) {
-                    NPayLibrary.getInstance().listener.onPaymentFailed();
+                    NPayLibrary.getInstance().listener.onPaymentFailed()
                     appViewModel.hideLoading()
                     inputView.showNotification.value = true
                     inputView.stringDialog.value = it1
@@ -363,7 +364,7 @@ class PasswordActivity : ComponentActivity() {
                     CreatePayment().create(context, orderId, CallbackCreatePayment { paymentId, message ->
                         run {
                             if (paymentId == null) {
-                                NPayLibrary.getInstance().listener.onPaymentFailed();
+                                NPayLibrary.getInstance().listener.onPaymentFailed()
                                 appViewModel.hideLoading()
                                 inputView.showNotification.value = true
                                 inputView.stringDialog.value = message
@@ -377,7 +378,7 @@ class PasswordActivity : ComponentActivity() {
                                     CallbackVerifyPayment { message: String? ->
                                         appViewModel.hideLoading()
                                         if (message != null) {
-                                            NPayLibrary.getInstance().listener.onPaymentFailed();
+                                            NPayLibrary.getInstance().listener.onPaymentFailed()
                                             messageError(message)
                                         } else {
                                             // Done

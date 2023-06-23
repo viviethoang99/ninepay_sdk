@@ -44,7 +44,7 @@ object Validator {
 
         when {
             input.isBlank() -> stringError = "Vui lòng nhập số thẻ ATM."
-            input.length < 10 -> stringError = "Số thẻ ATM không hợp lệ. Vui lòng kiểm tra lại."
+            input.length < 15 -> stringError = "Số thẻ ATM không hợp lệ. Vui lòng kiểm tra lại."
         }
 
 
@@ -70,7 +70,7 @@ object Validator {
 
         when {
             input.isBlank() -> stringError = "Vui lòng nhập Họ và tên."
-            input.length < 5 -> stringError = "Họ và tên chủ thẻ không hợp lệ. Vui lòng kiểm tra lại."
+            input.length < 6 || input.endsWith(" ") -> stringError = "Họ và tên chủ thẻ không hợp lệ. Vui lòng kiểm tra lại."
         }
 
         return stringError

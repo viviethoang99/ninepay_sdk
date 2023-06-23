@@ -21,6 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.npsdk.R
 import com.npsdk.jetpack_sdk.theme.fontAppBold
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
+import com.npsdk.jetpack_sdk.theme.initColor
 import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import kotlinx.coroutines.*
 
@@ -55,7 +56,7 @@ fun DialogNotification(contextString: String, onDismiss: () -> Unit, titleButon:
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.clip(RoundedCornerShape(8.dp)).fillMaxWidth().height(36.dp).background(
-                    colorResource(R.color.green)
+                    initColor()
                 ).clickable {
                     onDismiss()
                 },
@@ -79,7 +80,7 @@ fun LoadingView() {
             appViewModel.hideLoading()
         }
     }
-    CircularProgressIndicator(color = colorResource(R.color.green))
+    CircularProgressIndicator(color = initColor())
 
 //    val imageLoader = ImageLoader.Builder(LocalContext.current).components {
 //        if (SDK_INT >= 28) {
@@ -142,7 +143,7 @@ fun ShowBackDialog(onBack: () -> Unit = {}, onContinue: () -> Unit = {}) {
                         textAlign = TextAlign.Center,
                         fontFamily = fontAppBold,
                         fontSize = 12.sp,
-                        color = colorResource(R.color.green)
+                        color = initColor()
                     )
                 }
 
@@ -152,7 +153,7 @@ fun ShowBackDialog(onBack: () -> Unit = {}, onContinue: () -> Unit = {}) {
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.weight(1f).clip(RoundedCornerShape(8.dp)).fillMaxWidth().height(36.dp)
                         .background(
-                            colorResource(R.color.green)
+                            initColor()
                         ).clickableWithoutRipple{
                             onContinue()
                         }

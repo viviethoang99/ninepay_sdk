@@ -51,18 +51,27 @@ fun CardInland(viewModel: InputViewModel) {
             maxLength = 19,
             errText = viewModel.numberCardErrorInLand.value,
             visualTransformation = CardNumberMaskCustom(" "),
+            onFocusOut = {
+                viewModel.numberCardErrorInLand.value = Validator.validateNumberCardATM(it, inputViewModel = viewModel)
+            },
             onTextChanged = {
                 viewModel.numberCardInLand.value = it
-                viewModel.numberCardErrorInLand.value = Validator.validateNumberCardATM(it, inputViewModel = viewModel)
             })
         Spacer(modifier = Modifier.height(12.dp))
-        MyEdittext("Họ và tên chủ thẻ", onTextChanged = {
-            viewModel.nameCardInLand.value = it
-            viewModel.nameCardErrorInLand.value = Validator.validateNameCard(it)
-        }, errText = viewModel.nameCardErrorInLand.value)
+        MyEdittext(
+            "Họ và tên chủ thẻ",
+            onTextChanged = {
+                viewModel.nameCardInLand.value = it
+            },
+            onFocusOut = {
+                viewModel.nameCardErrorInLand.value = Validator.validateNameCard(it)
+            },
+            errText = viewModel.nameCardErrorInLand.value,
+        )
+
         Spacer(modifier = Modifier.height(12.dp))
         if (viewModel.inlandBankDetect?.isValidDate != null) MyEdittext(
-            label =  if (viewModel.inlandBankDetect!!.isValidDate == 1) "Ngày hiệu lực (MM/YY)" else "Ngày hết hạn (MM/YY)",
+            label = if (viewModel.inlandBankDetect!!.isValidDate == 1) "Ngày hiệu lực (MM/YY)" else "Ngày hết hạn (MM/YY)",
             keyboardType = KeyboardType.Number,
             maxLength = 5,
             enabled = false,

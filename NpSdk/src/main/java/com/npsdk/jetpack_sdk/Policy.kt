@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.npsdk.R
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
+import com.npsdk.jetpack_sdk.theme.initColor
 
 
 @Composable
@@ -45,7 +46,7 @@ fun PolicyView(callBack: (Boolean) -> Unit) {
 
         withStyle(
             style = SpanStyle(
-                color = colorResource(R.color.green), fontFamily = fontAppDefault, fontSize = 12.sp
+                color = initColor(), fontFamily = fontAppDefault, fontSize = 12.sp
             )
         ) {
             appendLink("Điều khoản và chính sách", DataOrder.dataOrderSaved?.data?.policyLink)
@@ -60,9 +61,9 @@ fun PolicyView(callBack: (Boolean) -> Unit) {
     ) {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.size(20.dp).clip(RoundedCornerShape(4.dp)).border(
             width = 1.dp,
-            color = colorResource(if (isChecked) R.color.green else R.color.grey),
+            color = if (isChecked) initColor() else colorResource(R.color.grey),
             shape = RoundedCornerShape(4.dp)
-        ).background(if (!isChecked) Color.White else colorResource(R.color.green)).clickable {
+        ).background(if (!isChecked) Color.White else initColor()).clickable {
             isChecked = !isChecked
             callBack(isChecked)
         }) {

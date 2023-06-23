@@ -230,7 +230,7 @@ public class NPayLibrary {
         header.put("env", sdkConfig.getEnv());
         header.put("App-Type", "SDK");
         header.put("Access-Control-Allow-Origin", "*");
-        header.put("brand_color", String.valueOf(SdkConfig.getBrandColor()));
+        header.put("brand_color", sdkConfig.getBrandColor());
         header.put("platform", "android");
         header.put("device", DeviceUtils.getDevice());
         header.put("User-Agent", DeviceUtils.getDevice());

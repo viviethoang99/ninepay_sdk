@@ -1,7 +1,6 @@
 package com.npsdk.demo;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -12,14 +11,13 @@ import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.npsdk.LibListener;
-import com.npsdk.jetpack_sdk.PasswordActivity;
-import com.npsdk.jetpack_sdk.ResultPayment;
-import com.npsdk.jetpack_sdk.WebviewActivity;
-import com.npsdk.jetpack_sdk.WebviewComposeActivity;
 import com.npsdk.module.NPayLibrary;
 import com.npsdk.module.model.Bank;
 import com.npsdk.module.model.SdkConfig;
-import com.npsdk.module.utils.*;
+import com.npsdk.module.utils.Actions;
+import com.npsdk.module.utils.Constants;
+import com.npsdk.module.utils.Flavor;
+import com.npsdk.module.utils.Preference;
 
 import java.util.List;
 
@@ -91,12 +89,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         testClick.setOnClickListener(this);
         // Create flavor by packagen name test
         String flavorEnv = Flavor.setEnvTest(this);
-        SdkConfig sdkConfig = new SdkConfig.Builder(this).merchantCode("sdk_test").uid(null).env(flavorEnv).brandColor(0xff15AE62).build();
+        SdkConfig sdkConfig = new SdkConfig.Builder(this).merchantCode("sdk_test").uid(null).env(flavorEnv).brandColor("15AE62").build();
         initSdk(sdkConfig);
-
-//		Intent intent = new Intent(this, PasswordActivity.class);
-//		intent.putExtra("url", url);
-//		startActivity(intent);
     }
 
 

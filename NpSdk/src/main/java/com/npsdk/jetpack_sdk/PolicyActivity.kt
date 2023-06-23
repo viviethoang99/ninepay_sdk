@@ -21,6 +21,7 @@ import androidx.compose.ui.res.colorResource
 import com.npsdk.R
 import com.npsdk.jetpack_sdk.base.view.TopAppBarApp
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
+import com.npsdk.jetpack_sdk.theme.initColor
 import com.rizzi.bouquet.ResourceType
 import com.rizzi.bouquet.VerticalPDFReader
 import com.rizzi.bouquet.rememberVerticalPdfReaderState
@@ -75,7 +76,7 @@ class PolicyActivity : ComponentActivity() {
                     .fillMaxSize()
                     .background(color = Color.White)
             )
-            if (!pdfState.isLoaded) CircularProgressIndicator(color = colorResource(R.color.green))
+            if (!pdfState.isLoaded) CircularProgressIndicator(color = initColor())
         }
     }
 

@@ -60,17 +60,24 @@ fun CardInternational(viewModel: InputViewModel) {
             tooltipsText = "Nhập đủ 16 số in nổi trên thẻ",
             errText = viewModel.numberOfCardErrorInter.value,
             visualTransformation = CardNumberMaskCustom(),
+            onFocusOut = {
+                viewModel.numberOfCardErrorInter.value = Validator.validateNumberCardInter(it, viewModel)
+            },
             onTextChanged = {
                 viewModel.numberOfCardInter.value = it
-                viewModel.numberOfCardErrorInter.value = Validator.validateNumberCardInter(it, viewModel)
             })
         Spacer(modifier = Modifier.height(12.dp))
         MyEdittext("Họ và tên chủ thẻ",
             tooltipsText = "Nhập tên chủ thẻ không dấu",
-            errText = viewModel.nameOfCardErrorInter.value, onTextChanged = {
+            errText = viewModel.nameOfCardErrorInter.value,
+            onTextChanged = {
                 viewModel.nameOfCardInter.value = it
+            },
+            onFocusOut = {
                 viewModel.nameOfCardErrorInter.value = Validator.validateNameCard(it)
-            })
+
+            }
+        )
         Spacer(modifier = Modifier.height(12.dp))
         ExpandedRow {
 
@@ -97,8 +104,12 @@ fun CardInternational(viewModel: InputViewModel) {
                     errText = viewModel.cvvCardErrorInter.value,
                     onTextChanged = {
                         viewModel.cvvCardInter.value = it
+                    },
+                    onFocusOut = {
                         viewModel.cvvCardErrorInter.value = Validator.validateCCVCard(it)
-                    })
+
+                    }
+                )
             }
         }
 

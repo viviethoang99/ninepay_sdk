@@ -35,6 +35,7 @@ import com.npsdk.jetpack_sdk.base.Utils
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
 import com.npsdk.jetpack_sdk.theme.fontAppBold
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
+import com.npsdk.jetpack_sdk.theme.initColor
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
@@ -96,7 +97,7 @@ class ResultPayment : ComponentActivity() {
             Column(modifier = Modifier.fillMaxWidth().fillMaxSize()) {
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
                     Box(
-                        modifier = Modifier.height(100.dp).background(color = colorResource(R.color.green))
+                        modifier = Modifier.height(100.dp).background(color = initColor())
                             .fillMaxWidth()
                     )
                     Column(

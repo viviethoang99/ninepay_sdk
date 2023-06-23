@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.npsdk.R
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
+import com.npsdk.jetpack_sdk.theme.initColor
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -49,6 +50,7 @@ fun MyEdittext(
     initText: String? = null,
     visualTransformation: VisualTransformation? = VisualTransformation.None,
     onTap: () -> Unit = {},
+    onFocusOut: (String) -> Unit = {},
     tooltipsText: String? = ""
 ) {
 
@@ -101,7 +103,10 @@ fun MyEdittext(
                     disabledIndicatorColor = Color.Transparent,
                     cursorColor = Color.Black,
                     containerColor = Color.White,
-                    selectionColors = TextSelectionColors(handleColor = Color.Black, backgroundColor = colorResource(R.color.green).copy(0.6f))
+                    selectionColors = TextSelectionColors(
+                        handleColor = Color.Black,
+                        backgroundColor = initColor().copy(0.6f)
+                    )
 
                 ),
                 singleLine = true,
@@ -122,7 +127,8 @@ fun MyEdittext(
                         isFirstFocus = true
                     } else {
                         if (isFirstFocus) {
-                            onTextChanged(textInput)
+                            onFocusOut(textInput)
+//                            onTextChanged(textInput)
                         }
                         isFirstFocus = false
                     }
@@ -181,7 +187,7 @@ fun MyEdittext(
 
             if (isFocused) Box(
                 modifier = Modifier.align(Alignment.BottomStart).height(2.dp).padding(horizontal = 12.dp).fillMaxWidth()
-                    .background(colorResource(id = R.color.green))
+                    .background(initColor())
             )
         }
         Spacer(modifier = Modifier.height(3.dp))

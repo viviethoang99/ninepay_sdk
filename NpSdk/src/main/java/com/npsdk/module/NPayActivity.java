@@ -61,7 +61,8 @@ public class NPayActivity extends AppCompatActivity {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
-                    OnBackInvokedDispatcher.PRIORITY_DEFAULT, () -> {}
+                    OnBackInvokedDispatcher.PRIORITY_DEFAULT, () -> {
+                    }
             );
         }
 
@@ -83,12 +84,13 @@ public class NPayActivity extends AppCompatActivity {
 
         setUpweb1Client();
         setUpWeb2Client();
+        setCookieRefreshToken();
+
         try {
             Uri.Builder builder = new Uri.Builder();
             JSONObject jsonObject = new JSONObject(data);
             String route = jsonObject.getString("route");
             String orderId = "";
-            String path = "";
             if (jsonObject.has("order_id")) {
                 orderId = jsonObject.getString("order_id");
             }
@@ -144,7 +146,7 @@ public class NPayActivity extends AppCompatActivity {
                         .appendQueryParameter("Merchant-Code", jsonObject.getString("Merchant-Code"))
                         .appendQueryParameter("Merchant-Uid", jsonObject.getString("Merchant-Uid"))
                         .appendQueryParameter("App-version-Code", "400")
-                        .appendQueryParameter("brand_color", String.valueOf(NPayLibrary.getInstance().sdkConfig.getBrandColor()))
+                        .appendQueryParameter("brand_color", NPayLibrary.getInstance().sdkConfig.getBrandColor())
                         .appendQueryParameter("platform", "android")
                         .appendQueryParameter("device", DeviceUtils.getDevice());
                 if (jsonObject.has("order_id")) {
@@ -159,54 +161,7 @@ public class NPayActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
         KeyboardUtils.addKeyboardToggleListener(this, isVisible -> NPayLibrary.isKeyboardShowing = isVisible);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    private void setUpWeb2Client() {
-        webView2.setWebViewClient(new WebViewClient() {
-
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                handler.proceed();
-            }
-
-
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                String url = request.getUrl().toString();
-                Log.d(TAG, "shouldOverrideUrlLoading 2: url ==   " + url);
-
-                if (url.endsWith("close-webview")) {
-                    clearWebview2WithToolbar();
-                    return false;
-                }
-
-                if (url.startsWith(Flavor.baseUrl)) {
-                    clearWebview2WithToolbar();
-                    return false;
-                }
-                webView2.loadUrl(url, headerWebView);
-                return false;
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                CookieManager.getInstance().flush();
-                super.onPageFinished(view, url);
-            }
-        });
-        setCookieRefreshToken();
     }
 
     private void setCookieRefreshToken() {
@@ -214,19 +169,23 @@ public class NPayActivity extends AppCompatActivity {
         String refreshToken = Preference.getString(this, Flavor.prefKey + Constants.REFRESH_TOKEN, "");
         String publicKey = Preference.getString(this, Flavor.prefKey + Constants.PUBLIC_KEY, "");
         if (!accessToken.isEmpty() && !refreshToken.isEmpty() && !publicKey.isEmpty()) {
-            String cookieAcccessToken = "actk="+ accessToken +"; path=/v1";
+            String cookieAcccessToken = "actk=" + accessToken + "; path=/v1";
             CookieManager.getInstance().setCookie(Flavor.baseUrl.replaceAll("https://", ""), cookieAcccessToken);
+            CookieManager.getInstance().setCookie(Flavor.baseShop.replaceAll("https://", ""), cookieAcccessToken);
 
-            String cookieRefreshToken = "rtk="+ refreshToken +"; path=/v1";
+            String cookieRefreshToken = "rtk=" + refreshToken + "; path=/v1";
             CookieManager.getInstance().setCookie(Flavor.baseUrl.replaceAll("https://", ""), cookieRefreshToken);
+            CookieManager.getInstance().setCookie(Flavor.baseShop.replaceAll("https://", ""), cookieRefreshToken);
 
-            String publicKeyString = "pk="+ publicKey +"; path=/v1";
+            String publicKeyString = "pk=" + publicKey + "; path=/v1";
             CookieManager.getInstance().setCookie(Flavor.baseUrl.replaceAll("https://", ""), publicKeyString);
+            CookieManager.getInstance().setCookie(Flavor.baseShop.replaceAll("https://", ""), publicKeyString);
 
-            CookieManager.getInstance().setAcceptThirdPartyCookies(webView,true);
-            CookieManager.getInstance().setAcceptThirdPartyCookies(webView2,true);
+            CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
+            CookieManager.getInstance().setAcceptThirdPartyCookies(webView2, true);
         }
     }
+
     private void setUpweb1Client() {
         webView.setWebViewClient(new WebViewClient() {
 
@@ -268,7 +227,7 @@ public class NPayActivity extends AppCompatActivity {
                                 .appendQueryParameter("Merchant-Code", NPayLibrary.getInstance().sdkConfig.getMerchantCode())
                                 .appendQueryParameter("Merchant-Uid", NPayLibrary.getInstance().sdkConfig.getUid())
                                 .appendQueryParameter("App-version-Code", "400")
-                                .appendQueryParameter("brand_color", String.valueOf(NPayLibrary.getInstance().sdkConfig.getBrandColor()))
+                                .appendQueryParameter("brand_color", NPayLibrary.getInstance().sdkConfig.getBrandColor())
                                 .appendQueryParameter("platform", "android")
                                 .appendQueryParameter("order_id", Utils.convertUrlToOrderId(url))
                                 .appendQueryParameter("device", DeviceUtils.getDevice());
@@ -295,8 +254,43 @@ public class NPayActivity extends AppCompatActivity {
             }
 
         });
-        setCookieRefreshToken();
     }
+
+    private void setUpWeb2Client() {
+        webView2.setWebViewClient(new WebViewClient() {
+
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                handler.proceed();
+            }
+
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                String url = request.getUrl().toString();
+                Log.d(TAG, "shouldOverrideUrlLoading 2: url ==   " + url);
+
+                if (url.endsWith("close-webview")) {
+                    clearWebview2WithToolbar();
+                    return false;
+                }
+
+                if (url.startsWith(Flavor.baseUrl)) {
+                    clearWebview2WithToolbar();
+                    return false;
+                }
+                webView2.loadUrl(url, headerWebView);
+                return false;
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                CookieManager.getInstance().flush();
+                super.onPageFinished(view, url);
+            }
+        });
+    }
+
 
     private void listentChangeUrlBroadcast() {
         changeUrlBR = new BroadcastReceiver() {
@@ -367,19 +361,6 @@ public class NPayActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public void onBackPressed() {
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(changeUrlBR);
-        clearWebview2NonToolbar();
-        closeCamera();
-        super.onDestroy();
-    }
-
     public void clearWebview2WithToolbar() {
         if (webView2.getVisibility() == View.VISIBLE) {
             clearWebview2NonToolbar();
@@ -439,5 +420,27 @@ public class NPayActivity extends AppCompatActivity {
             JsHandler.sendStatusStorage(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    public void onBackPressed() {
+    }
+
+    @Override
+    protected void onDestroy() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(changeUrlBR);
+        clearWebview2NonToolbar();
+        closeCamera();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 }

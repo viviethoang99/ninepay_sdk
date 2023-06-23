@@ -42,6 +42,7 @@ import com.npsdk.jetpack_sdk.repository.model.validate_payment.Methods
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
 import com.npsdk.jetpack_sdk.theme.fontAppBold
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
+import com.npsdk.jetpack_sdk.theme.initColor
 import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.npsdk.module.NPayLibrary
@@ -102,9 +103,10 @@ class OrderActivity : ComponentActivity() {
     }
 
     private fun isHavePublicKey(): String {
-       return Preference.getString(
+        return Preference.getString(
             NPayLibrary.getInstance().activity,
-            NPayLibrary.getInstance().sdkConfig.env + Constants.PUBLIC_KEY, "")
+            NPayLibrary.getInstance().sdkConfig.env + Constants.PUBLIC_KEY, ""
+        )
     }
 
     @Composable
@@ -222,7 +224,7 @@ class OrderActivity : ComponentActivity() {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.clip(RoundedCornerShape(8.dp)).fillMaxWidth().height(44.dp).background(
-                    if (DataOrder.selectedItemMethod == null) colorResource(R.color.grey) else colorResource(R.color.green)
+                    if (DataOrder.selectedItemMethod == null) colorResource(R.color.grey) else initColor()
                 ).clickable {
                     if (DataOrder.selectedItemMethod != null) clickContinue()
                 },
@@ -303,7 +305,7 @@ class OrderActivity : ComponentActivity() {
             ) {
                 val parseAmount: Int =
                     if (DataOrder.amount is Double) (DataOrder.amount as Double).toInt() else (DataOrder.amount as Int)
-                    val phone = DataOrder.userInfo?.data?.phone
+                val phone = DataOrder.userInfo?.data?.phone
                 Column {
                     Text(
                         if (item.code.equals(Constants.WALLET) && phone != null) "Ví 9Pay: $phone" else item.name,
@@ -330,7 +332,10 @@ class OrderActivity : ComponentActivity() {
                     }
                 }
 
-                if (DataOrder.userInfo != null && DataOrder!!.userInfo!!.data.balance!! < parseAmount && item.code.equals(Constants.WALLET)) Box(
+                if (DataOrder.userInfo != null && DataOrder.userInfo!!.data.balance!! < parseAmount && item.code.equals(
+                        Constants.WALLET
+                    )
+                ) Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.width(80.dp).height(28.dp).clip(RoundedCornerShape(14.dp))
                         .background(colorResource(R.color.background)).clickableWithoutRipple {
@@ -342,7 +347,7 @@ class OrderActivity : ComponentActivity() {
                     Text(
                         "Nạp tiền",
                         style = TextStyle(
-                            color = colorResource(R.color.green),
+                            color = initColor(),
                             fontSize = 12.sp,
                             fontFamily = fontAppDefault,
                             fontWeight = FontWeight.W600
@@ -399,8 +404,8 @@ class OrderActivity : ComponentActivity() {
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.weight(1f).clip(RoundedCornerShape(8.dp)).fillMaxWidth().height(40.dp)
                             .background(
-                                colorResource(R.color.green)
-                            ).clickableWithoutRipple{
+                                initColor()
+                            ).clickableWithoutRipple {
                                 onDismiss()
                                 onDeposit()
                             }

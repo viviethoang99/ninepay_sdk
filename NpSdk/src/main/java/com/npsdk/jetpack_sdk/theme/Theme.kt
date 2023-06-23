@@ -14,7 +14,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.colorResource
 import androidx.core.view.WindowCompat
+import com.npsdk.R
+import com.npsdk.module.NPayLibrary
 
 private val DarkColorScheme = darkColorScheme(
 	primary = Color.White,
@@ -38,6 +41,21 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+@Composable()
+fun initColor() : Color {
+	var colorMerchant : String? = NPayLibrary.getInstance()?.sdkConfig?.brandColor
+	try {
+		if (!colorMerchant.isNullOrBlank()) {
+			val replaceColorWrong = "#"+colorMerchant.replace("#", "").replace(" ", "")
+			val parseColor = android.graphics.Color.parseColor(replaceColorWrong)
+			return Color(parseColor)
+		}
+	} catch (e: Exception) {
+		return colorResource(R.color.green)
+	}
+	return colorResource(R.color.green)
+}
+
 @Composable
 fun PaymentNinepayTheme(
 	darkTheme: Boolean = isSystemInDarkTheme(),
@@ -58,7 +76,18 @@ fun PaymentNinepayTheme(
 	if (!view.isInEditMode) {
 		SideEffect {
 			val window = (view.context as Activity).window
-			window.statusBarColor = Color(0xFF15AE62).toArgb()
+			var colorMerchant : String? = NPayLibrary.getInstance()?.sdkConfig?.brandColor
+			try {
+				if (!colorMerchant.isNullOrBlank()) {
+					val replaceColorWrong = "#"+colorMerchant.replace("#", "").replace(" ", "")
+					val parseColor = android.graphics.Color.parseColor(replaceColorWrong)
+					window.statusBarColor = Color(parseColor).toArgb()
+				} else {
+					window.statusBarColor = Color(0xFF15AE62).toArgb()
+				}
+			} catch (e: Exception) {
+				window.statusBarColor = Color(0xFF15AE62).toArgb()
+			}
 			WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
 		}
 	}
