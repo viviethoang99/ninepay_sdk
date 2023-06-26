@@ -17,7 +17,7 @@ public class Utils {
         String path = null;
         switch (action) {
             case Actions.SHOP:
-                path = "/hoa-don-thanh-toan?is_start=1";
+                path = "/sdk/billing";
                 break;
             case Actions.BILLING_DIEN:
                 path = "/hoa-don/hoa-don-tien-dien";
@@ -59,19 +59,19 @@ public class Utils {
                 path = "/hoa-don/hoa-don-duong-bo";
                 break;
             case Actions.TOPUP:
-                path = "/dich-vu-dien-thoai?code=topup_phone&is_start=1";
+                path = "/sdk/topup-phone";
                 break;
             case Actions.PHONE_CARD:
-                path = "/dich-vu-dien-thoai?code=phone_card&is_start=1";
+                path = "/sdk/phone-card";
                 break;
             case Actions.DATA_CARD:
-                path = "/dich-vu-dien-thoai?code=topup_data&is_start=1";
+                path = "/sdk/data-card";
                 break;
             case Actions.GAME:
-                path = "/mua-the-game?code=game_card&is_start=1";
+                path = "/sdk/game";
                 break;
             case Actions.SERVICE_CARD:
-                path = "/dich-vu-thanh-toan?is_start=1";
+                path = "/sdk/service-card";
                 break;
         }
 

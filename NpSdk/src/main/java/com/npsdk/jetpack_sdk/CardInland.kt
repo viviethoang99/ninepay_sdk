@@ -52,11 +52,14 @@ fun CardInland(viewModel: InputViewModel) {
             errText = viewModel.numberCardErrorInLand.value,
             visualTransformation = CardNumberMaskCustom(" "),
             onFocusOut = {
-                viewModel.numberCardErrorInLand.value = Validator.validateNumberCardATM(it, inputViewModel = viewModel, showError = true)
+                viewModel.numberCardErrorInLand.value =
+                    Validator.validateNumberCardATM(it, inputViewModel = viewModel, showError = true)
             },
             onTextChanged = {
                 viewModel.numberCardInLand.value = it
-                viewModel.numberCardErrorInLand.value = Validator.validateNumberCardATM(it, inputViewModel = viewModel, showError = false)
+                viewModel.numberCardErrorInLand.value =
+                    Validator.validateNumberCardATM(it, inputViewModel = viewModel, showError = false)
+                viewModel.dateCardErrorInLand.value = ""
             })
         Spacer(modifier = Modifier.height(12.dp))
         MyEdittext(

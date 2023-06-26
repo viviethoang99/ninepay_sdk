@@ -25,7 +25,7 @@ import com.npsdk.jetpack_sdk.theme.initColor
 
 
 @Composable
-fun PolicyView() {
+fun DescriptionSaveCard() {
     val context = LocalContext.current
 
     val annotatedString = buildAnnotatedString {
@@ -34,7 +34,7 @@ fun PolicyView() {
                 color = colorResource(R.color.titleText), fontFamily = fontAppDefault, fontSize = 12.sp
             )
         ) {
-            append("Bấm tiếp tục, tôi đồng ý với ")
+            append("Lưu lại liên kết thẻ để sử dụng cho những lần thanh toán sau (áp dụng tiêu chuẩn bảo mật PCI DSS, ")
         }
 
         withStyle(
@@ -42,8 +42,16 @@ fun PolicyView() {
                 color = initColor(), fontFamily = fontAppDefault, fontSize = 12.sp
             )
         ) {
-            appendLink("Điều khoản của 9Pay", DataOrder.dataOrderSaved?.data?.policyLink)
+            appendLink("tìm hiểu thêm", DataOrder.dataOrderSaved?.data?.policyLink)
 
+        }
+
+        withStyle(
+            style = SpanStyle(
+                color = colorResource(R.color.titleText), fontFamily = fontAppDefault, fontSize = 12.sp
+            )
+        ) {
+            append(").")
         }
     }
 
@@ -54,7 +62,7 @@ fun PolicyView() {
     ) {
 
         ClickableText(
-            modifier = Modifier.align(Alignment.CenterVertically).padding(start = 16.dp),
+            modifier = Modifier.weight(1f).align(Alignment.CenterVertically),
             text = annotatedString,
             onClick = { offset ->
                 annotatedString.onLinkClick(offset) { link ->

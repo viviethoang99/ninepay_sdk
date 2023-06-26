@@ -166,8 +166,7 @@ public class NPayActivity extends AppCompatActivity {
     private void setCookieRefreshToken() {
         String accessToken = Preference.getString(this, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
         String refreshToken = Preference.getString(this, Flavor.prefKey + Constants.REFRESH_TOKEN, "");
-        String publicKey = Preference.getString(this, Flavor.prefKey + Constants.PUBLIC_KEY, "");
-        if (!accessToken.isEmpty() && !refreshToken.isEmpty() && !publicKey.isEmpty()) {
+        if (!accessToken.isEmpty() && !refreshToken.isEmpty()) {
             String cookieAcccessToken = "actk=" + accessToken + "; path=/v1";
             CookieManager.getInstance().setCookie(Flavor.baseUrl.replaceAll("https://", ""), cookieAcccessToken);
             CookieManager.getInstance().setCookie(Flavor.baseShop.replaceAll("https://", ""), cookieAcccessToken);
@@ -176,9 +175,6 @@ public class NPayActivity extends AppCompatActivity {
             CookieManager.getInstance().setCookie(Flavor.baseUrl.replaceAll("https://", ""), cookieRefreshToken);
             CookieManager.getInstance().setCookie(Flavor.baseShop.replaceAll("https://", ""), cookieRefreshToken);
 
-            String publicKeyString = "pk=" + publicKey + "; path=/v1";
-            CookieManager.getInstance().setCookie(Flavor.baseUrl.replaceAll("https://", ""), publicKeyString);
-            CookieManager.getInstance().setCookie(Flavor.baseShop.replaceAll("https://", ""), publicKeyString);
 
             CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
             CookieManager.getInstance().setAcceptThirdPartyCookies(webView2, true);

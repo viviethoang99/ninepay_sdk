@@ -22,11 +22,14 @@ public class CreateOrderInlandRepo extends BaseApiClient {
 
     public void create(Context context, CreateOrderParamsInland param, CallbackCreateOrder callbackCreateOrder) {
         executor.execute(() -> {
-            Call<CreateOrderCardModel> call = apiService.createOrderCardInland(param.getUrl(), param.getCardNumber().replaceAll(" ", ""), param.getCardName().trim(), param.getExpireMonth(), param.getExpireYear(), param.getAmount(), param.getMethod());
+            Call<CreateOrderCardModel> call = apiService.createOrderCardInland(param.getUrl(),
+                    param.getCardNumber().replaceAll(" ", ""),
+                    param.getCardName().trim(), param.getExpireMonth(), param.getExpireYear(),
+                    param.getAmount(), param.getMethod(), param.isSave());
             enqueue(call, new Callback<CreateOrderCardModel>() {
                 @Override
                 public void onResponse(Call<CreateOrderCardModel> call, Response<CreateOrderCardModel> response) {
-                    if (response.code() ==200 && response.body() != null) {
+                    if (response.code() == 200 && response.body() != null) {
                         updateUI(() -> {
                             callbackCreateOrder.onSuccess(response.body());
                         });

@@ -93,8 +93,7 @@ class InputCardActivity : ComponentActivity() {
         val context = LocalContext.current
         val keyboardController = LocalSoftwareKeyboardController.current
         val focusManager = LocalFocusManager.current
-
-        var isSelectedPolicy = true
+        var isSaveCard = true
 
         LaunchedEffect(true) {
             if (DataOrder.listBankModel == null) {
@@ -110,7 +109,7 @@ class InputCardActivity : ComponentActivity() {
                 DataOrder.amount = data!!.data.feeData.wallet.toInt()
                 setDefaultAmount()
                 if (method == Constants.ATM_CARD) {
-                    DataOrder.feeTemp = data!!.data.feeData.atmCard.toInt()
+                    DataOrder.feeTemp = data.data.feeData.atmCard.toInt()
                 }
             })
         }
@@ -147,17 +146,15 @@ class InputCardActivity : ComponentActivity() {
                 }
 
                 item {
+                    SaveCardView(callBack = { isSaveCard = it })
+                }
+
+                item {
                     if (inputViewModel.showNotification.value) {
                         DialogNotification(contextString = inputViewModel.stringDialog.value, onDismiss = {
                             inputViewModel.showNotification.value = false
                         })
                     }
-                }
-
-                item {
-                    if (method == Constants.CREDIT_CARD && DataOrder.dataOrderSaved != null) PolicyView(callBack = {
-                        isSelectedPolicy = it
-                    })
                 }
 
                 item {
@@ -169,31 +166,47 @@ class InputCardActivity : ComponentActivity() {
             if (appViewModel.isShowLoading) Box(Modifier.align(Alignment.Center)) {
                 LoadingView()
             }
-            FooterButton(onClickBack = {
-                setDefaultAmount()
-                (context as Activity).finish()
-            }, onClickContinue = {
-                if (!isSelectedPolicy) {
-                    inputViewModel.showNotification.value = true
-                    inputViewModel.stringDialog.value = "Bạn phải chấp nhận với điều khoản để tiếp tục."
-                    return@FooterButton
-                }
+            Column(
+                modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (method == Constants.CREDIT_CARD && DataOrder.dataOrderSaved != null) PolicyView()
+                FooterButton(onClickBack = {
+                    setDefaultAmount()
+                    (context as Activity).finish()
+                }, onClickContinue = {
+                    DataOrder.activityOrder?.finish() // Close order activity
 
-                DataOrder.activityOrder?.finish() // Close order activity
+                    when (method) {
+                        Constants.CREDIT_CARD -> createOrderInternational(
+                            inputViewModel,
+                            context,
+                            appViewModel,
+                            isSaveCard
+                        )
 
-                when (method) {
-                    Constants.CREDIT_CARD -> createOrderInternational(inputViewModel, context, appViewModel)
-                    Constants.ATM_CARD -> createOrderInland(inputViewModel, context, appViewModel)
-                }
+                        Constants.ATM_CARD -> createOrderInland(
+                            inputViewModel, context, appViewModel,
+                            isSaveCard
+                        )
+                    }
 
-            }, modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter).padding(12.dp)
-            )
+                }, modifier = Modifier.background(colorResource(R.color.background)).fillMaxWidth().padding(12.dp)
+                )
+            }
+
         }
     }
 }
 
 
-fun createOrderInternational(viewModel: InputViewModel, context: Context, appViewModel: AppViewModel) {
+fun createOrderInternational(
+    viewModel: InputViewModel,
+    context: Context,
+    appViewModel: AppViewModel,
+    saveCard: Boolean
+) {
 
     val numberCard = viewModel.numberOfCardInter.value
     val nameCard = viewModel.nameOfCardInter.value
@@ -235,7 +248,8 @@ fun createOrderInternational(viewModel: InputViewModel, context: Context, appVie
         expireYear = year,
         cvc = viewModel.cvvCardInter.value,
         amount = amount.toString(),
-        method = Constants.CREDIT_CARD
+        method = Constants.CREDIT_CARD,
+        isSave = saveCard
     )
 
     appViewModel.showLoading()
@@ -255,7 +269,10 @@ fun createOrderInternational(viewModel: InputViewModel, context: Context, appVie
 
 }
 
-fun createOrderInland(viewModel: InputViewModel, context: Context, appViewModel: AppViewModel) {
+fun createOrderInland(
+    viewModel: InputViewModel, context: Context, appViewModel: AppViewModel,
+    saveCard: Boolean
+) {
 
     val numberCard = viewModel.numberCardInLand.value
     val nameCard = viewModel.nameCardInLand.value
@@ -291,7 +308,8 @@ fun createOrderInland(viewModel: InputViewModel, context: Context, appViewModel:
         expireMonth = month,
         expireYear = year,
         amount = amount.toString(),
-        method = Constants.ATM_CARD
+        method = Constants.ATM_CARD,
+        isSave = saveCard
     )
 
     appViewModel.showLoading()

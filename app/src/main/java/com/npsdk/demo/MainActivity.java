@@ -1,6 +1,7 @@
 package com.npsdk.demo;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -11,6 +12,7 @@ import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.npsdk.LibListener;
+import com.npsdk.jetpack_sdk.TestWebviewActivity;
 import com.npsdk.module.NPayLibrary;
 import com.npsdk.module.model.Bank;
 import com.npsdk.module.model.SdkConfig;
@@ -98,12 +100,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         NPayLibrary.getInstance().init(MainActivity.this, sdkConfig, new LibListener() {
             @Override
             public void onLoginSuccessful() {
-
+                Toast.makeText(MainActivity.this, "onLoginSuccessful", Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onPaySuccessful() {
-
+                Toast.makeText(MainActivity.this, "Thanh toán thành công!", Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -114,17 +116,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onError(int errorCode, String message) {
-
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onLogoutSuccessful() {
-                System.out.println("Logout success!");
+                Toast.makeText(MainActivity.this, "Logout success!", Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onCloseSDK() {
-
+                Toast.makeText(MainActivity.this, "onCloseSDK", Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -228,13 +230,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 NPayLibrary.getInstance().payWithWallet(url, Constants.CREDIT_CARD);
                 break;
             case R.id.test_click:
-                NPayLibrary.getInstance().payWithWallet(url, null);
+//                NPayLibrary.getInstance().payWithWallet(url, null);
 //                NPayLibrary.getInstance().openWallet(url);
 //                String old = Preference.getString(this, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
 //                Preference.save(this, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN, old + "a");
 //                Intent i = new Intent(this, WebviewComposeActivity.class);
 //                i.putExtra("url", "https://zing.vn");
 //                startActivity(i);
+
+//                Intent i = new Intent(this, TestWebviewActivity.class);
+//                startActivity(i);
+
+                NPayLibrary.getInstance().openWallet("https://stg-sdk.9pay.mobi/v1/cookie");
                 break;
         }
         edtUrlPaygate.setText("");

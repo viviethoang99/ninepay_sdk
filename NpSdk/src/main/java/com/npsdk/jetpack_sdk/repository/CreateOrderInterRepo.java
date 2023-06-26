@@ -22,7 +22,11 @@ public class CreateOrderInterRepo extends BaseApiClient {
 
     public void create(Context context, CreateOrderParamsInter param, CallbackCreateOrder callbackCreateOrder) {
         executor.execute(() -> {
-            Call<CreateOrderCardModel> call = apiService.createOrderCardInter(param.getUrl(), param.getCardNumber().replaceAll(" ", ""), param.getCardName().trim(), param.getExpireMonth(), param.getExpireYear(), param.getCvc(), param.getAmount(), param.getMethod());
+            Call<CreateOrderCardModel> call = apiService.createOrderCardInter(
+                    param.getUrl(), param.getCardNumber().replaceAll(" ", ""),
+                    param.getCardName().trim(), param.getExpireMonth(),
+                    param.getExpireYear(), param.getCvc(), param.getAmount(),
+                    param.getMethod(), param.isSave());
             enqueue(call, new Callback<CreateOrderCardModel>() {
                 @Override
                 public void onResponse(Call<CreateOrderCardModel> call, Response<CreateOrderCardModel> response) {

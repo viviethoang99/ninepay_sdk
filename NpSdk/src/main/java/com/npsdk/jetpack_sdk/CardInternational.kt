@@ -3,15 +3,20 @@ package com.npsdk.jetpack_sdk
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -27,6 +32,7 @@ import com.npsdk.jetpack_sdk.base.view.DatePicker
 import com.npsdk.jetpack_sdk.base.view.ExpandedRow
 import com.npsdk.jetpack_sdk.base.view.MyEdittext
 import com.npsdk.jetpack_sdk.theme.fontAppBold
+import com.npsdk.jetpack_sdk.theme.initColor
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -61,11 +67,13 @@ fun CardInternational(viewModel: InputViewModel) {
             errText = viewModel.numberOfCardErrorInter.value,
             visualTransformation = CardNumberMaskCustom(),
             onFocusOut = {
-                viewModel.numberOfCardErrorInter.value = Validator.validateNumberCardInter(it, viewModel, showError = true)
+                viewModel.numberOfCardErrorInter.value =
+                    Validator.validateNumberCardInter(it, viewModel, showError = true)
             },
             onTextChanged = {
                 viewModel.numberOfCardInter.value = it
-                viewModel.numberOfCardErrorInter.value = Validator.validateNumberCardInter(it, viewModel, showError = false)
+                viewModel.numberOfCardErrorInter.value =
+                    Validator.validateNumberCardInter(it, viewModel, showError = false)
             })
         Spacer(modifier = Modifier.height(12.dp))
         MyEdittext("Họ và tên chủ thẻ",
@@ -108,7 +116,6 @@ fun CardInternational(viewModel: InputViewModel) {
                     },
                     onFocusOut = {
                         viewModel.cvvCardErrorInter.value = Validator.validateCCVCard(it)
-
                     }
                 )
             }
@@ -173,6 +180,32 @@ private fun LineCardLabel() {
             Text(inputViewModel.interCardDetect!!.cardBrand!!)
         }
     }
+}
 
-
+@Composable
+fun SaveCardView(callBack: (Boolean) -> Unit) {
+    var isChecked by remember {
+        mutableStateOf(true)
+    }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Nut check
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.size(20.dp).clip(RoundedCornerShape(4.dp)).border(
+            width = 1.dp,
+            color = if (isChecked) initColor() else colorResource(R.color.grey),
+            shape = RoundedCornerShape(4.dp)
+        ).background(if (!isChecked) Color.White else initColor()).clickable {
+            isChecked = !isChecked
+            callBack(isChecked)
+        }) {
+            if (isChecked) Icon(
+                Icons.Rounded.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(10.dp)
+            )
+        }
+        Spacer(modifier = Modifier.width(13.dp))
+        // Mo ta nut bam
+        DescriptionSaveCard()
+    }
 }

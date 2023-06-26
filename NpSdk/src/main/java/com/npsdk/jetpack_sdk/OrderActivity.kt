@@ -147,7 +147,9 @@ class OrderActivity : ComponentActivity() {
 
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopStart) {
             LazyColumn(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
-                item { TopAppBarApp(isShowBack = false) }
+                item { TopAppBarApp(isShowBack = true, onBack = {
+                    finish()
+                }) }
                 item {
                     Box(modifier = Modifier.padding(12.dp)) {
                         HeaderOrder(modelOrderData!!)
@@ -304,9 +306,9 @@ class OrderActivity : ComponentActivity() {
                     }
                     methodFind?.let { ItemRow(it, true) {} }
                 }
-                if (methodDefault != Constants.WALLET && DataOrder.userInfo?.data?.banks != null) LinkBank(
-                    isChecked = DataOrder.selectedItemMethod == Constants.LINK_BANK
-                )
+//                if (methodDefault != Constants.WALLET && DataOrder.userInfo?.data?.banks != null) LinkBank(
+//                    isChecked = DataOrder.selectedItemMethod == Constants.LINK_BANK
+//                )
 //                Text(
 //                    if (isLimitItem) "Xem thêm phương thức khác" else "Đóng lại",
 //                    textAlign = TextAlign.Center,

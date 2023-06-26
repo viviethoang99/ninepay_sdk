@@ -91,6 +91,13 @@
                 android:screenOrientation="portrait"
                 android:theme="@style/Theme.PaymentNinepay"
                 android:windowSoftInputMode="adjustResize"/>
+
+        <activity
+                android:name="com.npsdk.jetpack_sdk.TestWebviewActivity"
+                android:exported="false"
+                android:screenOrientation="portrait"
+                android:theme="@style/Theme.AppCompat.Light"
+                android:windowSoftInputMode="adjustResize"/>
     </application>
 
 </manifest>
