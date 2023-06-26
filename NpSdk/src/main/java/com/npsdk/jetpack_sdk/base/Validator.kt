@@ -1,6 +1,7 @@
 package com.npsdk.jetpack_sdk.base
 
 import com.npsdk.jetpack_sdk.DataOrder
+import com.npsdk.jetpack_sdk.repository.model.INLAND
 import com.npsdk.jetpack_sdk.repository.model.INTERNATIONAL
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import java.math.BigInteger
@@ -62,7 +63,7 @@ object Validator {
                     inputViewModel.inlandBankDetect = item
                     break
                 } else {
-                    inputViewModel.inlandBankDetect = null
+                    inputViewModel.inlandBankDetect = INLAND(isValidDate = 1)
                 }
             }
             if (showError!!) if (!isSupport) stringError = "Số thẻ ATM không hợp lệ. Vui lòng kiểm tra lại."
@@ -94,6 +95,8 @@ object Validator {
     }
 
     fun validateDateCardInland(input: String, month: Int?, year: Int?, inputViewModel: InputViewModel): String {
+
+        // 1 Ngay hieu luc, 0 ngay het han
         val isEffectiveCard: Boolean = inputViewModel.inlandBankDetect?.isValidDate == 1
         val typeString = if (isEffectiveCard) "hiệu lực" else "hết hạn"
         var stringError = ""

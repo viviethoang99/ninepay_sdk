@@ -28,7 +28,7 @@ data class INLAND(
     @SerializedName("logo") var logo: String? = null,
     @SerializedName("bank_code") var bankCode: String? = null,
     @SerializedName("prefix") var prefix: Int? = null,
-    @SerializedName("is_valid_date") var isValidDate: Int? = 1
+    @SerializedName("is_valid_date") var isValidDate: Int? = 1 // 1 Ngay hieu luc, 0 Ngay het han
 
 )
 

@@ -71,7 +71,7 @@ fun CardInland(viewModel: InputViewModel) {
         )
 
         Spacer(modifier = Modifier.height(12.dp))
-        if (viewModel.inlandBankDetect?.isValidDate != null) MyEdittext(
+        MyEdittext(
             label = if (viewModel.inlandBankDetect!!.isValidDate == 1) "Ngày hiệu lực (MM/YY)" else "Ngày hết hạn (MM/YY)",
             keyboardType = KeyboardType.Number,
             maxLength = 5,
