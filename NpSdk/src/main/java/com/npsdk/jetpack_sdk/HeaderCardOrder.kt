@@ -73,7 +73,7 @@ private fun BoxCollapse(data: ValidatePaymentModel, onClick: () -> Unit) {
                     text = "Xem thêm", textAlign = TextAlign.Center, style = TextStyle(
                         fontWeight = FontWeight.W600,
                         fontFamily = fontAppBold,
-                        color = Color(0xFF1F92FC),
+                        color = colorResource(R.color.blue),
                         fontSize = 12.sp
                     )
                 )
@@ -176,7 +176,7 @@ fun HeaderOrder(data: ValidatePaymentModel) {
                         style = TextStyle(
                             fontWeight = FontWeight.W600,
                             fontFamily = fontAppBold,
-                            color = Color(0xFF1F92FC),
+                            color = colorResource(R.color.blue),
                             fontSize = 12.sp
                         ),
                     )

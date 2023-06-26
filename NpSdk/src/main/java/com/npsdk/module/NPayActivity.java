@@ -145,7 +145,6 @@ public class NPayActivity extends AppCompatActivity {
                         .appendQueryParameter("route", route)
                         .appendQueryParameter("Merchant-Code", jsonObject.getString("Merchant-Code"))
                         .appendQueryParameter("Merchant-Uid", jsonObject.getString("Merchant-Uid"))
-                        .appendQueryParameter("App-version-Code", "400")
                         .appendQueryParameter("brand_color", NPayLibrary.getInstance().sdkConfig.getBrandColor())
                         .appendQueryParameter("platform", "android")
                         .appendQueryParameter("device", DeviceUtils.getDevice());
@@ -226,7 +225,6 @@ public class NPayActivity extends AppCompatActivity {
                                 .appendQueryParameter("route", Constants.VERIFY_PAYMENT_ROUTE)
                                 .appendQueryParameter("Merchant-Code", NPayLibrary.getInstance().sdkConfig.getMerchantCode())
                                 .appendQueryParameter("Merchant-Uid", NPayLibrary.getInstance().sdkConfig.getUid())
-                                .appendQueryParameter("App-version-Code", "400")
                                 .appendQueryParameter("brand_color", NPayLibrary.getInstance().sdkConfig.getBrandColor())
                                 .appendQueryParameter("platform", "android")
                                 .appendQueryParameter("order_id", Utils.convertUrlToOrderId(url))

@@ -12,6 +12,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -111,7 +114,7 @@ class OrderActivity : ComponentActivity() {
 
     @Composable
     private fun Body() {
-        var modalOrderData by remember { mutableStateOf<ValidatePaymentModel?>(null) }
+        var modelOrderData by remember { mutableStateOf<ValidatePaymentModel?>(null) }
         val inputViewModel: InputViewModel = viewModel()
         val appViewModel: AppViewModel = viewModel()
         val context = LocalContext.current
@@ -124,7 +127,7 @@ class OrderActivity : ComponentActivity() {
 
             // Get detail payment
             CheckValidatePayment().check(context, DataOrder.urlData, CallbackOrder { data ->
-                modalOrderData = data
+                modelOrderData = data
                 DataOrder.dataOrderSaved = data
                 DataOrder.amount =
                     (DataOrder.dataOrderSaved!!.data.feeData.wallet).toInt()
@@ -137,7 +140,7 @@ class OrderActivity : ComponentActivity() {
             }
         }
 
-        if (modalOrderData == null) {
+        if (modelOrderData == null) {
             ShimmerLoading()
             return
         }
@@ -147,14 +150,16 @@ class OrderActivity : ComponentActivity() {
                 item { TopAppBarApp(isShowBack = false) }
                 item {
                     Box(modifier = Modifier.padding(12.dp)) {
-                        HeaderOrder(modalOrderData!!)
+                        HeaderOrder(modelOrderData!!)
                     }
                 }
                 item {
-                    Box(modifier = Modifier.padding(horizontal = 12.dp)) {
-                        ShowMethodPayment(modalOrderData!!, onItemClick = { itemCallback ->
-                            DataOrder.selectedItemMethod = itemCallback.code
-                        })
+                    modelOrderData?.data?.methods?.let {
+                        Box(modifier = Modifier.padding(horizontal = 12.dp)) {
+                            ShowMethodPayment(it, onItemClick = { itemCallback ->
+                                DataOrder.selectedItemMethod = itemCallback.code
+                            })
+                        }
                     }
                 }
 
@@ -195,9 +200,9 @@ class OrderActivity : ComponentActivity() {
                             inputViewModel.stringDialog.value = "Đang lấy dữ liệu tài khoản ví!!!"
                             return@Footer
                         }
-                        DataOrder.userInfo?.let { it1 ->
+                        DataOrder.userInfo?.data?.balance?.let { it1 ->
                             DataOrder.feeTemp?.let { it2 ->
-                                if (it1.data.balance < it2) {
+                                if (it1 < it2) {
                                     showDialogDeposit = true
                                     return@Footer
                                 }
@@ -240,16 +245,33 @@ class OrderActivity : ComponentActivity() {
 
 
     @Composable
-    private fun ShowMethodPayment(data: ValidatePaymentModel, onItemClick: (Methods) -> Unit) {
+    private fun ShowMethodPayment(list: List<Methods>, onItemClick: (Methods) -> Unit) {
+        val listMethods = remember { mutableStateListOf<Methods>() }
+//        var isLimitItem by remember { mutableStateOf(true) }
+//        val maxItemLimit = 2
+//
+//        var listMethods by remember {
+//            mutableStateOf<ArrayList<Methods>>(ArrayList(data.data.methods))
+//        }
+
+        LaunchedEffect(true) {
+            listMethods.addAll(ArrayList(list))
+//            if (data.data.methods.size > maxItemLimit) {
+//                data.data.methods.forEachIndexed { index, methods ->
+//                    if (index < maxItemLimit) {
+//                        listMethods.add(methods)
+//                    }
+//                }
+//            } else {
+//                listMethods = ArrayList(data.data.methods)
+//            }
+        }
 
         Column(modifier = Modifier.fillMaxWidth()) {
             Spacer(modifier = Modifier.height(16.dp))
-            if (methodDefault == Constants.WALLET) Text(
-                text = "Phương thức thanh toán", style = TextStyle(
-                    fontWeight = FontWeight.W600, fontSize = 12.sp, fontFamily = fontAppBold
-                )
-            ) else Text(
-                text = "Chọn phương thức thanh toán", style = TextStyle(
+            Text(
+                text = if (methodDefault == Constants.WALLET) "Phương thức thanh toán" else "Chọn phương thức thanh toán",
+                style = TextStyle(
                     fontWeight = FontWeight.W600, fontSize = 12.sp, fontFamily = fontAppBold
                 )
             )
@@ -258,20 +280,22 @@ class OrderActivity : ComponentActivity() {
                 modifier = Modifier.clip(shape = RoundedCornerShape(12.dp)).background(Color.White)
                     .padding(vertical = 8.dp)
             ) {
-                if (methodDefault == null) data.data.methods.forEachIndexed { index, item ->
+                // Khong chon method nao.
+                if (methodDefault == null) listMethods.forEachIndexed { index, item ->
 
                     Column {
                         ItemRow(item, item.code == DataOrder.selectedItemMethod) { ->
                             onItemClick(item)
                         }
-                        if (index != data.data.methods.size - 1) Divider(
+                        if (index != listMethods.size - 1) Divider(
                             modifier = Modifier.padding(start = 50.dp),
                             color = Color(0XFFF1F3F4)
                         )
                     }
+
                 } else Column {
                     var methodFind: Methods? = null
-                    data.data.methods.forEach { item ->
+                    listMethods.forEach { item ->
                         if (item.code == methodDefault) {
                             methodFind = item
                             DataOrder.selectedItemMethod = methodFind!!.code
@@ -279,6 +303,112 @@ class OrderActivity : ComponentActivity() {
                         }
                     }
                     methodFind?.let { ItemRow(it, true) {} }
+                }
+                if (methodDefault != Constants.WALLET && DataOrder.userInfo?.data?.banks != null) LinkBank(
+                    isChecked = DataOrder.selectedItemMethod == Constants.LINK_BANK
+                )
+//                Text(
+//                    if (isLimitItem) "Xem thêm phương thức khác" else "Đóng lại",
+//                    textAlign = TextAlign.Center,
+//                    modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 12.dp)
+//                        .clickableWithoutRipple {
+//                            isLimitItem = !isLimitItem
+//                        },
+//                    style = TextStyle(
+//                        color = colorResource(R.color.blue),
+//                        fontFamily = fontAppDefault, fontSize = 12.sp, fontWeight = FontWeight.W600
+//                    )
+//                )
+            }
+        }
+    }
+
+    @Composable
+    private fun LinkBank(isChecked: Boolean) {
+        var bankSelected by remember {
+            mutableStateOf<String?>(null)
+        }
+        Column {
+
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(8.dp).clickableWithoutRipple {
+                    DataOrder.selectedItemMethod = Constants.LINK_BANK
+                }, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painterResource(R.drawable.link_bank),
+                    modifier = Modifier.size(36.dp),
+                    contentDescription = null,
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().weight(1f).padding(start = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+
+                ) {
+                    val parseAmount: Int =
+                        if (DataOrder.amount is Double) (DataOrder.amount as Double).toInt() else (DataOrder.amount as Int)
+                    val phone = DataOrder.userInfo?.data?.phone
+                    Column {
+                        Text(
+                            "Ngân hàng liên kết",
+                            style = TextStyle(
+                                fontWeight = FontWeight.W600,
+                                fontSize = 13.sp,
+                                fontFamily = fontAppDefault
+                            )
+                        )
+
+                    }
+
+                    Image(
+                        painter = painterResource(if (isChecked) R.drawable.radio_checked else R.drawable.radio_no_check),
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+            // Info bank list
+            DataOrder.userInfo?.data?.banks?.let { banks ->
+                banks.forEachIndexed { index, item ->
+                    Row(
+                        modifier = Modifier.background(colorResource(R.color.background))
+                            .padding(horizontal = 12.dp, vertical = 10.dp).clickableWithoutRipple {
+                            bankSelected = item.getbToken()
+                        },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Spacer(modifier = Modifier.width(16.dp))
+                        ImageFromUrl(item.getbLogo(), modifier = Modifier.size(36.dp))
+                        Column(modifier = Modifier.padding(horizontal = 16.dp).weight(1f)) {
+                            Text(
+                                item.getbFullname(),
+                                style = TextStyle(
+                                    color = colorResource(R.color.black),
+                                    fontWeight = FontWeight.W600,
+                                    fontSize = 12.sp,
+                                    fontFamily = fontAppDefault
+                                )
+                            )
+                            Text(
+                                item.getbAccount(),
+                                style = TextStyle(
+                                    color = colorResource(R.color.titleText),
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 12.sp,
+                                    fontFamily = fontAppDefault
+                                )
+                            )
+                        }
+                        if (DataOrder.selectedItemMethod == Constants.LINK_BANK && bankSelected == item.getbToken()) Icon(
+                            Icons.Rounded.Check,
+                            contentDescription = null,
+                            tint = initColor(),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
             }
         }
@@ -311,9 +441,9 @@ class OrderActivity : ComponentActivity() {
                         if (item.code.equals(Constants.WALLET) && phone != null) "Ví 9Pay: $phone" else item.name,
                         style = TextStyle(fontWeight = FontWeight.W600, fontSize = 13.sp, fontFamily = fontAppDefault)
                     )
-                    DataOrder.userInfo?.let {
-                        if (it.data.balance < parseAmount && item.code.equals(Constants.WALLET)) Text(
-                            "${Utils.formatMoney(it.data.balance)} - Không đủ",
+                    DataOrder.userInfo?.data?.balance?.let {
+                        if (it < parseAmount && item.code.equals(Constants.WALLET)) Text(
+                            "${Utils.formatMoney(it)} - Không đủ",
                             style = TextStyle(
                                 fontWeight = FontWeight.W400,
                                 fontSize = 12.sp,
@@ -321,7 +451,7 @@ class OrderActivity : ComponentActivity() {
                                 color = colorResource(R.color.yellow)
                             )
                         ) else if (item.code.equals(Constants.WALLET)) Text(
-                            "Số dư ${Utils.formatMoney(it.data.balance)}",
+                            "Số dư ${Utils.formatMoney(it)}",
                             style = TextStyle(
                                 fontWeight = FontWeight.W400,
                                 fontSize = 12.sp,
@@ -332,7 +462,7 @@ class OrderActivity : ComponentActivity() {
                     }
                 }
 
-                if (DataOrder.userInfo != null && DataOrder.userInfo!!.data.balance!! < parseAmount && item.code.equals(
+                if (DataOrder.userInfo != null && DataOrder.userInfo!!.data?.balance!! < parseAmount && item.code.equals(
                         Constants.WALLET
                     )
                 ) Box(
@@ -424,7 +554,3 @@ class OrderActivity : ComponentActivity() {
         }
     }
 }
-
-
-
-

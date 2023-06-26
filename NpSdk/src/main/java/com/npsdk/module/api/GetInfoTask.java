@@ -3,17 +3,10 @@ package com.npsdk.module.api;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
-
-import androidx.annotation.Nullable;
 import com.npsdk.jetpack_sdk.DataOrder;
-import com.npsdk.module.model.Bank;
 import com.npsdk.module.model.UserInfoModel;
 import com.npsdk.module.model.UserInfoResponse;
-
-import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -21,7 +14,7 @@ import retrofit2.Response;
 public class GetInfoTask extends AsyncTask<Void, Void, Void> {
     private final OnGetInfoListener callback;
     private final Context context;
-    private String token;
+    private final String token;
 
     public GetInfoTask(Context ct, String token, OnGetInfoListener callback) {
         context = ct;
@@ -37,8 +30,8 @@ public class GetInfoTask extends AsyncTask<Void, Void, Void> {
             call.enqueue(new Callback<UserInfoResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<UserInfoResponse> call, @NonNull Response<UserInfoResponse> response) {
-                    Log.d("Response", "response.code() ==   " +response.code());
-                    if(response.code() != 200) {
+                    Log.d("Response", "response.code() ==   " + response.code());
+                    if (response.code() != 200) {
                         callback.onError(response.code(), response.message());
                         return;
                     }
@@ -49,7 +42,7 @@ public class GetInfoTask extends AsyncTask<Void, Void, Void> {
                             callback.onGetInfoSuccess(data.getData());
                         } else {
                             DataOrder.Companion.setUserInfo(null);
-                            callback.onError(data.getErrorCode(), data.getMessage());
+                            callback.onError(response.code(), data.getMessage());
                         }
                     } else {
                         DataOrder.Companion.setUserInfo(null);
