@@ -26,7 +26,7 @@ public class CreateOrderInterRepo extends BaseApiClient {
                     param.getUrl(), param.getCardNumber().replaceAll(" ", ""),
                     param.getCardName().trim(), param.getExpireMonth(),
                     param.getExpireYear(), param.getCvc(), param.getAmount(),
-                    param.getMethod(), param.isSave());
+                    param.getMethod(), param.getSaveToken());
             enqueue(call, new Callback<CreateOrderCardModel>() {
                 @Override
                 public void onResponse(Call<CreateOrderCardModel> call, Response<CreateOrderCardModel> response) {

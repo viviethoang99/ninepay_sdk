@@ -218,19 +218,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_thanh_toan:
                 //paste url thanh toán vào hàm pay
 
-                NPayLibrary.getInstance().payWithWallet(url, Constants.WALLET);
+                NPayLibrary.getInstance().payWithWallet(url, Constants.WALLET, true);
                 edtUrlPaygate.setText("");
                 break;
             case R.id.btn_thanh_toan2:
-                NPayLibrary.getInstance().payWithWallet(url, Constants.ATM_CARD);
+                NPayLibrary.getInstance().payWithWallet(url, Constants.ATM_CARD, true);
                 edtUrlPaygate.setText("");
                 break;
             case R.id.btn_thanh_toan3:
                 //paste url thanh toán vào hàm pay
-                NPayLibrary.getInstance().payWithWallet(url, Constants.CREDIT_CARD);
+                NPayLibrary.getInstance().payWithWallet(url, Constants.CREDIT_CARD, true);
                 break;
             case R.id.test_click:
-//                NPayLibrary.getInstance().payWithWallet(url, null);
+                NPayLibrary.getInstance().payWithWallet(url, null, true);
 //                NPayLibrary.getInstance().openWallet(url);
 //                String old = Preference.getString(this, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
 //                Preference.save(this, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN, old + "a");
@@ -241,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                Intent i = new Intent(this, TestWebviewActivity.class);
 //                startActivity(i);
 
-                NPayLibrary.getInstance().openWallet("https://stg-sdk.9pay.mobi/v1/cookie");
+//                NPayLibrary.getInstance().openWallet("https://stg-sdk.9pay.mobi/v1/cookie");
                 break;
         }
         edtUrlPaygate.setText("");

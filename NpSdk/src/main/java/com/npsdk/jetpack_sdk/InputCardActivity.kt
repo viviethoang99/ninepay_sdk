@@ -9,17 +9,24 @@ import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -33,6 +40,7 @@ import com.npsdk.jetpack_sdk.repository.*
 import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamsInland
 import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamsInter
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
+import com.npsdk.jetpack_sdk.theme.initColor
 import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.npsdk.module.utils.Constants
@@ -44,6 +52,7 @@ class InputCardActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        DataOrder.isStartScreen = false
         val intent = intent.extras
         if (intent != null) {
             method = intent.getString("method")
@@ -93,7 +102,7 @@ class InputCardActivity : ComponentActivity() {
         val context = LocalContext.current
         val keyboardController = LocalSoftwareKeyboardController.current
         val focusManager = LocalFocusManager.current
-        var isSaveCard = true
+        var isSaveToken = false
 
         LaunchedEffect(true) {
             if (DataOrder.listBankModel == null) {
@@ -146,7 +155,7 @@ class InputCardActivity : ComponentActivity() {
                 }
 
                 item {
-                    SaveCardView(callBack = { isSaveCard = it })
+                    SaveCardView(callBack = { isSaveToken = it })
                 }
 
                 item {
@@ -183,12 +192,12 @@ class InputCardActivity : ComponentActivity() {
                             inputViewModel,
                             context,
                             appViewModel,
-                            isSaveCard
+                            isSaveToken
                         )
 
                         Constants.ATM_CARD -> createOrderInland(
                             inputViewModel, context, appViewModel,
-                            isSaveCard
+                            isSaveToken
                         )
                     }
 
@@ -200,12 +209,65 @@ class InputCardActivity : ComponentActivity() {
     }
 }
 
+@Composable
+fun SaveCardView(callBack: (Boolean) -> Unit) {
+
+    var isChecked by remember {
+        mutableStateOf(false)
+    }
+
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Nut check
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.size(20.dp).clip(RoundedCornerShape(4.dp)).border(
+            width = 1.dp,
+            color = if (isChecked) initColor() else colorResource(R.color.grey),
+            shape = RoundedCornerShape(4.dp)
+        ).background(if (!isChecked) Color.White else initColor()).clickable {
+            if (DataOrder.userInfo != null) {
+                isChecked = !isChecked
+                callBack(isChecked)
+            } else showDialog = true
+        }) {
+            if (isChecked) Icon(
+                Icons.Rounded.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(10.dp)
+            )
+        }
+        Spacer(modifier = Modifier.width(13.dp))
+        // Mo ta nut bam
+        DescriptionSaveCard()
+    }
+
+    if (showDialog) ShowConfirmDialog(
+        onDismiss = {
+            showDialog = false
+        },
+        onLeft = {
+            showDialog = false
+//            isChecked = false
+        }, onRight = {
+            showDialog = false
+            DataOrder.isProgressing = true
+//            isChecked = !isChecked
+//            callBack(isChecked)
+        }, title = "Bạn sẽ được chuyển đến trang đăng nhập",
+        content = "Bạn cần đăng nhập bằng số điện thoại để lưu lại liên kết thẻ. Vui lòng hoàn tất đăng nhập để tiến hành lưu lại liên kết thẻ.",
+        titleLeft = "Bỏ qua",
+        titleRight = "Đăng nhập"
+    )
+}
 
 fun createOrderInternational(
     viewModel: InputViewModel,
     context: Context,
     appViewModel: AppViewModel,
-    saveCard: Boolean
+    saveToken: Boolean
 ) {
 
     val numberCard = viewModel.numberOfCardInter.value
@@ -249,7 +311,7 @@ fun createOrderInternational(
         cvc = viewModel.cvvCardInter.value,
         amount = amount.toString(),
         method = Constants.CREDIT_CARD,
-        isSave = saveCard
+        saveToken = if (saveToken) 1 else 0
     )
 
     appViewModel.showLoading()
@@ -271,7 +333,7 @@ fun createOrderInternational(
 
 fun createOrderInland(
     viewModel: InputViewModel, context: Context, appViewModel: AppViewModel,
-    saveCard: Boolean
+    isSaveToken: Boolean
 ) {
 
     val numberCard = viewModel.numberCardInLand.value
@@ -309,7 +371,7 @@ fun createOrderInland(
         expireYear = year,
         amount = amount.toString(),
         method = Constants.ATM_CARD,
-        isSave = saveCard
+        saveToken = if (isSaveToken) 1 else 0
     )
 
     appViewModel.showLoading()

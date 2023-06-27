@@ -96,8 +96,9 @@ public class NPayLibrary {
     }
 
 
-    public void payWithWallet(String url, @Nullable String type) {
+    public void payWithWallet(String url, @Nullable String type, Boolean isShowResultScreen) {
         DataOrder.Companion.setUrlData(url);
+        DataOrder.Companion.setShowResultScreen(isShowResultScreen);
 
         if (type == null || type.equals(Constants.WALLET)) {
             if (type != null && type.equals(Constants.WALLET)) {

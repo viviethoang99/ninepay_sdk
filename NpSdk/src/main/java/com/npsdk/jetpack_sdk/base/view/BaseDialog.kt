@@ -100,23 +100,30 @@ fun LoadingView() {
 }
 
 @Composable
-fun ShowBackDialog(onBack: () -> Unit = {}, onContinue: () -> Unit = {}) {
+fun ShowConfirmDialog(
+    title: String? = null,
+    content: String? = null,
+    titleLeft: String? = null,
+    titleRight: String? = null,
+    onDismiss: () -> Unit = {},
+    onLeft: () -> Unit = {}, onRight: () -> Unit = {}) {
     Dialog(onDismissRequest = {
-        onContinue()
+        onDismiss()
     }) {
         Column(
             modifier = Modifier.clip(RoundedCornerShape(12.dp)).background(color = Color.White).padding(12.dp)
                 .fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
             androidx.compose.material3.Text(
-                text = "Bạn có chắc chắn muốn quay lại?",
+                text = title?:"Bạn có chắc chắn muốn quay lại?",
                 color = colorResource(R.color.black),
                 fontSize = 14.sp,
+                textAlign = TextAlign.Center,
                 fontFamily = fontAppBold
             )
             Spacer(modifier = Modifier.height(12.dp))
             androidx.compose.material3.Text(
-                text = "Giao dịch thanh toán của bạn sẽ bị hủy nếu bạn thực hiện quay lại.",
+                text = content?: "Giao dịch thanh toán của bạn sẽ bị hủy nếu bạn thực hiện quay lại.",
                 color = colorResource(R.color.titleText),
                 fontSize = 12.sp,
                 lineHeight = 18.sp,
@@ -135,11 +142,11 @@ fun ShowBackDialog(onBack: () -> Unit = {}, onContinue: () -> Unit = {}) {
                         .background(
                             colorResource(R.color.background)
                         ).clickableWithoutRipple{
-                            onBack()
+                            onLeft()
                         }
                 ) {
                     androidx.compose.material3.Text(
-                        "Quay lại",
+                        text = titleLeft?:"Quay lại",
                         textAlign = TextAlign.Center,
                         fontFamily = fontAppBold,
                         fontSize = 12.sp,
@@ -155,11 +162,11 @@ fun ShowBackDialog(onBack: () -> Unit = {}, onContinue: () -> Unit = {}) {
                         .background(
                             initColor()
                         ).clickableWithoutRipple{
-                            onContinue()
+                            onRight()
                         }
                 ) {
                     androidx.compose.material3.Text(
-                        "Không",
+                        text = titleRight?:"Không",
                         textAlign = TextAlign.Center,
                         fontFamily = fontAppBold,
                         fontSize = 12.sp,

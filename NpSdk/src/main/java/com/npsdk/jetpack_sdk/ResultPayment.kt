@@ -36,6 +36,7 @@ import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
 import com.npsdk.jetpack_sdk.theme.fontAppBold
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
 import com.npsdk.jetpack_sdk.theme.initColor
+import com.npsdk.module.NPayLibrary
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
@@ -77,7 +78,7 @@ class ResultPayment : ComponentActivity() {
 
     @Composable
     private fun Body(paddingValues: PaddingValues?) {
-        var ticks by remember { mutableStateOf(7) }
+        var ticks by remember { mutableStateOf(3) }
 
         LaunchedEffect(true) {
             while (ticks > 0) {
@@ -85,6 +86,8 @@ class ResultPayment : ComponentActivity() {
                 ticks--
             }
             if (ticks == 0) {
+                // Done
+                NPayLibrary.getInstance().listener.onPaySuccessful()
                 activity?.finish()
             }
         }

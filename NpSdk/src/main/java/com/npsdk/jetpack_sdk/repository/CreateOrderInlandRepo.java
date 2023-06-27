@@ -25,7 +25,7 @@ public class CreateOrderInlandRepo extends BaseApiClient {
             Call<CreateOrderCardModel> call = apiService.createOrderCardInland(param.getUrl(),
                     param.getCardNumber().replaceAll(" ", ""),
                     param.getCardName().trim(), param.getExpireMonth(), param.getExpireYear(),
-                    param.getAmount(), param.getMethod(), param.isSave());
+                    param.getAmount(), param.getMethod(), param.getSaveToken());
             enqueue(call, new Callback<CreateOrderCardModel>() {
                 @Override
                 public void onResponse(Call<CreateOrderCardModel> call, Response<CreateOrderCardModel> response) {

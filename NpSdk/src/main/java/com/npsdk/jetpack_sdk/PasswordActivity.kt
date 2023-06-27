@@ -183,13 +183,16 @@ class PasswordActivity : ComponentActivity() {
 
                 })
 
-            if (showDialog) ShowBackDialog(onBack = {
+            if (showDialog) ShowConfirmDialog(onLeft = {
                 showDialog = false
                 NPayLibrary.getInstance().listener.onPaymentFailed()
                 finish()
-            }, onContinue = {
+            }, onRight = {
                 showDialog = false
-            })
+            }, onDismiss = {
+                showDialog = false
+            }
+            )
         }
     }
 
@@ -381,12 +384,15 @@ class PasswordActivity : ComponentActivity() {
                                             NPayLibrary.getInstance().listener.onPaymentFailed()
                                             messageError(message)
                                         } else {
-                                            // Done
-                                            NPayLibrary.getInstance().listener.onPaySuccessful()
                                             (context as Activity).finish() // Close screen
                                             DataOrder.activityOrder?.finish()
-                                            // Move to result screen
-                                            context.startActivity(Intent(context, ResultPayment::class.java))
+                                            if (DataOrder.isShowResultScreen) {
+                                                // Move to result screen
+                                                context.startActivity(Intent(context, ResultPayment::class.java))
+                                            } else {
+                                                // Done
+                                                NPayLibrary.getInstance().listener.onPaySuccessful()
+                                            }
                                         }
                                     })
                             }

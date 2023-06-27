@@ -32,7 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.viewinterop.AndroidView
 import com.npsdk.R
-import com.npsdk.jetpack_sdk.base.view.ShowBackDialog
+import com.npsdk.jetpack_sdk.base.view.ShowConfirmDialog
 import com.npsdk.jetpack_sdk.base.view.TopAppBarApp
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
 import com.npsdk.module.NPayLibrary
@@ -129,9 +129,12 @@ class WebviewComposeActivity : ComponentActivity() {
                                     Handler().postDelayed({ finish() }, 1000)
                                     if (status.toInt() == WEBVIEW_STATUS_PROCESSED) {
                                         if (NPayLibrary.getInstance().listener != null) {
-                                            NPayLibrary.getInstance().listener.onPaySuccessful()
-                                            // Move to result screen
-                                            context.startActivity(Intent(context, ResultPayment::class.java))
+                                            if (DataOrder.isShowResultScreen) {
+                                                // Move to result screen
+                                                context.startActivity(Intent(context, ResultPayment::class.java))
+                                            } else {
+                                                NPayLibrary.getInstance().listener.onPaySuccessful()
+                                            }
                                         }
                                     } else {
                                         // Move to error page
@@ -172,14 +175,18 @@ class WebviewComposeActivity : ComponentActivity() {
                 }
             })
 
-            if (showDialog) ShowBackDialog(onBack = {
+            if (showDialog) ShowConfirmDialog(onLeft = {
                 showDialog = false
                 NPayLibrary.getInstance().listener.onPaymentFailed()
                 finish()
-            }, onContinue = {
+            }, onRight = {
                 showDialog = false
-            })
+            }, onDismiss = {
+                showDialog = false
+            }
+            )
         }
+
     }
 
     private fun moveToErrorPage(context: Context, error: String) {

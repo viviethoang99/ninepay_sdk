@@ -26,7 +26,7 @@ public interface ApiService {
             @Field("cvc") String cvc,
             @Field("amount") String amount,
             @Field("method") String method,
-            @Field("isSave") Boolean isSave
+            @Field("save_token") Integer status
     );
 
     @FormUrlEncoded
@@ -39,7 +39,7 @@ public interface ApiService {
              @Field("expire_year") String expireYear,
              @Field("amount") String amount,
              @Field("method") String method,
-             @Field("isSave") Boolean isSave
+             @Field("save_token") Integer status
 
     );
 

@@ -58,6 +58,7 @@ import com.npsdk.module.utils.Preference
 class DataOrder {
     companion object {
         var urlData: String = ""
+        var isShowResultScreen = false
         var dataOrderSaved by mutableStateOf<ValidatePaymentModel?>(null)
         var amount: Any? = null
         var listBankModel: ListBankModel? = null
@@ -68,6 +69,7 @@ class DataOrder {
         var userInfo by mutableStateOf<UserInfoResponse?>(null)
 
         var feeTemp by mutableStateOf<Int?>(null)
+        var bankTokenSelected by mutableStateOf<String?>(null)
         var isProgressing = false
         var isStartScreen = false
     }
@@ -84,6 +86,7 @@ class OrderActivity : ComponentActivity() {
         DataOrder.amount = null
         DataOrder.feeTemp = null
         DataOrder.dataOrderSaved = null
+        DataOrder.bankTokenSelected = null
         DataOrder.selectedItemMethod = null
 
         DataOrder.activityOrder = this
@@ -147,9 +150,11 @@ class OrderActivity : ComponentActivity() {
 
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopStart) {
             LazyColumn(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
-                item { TopAppBarApp(isShowBack = true, onBack = {
-                    finish()
-                }) }
+                item {
+                    TopAppBarApp(isShowBack = true, onBack = {
+                        finish()
+                    })
+                }
                 item {
                     Box(modifier = Modifier.padding(12.dp)) {
                         HeaderOrder(modelOrderData!!)
@@ -215,6 +220,9 @@ class OrderActivity : ComponentActivity() {
                         context.startActivity(intent)
                         return@Footer
                     }
+                    if (DataOrder.selectedItemMethod == Constants.LINK_BANK) {
+                        return@Footer
+                    }
                     val intent = Intent(context, InputCardActivity::class.java)
                     intent.putExtra("method", DataOrder.selectedItemMethod)
                     context.startActivity(intent)
@@ -248,25 +256,27 @@ class OrderActivity : ComponentActivity() {
 
     @Composable
     private fun ShowMethodPayment(list: List<Methods>, onItemClick: (Methods) -> Unit) {
-        val listMethods = remember { mutableStateListOf<Methods>() }
-//        var isLimitItem by remember { mutableStateOf(true) }
-//        val maxItemLimit = 2
-//
-//        var listMethods by remember {
-//            mutableStateOf<ArrayList<Methods>>(ArrayList(data.data.methods))
-//        }
+        val listMethodsAll = remember { mutableStateListOf<Methods>() }
+        var isLimitItem by remember { mutableStateOf(true) }
+        val maxItemLimit = 2
 
-        LaunchedEffect(true) {
-            listMethods.addAll(ArrayList(list))
-//            if (data.data.methods.size > maxItemLimit) {
-//                data.data.methods.forEachIndexed { index, methods ->
-//                    if (index < maxItemLimit) {
-//                        listMethods.add(methods)
-//                    }
-//                }
-//            } else {
-//                listMethods = ArrayList(data.data.methods)
-//            }
+        DisposableEffect(isLimitItem) {
+
+            if (isLimitItem && list.size > maxItemLimit) {
+                listMethodsAll.clear()
+                list.forEachIndexed { index, methods ->
+                    if (index < maxItemLimit) {
+                        listMethodsAll.add(methods)
+                    }
+                }
+            } else {
+                listMethodsAll.clear()
+                listMethodsAll.addAll(ArrayList(list))
+            }
+
+            onDispose {
+                // Các tác vụ dọn dẹp, nếu có
+            }
         }
 
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -283,13 +293,13 @@ class OrderActivity : ComponentActivity() {
                     .padding(vertical = 8.dp)
             ) {
                 // Khong chon method nao.
-                if (methodDefault == null) listMethods.forEachIndexed { index, item ->
+                if (methodDefault == null) listMethodsAll.forEachIndexed { index, item ->
 
                     Column {
                         ItemRow(item, item.code == DataOrder.selectedItemMethod) { ->
                             onItemClick(item)
                         }
-                        if (index != listMethods.size - 1) Divider(
+                        if (index != listMethodsAll.size - 1) Divider(
                             modifier = Modifier.padding(start = 50.dp),
                             color = Color(0XFFF1F3F4)
                         )
@@ -297,7 +307,7 @@ class OrderActivity : ComponentActivity() {
 
                 } else Column {
                     var methodFind: Methods? = null
-                    listMethods.forEach { item ->
+                    listMethodsAll.forEach { item ->
                         if (item.code == methodDefault) {
                             methodFind = item
                             DataOrder.selectedItemMethod = methodFind!!.code
@@ -306,31 +316,27 @@ class OrderActivity : ComponentActivity() {
                     }
                     methodFind?.let { ItemRow(it, true) {} }
                 }
-//                if (methodDefault != Constants.WALLET && DataOrder.userInfo?.data?.banks != null) LinkBank(
-//                    isChecked = DataOrder.selectedItemMethod == Constants.LINK_BANK
-//                )
-//                Text(
-//                    if (isLimitItem) "Xem thêm phương thức khác" else "Đóng lại",
-//                    textAlign = TextAlign.Center,
-//                    modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 12.dp)
-//                        .clickableWithoutRipple {
-//                            isLimitItem = !isLimitItem
-//                        },
-//                    style = TextStyle(
-//                        color = colorResource(R.color.blue),
-//                        fontFamily = fontAppDefault, fontSize = 12.sp, fontWeight = FontWeight.W600
-//                    )
-//                )
+                LinkBank(isChecked = DataOrder.selectedItemMethod == Constants.LINK_BANK)
+                if (methodDefault != Constants.WALLET && DataOrder.userInfo != null) Text(
+                    if (isLimitItem) "Xem thêm phương thức khác" else "Đóng lại",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 12.dp)
+                        .clickableWithoutRipple {
+                            isLimitItem = !isLimitItem
+                        },
+                    style = TextStyle(
+                        color = colorResource(R.color.blue),
+                        fontFamily = fontAppDefault, fontSize = 12.sp, fontWeight = FontWeight.W600
+                    )
+                )
             }
         }
     }
 
     @Composable
     private fun LinkBank(isChecked: Boolean) {
-        var bankSelected by remember {
-            mutableStateOf<String?>(null)
-        }
-        Column {
+
+        if (methodDefault != Constants.WALLET && DataOrder.userInfo?.data?.banks != null) Column {
 
             Row(
                 modifier = Modifier.fillMaxWidth().padding(8.dp).clickableWithoutRipple {
@@ -377,8 +383,8 @@ class OrderActivity : ComponentActivity() {
                     Row(
                         modifier = Modifier.background(colorResource(R.color.background))
                             .padding(horizontal = 12.dp, vertical = 10.dp).clickableWithoutRipple {
-                            bankSelected = item.getbToken()
-                        },
+                                DataOrder.bankTokenSelected = item.getbToken()
+                            },
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
@@ -404,7 +410,7 @@ class OrderActivity : ComponentActivity() {
                                 )
                             )
                         }
-                        if (DataOrder.selectedItemMethod == Constants.LINK_BANK && bankSelected == item.getbToken()) Icon(
+                        if (DataOrder.selectedItemMethod == Constants.LINK_BANK && DataOrder.bankTokenSelected == item.getbToken()) Icon(
                             Icons.Rounded.Check,
                             contentDescription = null,
                             tint = initColor(),
