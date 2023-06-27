@@ -34,6 +34,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.npsdk.R
+import com.npsdk.jetpack_sdk.base.Utils
 import com.npsdk.jetpack_sdk.base.Validator
 import com.npsdk.jetpack_sdk.base.view.*
 import com.npsdk.jetpack_sdk.repository.*
@@ -43,6 +44,8 @@ import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
 import com.npsdk.jetpack_sdk.theme.initColor
 import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
+import com.npsdk.module.NPayLibrary
+import com.npsdk.module.utils.Actions
 import com.npsdk.module.utils.Constants
 
 class InputCardActivity : ComponentActivity() {
@@ -121,6 +124,10 @@ class InputCardActivity : ComponentActivity() {
                     DataOrder.feeTemp = data.data.feeData.atmCard.toInt()
                 }
             })
+
+            if (!Utils.isHavePublicKey().isNullOrBlank()) {
+                NPayLibrary.getInstance().getUserInfoSendToPayment(null)
+            }
         }
 
         if (DataOrder.dataOrderSaved == null) {
@@ -254,6 +261,7 @@ fun SaveCardView(callBack: (Boolean) -> Unit) {
         }, onRight = {
             showDialog = false
             DataOrder.isProgressing = true
+            NPayLibrary.getInstance().openWallet(Actions.LOGIN)
 //            isChecked = !isChecked
 //            callBack(isChecked)
         }, title = "Bạn sẽ được chuyển đến trang đăng nhập",

@@ -38,7 +38,7 @@ public class GetInfoTask extends AsyncTask<Void, Void, Void> {
                     UserInfoResponse data = response.body();
                     if (data != null) {
                         if (data.getErrorCode() == 0) {
-                            DataOrder.Companion.setUserInfo(data);
+                            DataOrder.Companion.setUserInfo(data.getData());
                             callback.onGetInfoSuccess(data.getData());
                         } else {
                             DataOrder.Companion.setUserInfo(null);

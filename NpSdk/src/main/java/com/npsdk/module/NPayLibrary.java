@@ -15,15 +15,12 @@ import com.npsdk.jetpack_sdk.InputCardActivity;
 import com.npsdk.jetpack_sdk.OrderActivity;
 import com.npsdk.module.api.GetInfoTask;
 import com.npsdk.module.api.RefreshTokenTask;
-import com.npsdk.module.model.Bank;
 import com.npsdk.module.model.SdkConfig;
 import com.npsdk.module.model.UserInfoModel;
-import com.npsdk.module.model.UserInfoResponse;
 import com.npsdk.module.utils.*;
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @SuppressLint("StaticFieldLeak")
@@ -137,6 +134,7 @@ public class NPayLibrary {
             @Override
             public void onGetInfoSuccess(UserInfoModel userInfo) {
                 Preference.save(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PHONE, userInfo.getPhone());
+                DataOrder.Companion.setUserInfo(userInfo);
                 if (afterSuccess != null) {
                     afterSuccess.run();
                 }
@@ -171,7 +169,8 @@ public class NPayLibrary {
         GetInfoTask getInfoTask = new GetInfoTask(activity, "Bearer " + token, new GetInfoTask.OnGetInfoListener() {
             @Override
             public void onGetInfoSuccess(UserInfoModel userInfo) {
-                listener.getInfoSuccess(userInfo.getPhone(), userInfo.getBalance().toString(), userInfo.getStatus().toString(),  userInfo.getBanks(), userInfo.getName());
+                DataOrder.Companion.setUserInfo(userInfo);
+                listener.getInfoSuccess(userInfo.getPhone(), userInfo.getBalance().toString(), userInfo.getStatus().toString(), userInfo.getBanks(), userInfo.getName());
             }
 
             @Override

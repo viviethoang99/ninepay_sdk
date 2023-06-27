@@ -49,7 +49,7 @@ import com.npsdk.jetpack_sdk.theme.initColor
 import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.npsdk.module.NPayLibrary
-import com.npsdk.module.model.UserInfoResponse
+import com.npsdk.module.model.UserInfoModel
 import com.npsdk.module.utils.Actions
 import com.npsdk.module.utils.Constants
 import com.npsdk.module.utils.Flavor
@@ -66,7 +66,7 @@ class DataOrder {
         @SuppressLint("StaticFieldLeak")
         var activityOrder: Activity? = null
         var selectedItemMethod by mutableStateOf<String?>(null)
-        var userInfo by mutableStateOf<UserInfoResponse?>(null)
+        var userInfo by mutableStateOf<UserInfoModel?>(null)
 
         var feeTemp by mutableStateOf<Int?>(null)
         var bankTokenSelected by mutableStateOf<String?>(null)
@@ -108,13 +108,6 @@ class OrderActivity : ComponentActivity() {
 
     }
 
-    private fun isHavePublicKey(): String {
-        return Preference.getString(
-            NPayLibrary.getInstance().activity,
-            NPayLibrary.getInstance().sdkConfig.env + Constants.PUBLIC_KEY, ""
-        )
-    }
-
     @Composable
     private fun Body() {
         var modelOrderData by remember { mutableStateOf<ValidatePaymentModel?>(null) }
@@ -136,8 +129,7 @@ class OrderActivity : ComponentActivity() {
                     (DataOrder.dataOrderSaved!!.data.feeData.wallet).toInt()
                 setDefaultAmount()
             })
-
-            if (!isHavePublicKey().isNullOrBlank()) {
+            if (!Utils.isHavePublicKey().isNullOrBlank()) {
                 // Get user info
                 NPayLibrary.getInstance().getUserInfoSendToPayment(null)
             }
@@ -196,7 +188,7 @@ class OrderActivity : ComponentActivity() {
                     if (methodDefault == Constants.WALLET || DataOrder.selectedItemMethod == Constants.WALLET) {
                         if (DataOrder.userInfo == null) {
 
-                            if (isHavePublicKey().isNullOrBlank()) {
+                            if (Utils.isHavePublicKey().isNullOrBlank()) {
                                 isProgressing = true
                                 isStartScreen = false
                                 // Gọi sang webview login
@@ -207,7 +199,7 @@ class OrderActivity : ComponentActivity() {
                             inputViewModel.stringDialog.value = "Đang lấy dữ liệu tài khoản ví!!!"
                             return@Footer
                         }
-                        DataOrder.userInfo?.data?.balance?.let { it1 ->
+                        DataOrder.userInfo?.balance?.let { it1 ->
                             DataOrder.feeTemp?.let { it2 ->
                                 if (it1 < it2) {
                                     showDialogDeposit = true
@@ -260,18 +252,23 @@ class OrderActivity : ComponentActivity() {
         var isLimitItem by remember { mutableStateOf(true) }
         val maxItemLimit = 2
 
-        DisposableEffect(isLimitItem) {
-
-            if (isLimitItem && list.size > maxItemLimit) {
-                listMethodsAll.clear()
-                list.forEachIndexed { index, methods ->
-                    if (index < maxItemLimit) {
-                        listMethodsAll.add(methods)
-                    }
-                }
-            } else {
-                listMethodsAll.clear()
+        DisposableEffect(isLimitItem, DataOrder.userInfo) {
+            listMethodsAll.clear()
+            // Chua login thi khong limit item phuong thuc thanh toan
+            if (DataOrder.userInfo == null || (DataOrder.userInfo?.banks ?: arrayListOf()).isEmpty()) {
                 listMethodsAll.addAll(ArrayList(list))
+            } else {
+                // Neu limit thi loc item limit
+                if (isLimitItem && list.size > maxItemLimit) {
+                    list.forEachIndexed { index, methods ->
+                        if (index < maxItemLimit) {
+                            listMethodsAll.add(methods)
+                        }
+                    }
+                } else {
+                    // Show tat ca neu nhan nut
+                    listMethodsAll.addAll(ArrayList(list))
+                }
             }
 
             onDispose {
@@ -299,13 +296,17 @@ class OrderActivity : ComponentActivity() {
                         ItemRow(item, item.code == DataOrder.selectedItemMethod) { ->
                             onItemClick(item)
                         }
-                        if (index != listMethodsAll.size - 1) Divider(
+                        if (item.code == Constants.LINK_BANK) {
+                            LinkBank()
+                        }
+                        if (item.code != Constants.LINK_BANK && index != listMethodsAll.size - 1) Divider(
                             modifier = Modifier.padding(start = 50.dp),
                             color = Color(0XFFF1F3F4)
                         )
                     }
 
                 } else Column {
+                    // Chon 1 method nhat dinh
                     var methodFind: Methods? = null
                     listMethodsAll.forEach { item ->
                         if (item.code == methodDefault) {
@@ -316,69 +317,36 @@ class OrderActivity : ComponentActivity() {
                     }
                     methodFind?.let { ItemRow(it, true) {} }
                 }
-                LinkBank(isChecked = DataOrder.selectedItemMethod == Constants.LINK_BANK)
-                if (methodDefault != Constants.WALLET && DataOrder.userInfo != null) Text(
-                    if (isLimitItem) "Xem thêm phương thức khác" else "Đóng lại",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 12.dp)
-                        .clickableWithoutRipple {
-                            isLimitItem = !isLimitItem
-                        },
-                    style = TextStyle(
-                        color = colorResource(R.color.blue),
-                        fontFamily = fontAppDefault, fontSize = 12.sp, fontWeight = FontWeight.W600
-                    )
-                )
+                if (methodDefault != Constants.WALLET && (DataOrder.userInfo?.banks ?: arrayListOf()).isNotEmpty())
+                    Column {
+                        Box(
+                            Modifier.padding(horizontal = 12.dp).padding(top = 12.dp).height(1.dp).fillMaxWidth()
+                                .background(Color.Gray, shape = DottedShape(step = 5.dp))
+                        )
+                        Text(
+                            if (isLimitItem) "Xem thêm phương thức khác" else "Đóng lại",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 12.dp)
+                                .clickableWithoutRipple {
+                                    isLimitItem = !isLimitItem
+                                },
+                            style = TextStyle(
+                                color = colorResource(R.color.blue),
+                                fontFamily = fontAppDefault, fontSize = 12.sp, fontWeight = FontWeight.W600
+                            )
+                        )
+                    }
             }
         }
     }
 
     @Composable
-    private fun LinkBank(isChecked: Boolean) {
+    private fun LinkBank() {
 
-        if (methodDefault != Constants.WALLET && DataOrder.userInfo?.data?.banks != null) Column {
+        if (methodDefault != Constants.WALLET && (DataOrder.userInfo?.banks ?: arrayListOf()).isNotEmpty()) Column {
 
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(8.dp).clickableWithoutRipple {
-                    DataOrder.selectedItemMethod = Constants.LINK_BANK
-                }, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painterResource(R.drawable.link_bank),
-                    modifier = Modifier.size(36.dp),
-                    contentDescription = null,
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth().weight(1f).padding(start = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-
-                ) {
-                    val parseAmount: Int =
-                        if (DataOrder.amount is Double) (DataOrder.amount as Double).toInt() else (DataOrder.amount as Int)
-                    val phone = DataOrder.userInfo?.data?.phone
-                    Column {
-                        Text(
-                            "Ngân hàng liên kết",
-                            style = TextStyle(
-                                fontWeight = FontWeight.W600,
-                                fontSize = 13.sp,
-                                fontFamily = fontAppDefault
-                            )
-                        )
-
-                    }
-
-                    Image(
-                        painter = painterResource(if (isChecked) R.drawable.radio_checked else R.drawable.radio_no_check),
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-            }
             // Info bank list
-            DataOrder.userInfo?.data?.banks?.let { banks ->
+            DataOrder.userInfo?.banks?.let { banks ->
                 banks.forEachIndexed { index, item ->
                     Row(
                         modifier = Modifier.background(colorResource(R.color.background))
@@ -426,6 +394,10 @@ class OrderActivity : ComponentActivity() {
     private fun ItemRow(item: Methods, isChecked: Boolean, onItemClick: () -> Unit) {
         val context = LocalContext.current
 
+        if (item.code == Constants.LINK_BANK && (DataOrder.userInfo?.banks ?: arrayListOf()).isEmpty()) {
+            return
+        }
+
         Row(
             modifier = Modifier.fillMaxWidth().padding(8.dp).clickableWithoutRipple {
                 onItemClick()
@@ -443,13 +415,13 @@ class OrderActivity : ComponentActivity() {
             ) {
                 val parseAmount: Int =
                     if (DataOrder.amount is Double) (DataOrder.amount as Double).toInt() else (DataOrder.amount as Int)
-                val phone = DataOrder.userInfo?.data?.phone
+                val phone = DataOrder.userInfo?.phone
                 Column {
                     Text(
                         if (item.code.equals(Constants.WALLET) && phone != null) "Ví 9Pay: $phone" else item.name,
                         style = TextStyle(fontWeight = FontWeight.W600, fontSize = 13.sp, fontFamily = fontAppDefault)
                     )
-                    DataOrder.userInfo?.data?.balance?.let {
+                    DataOrder.userInfo?.balance?.let {
                         if (it < parseAmount && item.code.equals(Constants.WALLET)) Text(
                             "${Utils.formatMoney(it)} - Không đủ",
                             style = TextStyle(
@@ -470,7 +442,7 @@ class OrderActivity : ComponentActivity() {
                     }
                 }
 
-                if (DataOrder.userInfo != null && DataOrder.userInfo!!.data?.balance!! < parseAmount && item.code.equals(
+                if (DataOrder.userInfo != null && DataOrder.userInfo?.balance!! < parseAmount && item.code.equals(
                         Constants.WALLET
                     )
                 ) Box(

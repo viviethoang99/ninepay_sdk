@@ -2,6 +2,7 @@ package com.npsdk.jetpack_sdk.base.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,13 +25,53 @@ fun ShimmerLoading() {
     ) {
         Line(150, isHeader = true)
         Spacer(modifier = Modifier.height(24.dp))
-        Line(40)
+        Line(30)
         Spacer(modifier = Modifier.height(40.dp))
-        Line(40)
+        Row {
+            Circle()
+            Spacer(modifier = Modifier.width(12.dp))
+            Box(modifier = Modifier.weight(1f)) {
+                Line(40)
+            }
+        }
         Spacer(modifier = Modifier.height(6.dp))
-        Line(40)
+        Row {
+            Circle()
+            Spacer(modifier = Modifier.width(12.dp))
+            Box(modifier = Modifier.weight(1f)) {
+                Line(40)
+            }
+        }
         Spacer(modifier = Modifier.height(6.dp))
-        Line(40)
+        Row {
+            Circle()
+            Spacer(modifier = Modifier.width(12.dp))
+            Box(modifier = Modifier.weight(1f)) {
+                Line(40)
+            }
+        }
+    }
+}
+
+
+@Composable
+private fun Circle() {
+    Box(
+        modifier = Modifier
+            .width(40.dp)
+            .clip(shape = RoundedCornerShape(6.dp))
+            .height(40.dp)
+            .shimmer(),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(shape = CircleShape)
+                .height(40.dp)
+                .background(colorResource(id = R.color.grey)),
+            contentAlignment = Alignment.Center
+        ) {}
     }
 }
 

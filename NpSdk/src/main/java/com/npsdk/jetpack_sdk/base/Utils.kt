@@ -1,6 +1,9 @@
 package com.npsdk.jetpack_sdk.base
 
 import android.net.Uri
+import com.npsdk.module.NPayLibrary
+import com.npsdk.module.utils.Constants
+import com.npsdk.module.utils.Preference
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
@@ -43,5 +46,12 @@ object Utils {
         } catch (e: Exception) {
             return ""
         }
+    }
+
+    fun isHavePublicKey(): String {
+        return Preference.getString(
+            NPayLibrary.getInstance().activity,
+            NPayLibrary.getInstance().sdkConfig.env + Constants.PUBLIC_KEY, ""
+        )
     }
 }
