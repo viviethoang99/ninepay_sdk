@@ -31,6 +31,7 @@ import com.rw.keyboardlistener.KeyboardUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URLEncoder;
 import java.util.Map;
 
 public class NPayActivity extends AppCompatActivity {
@@ -166,18 +167,24 @@ public class NPayActivity extends AppCompatActivity {
     private void setCookieRefreshToken() {
         String accessToken = Preference.getString(this, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
         String refreshToken = Preference.getString(this, Flavor.prefKey + Constants.REFRESH_TOKEN, "");
-        if (!accessToken.isEmpty() && !refreshToken.isEmpty()) {
+        String publicKey = Preference.getString(this, Flavor.prefKey + Constants.PUBLIC_KEY, "");
+        publicKey = URLEncoder.encode(publicKey);
+
+        CookieManager cookieManager = CookieManager.getInstance();
+
+        cookieManager.setAcceptCookie(true);
+        cookieManager.setAcceptThirdPartyCookies(webView, true);
+        cookieManager.setAcceptThirdPartyCookies(webView2, true);
+
+        if (!accessToken.isEmpty() && !refreshToken.isEmpty() && !publicKey.isEmpty()) {
             String cookieAcccessToken = "actk=" + accessToken + "; path=/v1";
-            CookieManager.getInstance().setCookie(Flavor.baseUrl.replaceAll("https://", ""), cookieAcccessToken);
-            CookieManager.getInstance().setCookie(Flavor.baseShop.replaceAll("https://", ""), cookieAcccessToken);
+            cookieManager.setCookie(Flavor.baseUrl.replaceAll("https://", ""), cookieAcccessToken);
 
             String cookieRefreshToken = "rtk=" + refreshToken + "; path=/v1";
-            CookieManager.getInstance().setCookie(Flavor.baseUrl.replaceAll("https://", ""), cookieRefreshToken);
-            CookieManager.getInstance().setCookie(Flavor.baseShop.replaceAll("https://", ""), cookieRefreshToken);
+            cookieManager.setCookie(Flavor.baseUrl.replaceAll("https://", ""), cookieRefreshToken);
 
-
-            CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
-            CookieManager.getInstance().setAcceptThirdPartyCookies(webView2, true);
+            String publicKeyString = "pk=" + publicKey + "; path=/v1";
+            cookieManager.setCookie(Flavor.baseUrl.replaceAll("https://", ""), publicKeyString);
         }
     }
 

@@ -17,7 +17,7 @@ object Validator {
         if (showError!!) {
             when {
                 input.isBlank() -> stringError = "Số thẻ không được để trống."
-                input.length < 16 -> stringError = "Số thẻ không hợp lệ. Vui lòng kiểm tra lại."
+                input.length < 15 -> stringError = "Số thẻ không hợp lệ. Vui lòng kiểm tra lại."
             }
         }
 

@@ -56,8 +56,8 @@ fun CardInternational(viewModel: InputViewModel) {
         LineCardLabel()
         MyEdittext("Số thẻ",
             keyboardType = KeyboardType.Number,
-            maxLength = 16,
-            tooltipsText = "Nhập đủ 16 số in nổi trên thẻ",
+            maxLength = 19,
+            tooltipsText = "Nhập đủ các số in nổi trên thẻ",
             errText = viewModel.numberOfCardErrorInter.value,
             visualTransformation = CardNumberMaskCustom(),
             onFocusOut = {

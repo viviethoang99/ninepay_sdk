@@ -36,9 +36,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.npsdk.R
 import com.npsdk.jetpack_sdk.DataOrder.Companion.isProgressing
 import com.npsdk.jetpack_sdk.DataOrder.Companion.isStartScreen
+import com.npsdk.jetpack_sdk.DataOrder.Companion.userInfo
 import com.npsdk.jetpack_sdk.base.Utils
 import com.npsdk.jetpack_sdk.base.view.*
 import com.npsdk.jetpack_sdk.repository.*
+import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamsWallet
 import com.npsdk.jetpack_sdk.repository.model.ListBankModel
 import com.npsdk.jetpack_sdk.repository.model.ValidatePaymentModel
 import com.npsdk.jetpack_sdk.repository.model.validate_payment.Methods
@@ -49,6 +51,7 @@ import com.npsdk.jetpack_sdk.theme.initColor
 import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.npsdk.module.NPayLibrary
+import com.npsdk.module.model.Bank
 import com.npsdk.module.model.UserInfoModel
 import com.npsdk.module.utils.Actions
 import com.npsdk.module.utils.Constants
@@ -69,7 +72,7 @@ class DataOrder {
         var userInfo by mutableStateOf<UserInfoModel?>(null)
 
         var feeTemp by mutableStateOf<Int?>(null)
-        var bankTokenSelected by mutableStateOf<String?>(null)
+        var bankTokenSelected by mutableStateOf<Bank?>(null)
         var isProgressing = false
         var isStartScreen = false
     }
@@ -140,6 +143,13 @@ class OrderActivity : ComponentActivity() {
             return
         }
 
+        if (!Utils.isHavePublicKey().isNullOrBlank()) {
+            if (userInfo == null) {
+                ShimmerLoading()
+                return
+            }
+        }
+
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopStart) {
             LazyColumn(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
                 item {
@@ -170,9 +180,6 @@ class OrderActivity : ComponentActivity() {
                     }
                 }
                 item {
-                    if (appViewModel.isShowLoading) LoadingView()
-                }
-                item {
                     if (showDialogDeposit) ShowDepositDialog(onDismiss = {
                         showDialogDeposit = !showDialogDeposit
                     }, onDeposit = {
@@ -182,11 +189,14 @@ class OrderActivity : ComponentActivity() {
                     })
                 }
             }
+            if (appViewModel.isShowLoading) Box(modifier = Modifier.align(Alignment.Center)) {
+                LoadingView()
+            }
             Footer(modifier = Modifier.align(Alignment.BottomCenter).padding(horizontal = 16.dp),
 
                 clickContinue = { ->
                     if (methodDefault == Constants.WALLET || DataOrder.selectedItemMethod == Constants.WALLET) {
-                        if (DataOrder.userInfo == null) {
+                        if (userInfo == null) {
 
                             if (Utils.isHavePublicKey().isNullOrBlank()) {
                                 isProgressing = true
@@ -199,7 +209,7 @@ class OrderActivity : ComponentActivity() {
                             inputViewModel.stringDialog.value = "Đang lấy dữ liệu tài khoản ví!!!"
                             return@Footer
                         }
-                        DataOrder.userInfo?.balance?.let { it1 ->
+                        userInfo?.balance?.let { it1 ->
                             DataOrder.feeTemp?.let { it2 ->
                                 if (it1 < it2) {
                                     showDialogDeposit = true
@@ -213,6 +223,33 @@ class OrderActivity : ComponentActivity() {
                         return@Footer
                     }
                     if (DataOrder.selectedItemMethod == Constants.LINK_BANK) {
+                        if (DataOrder.bankTokenSelected == null) {
+                            inputViewModel.showNotification.value = true
+                            inputViewModel.stringDialog.value = "Vui lòng chọn ngân hàng liên kết để thanh toán!"
+                            return@Footer
+                        }
+                        val paramsCreateOrder = CreateOrderParamsWallet(
+                            url = DataOrder.urlData, method = Constants.WALLET
+                        )
+                        appViewModel.isShowLoading = true
+                        CreateOrderWalletRepo().create(context, paramsCreateOrder, CallbackCreateOrder {
+                            appViewModel.isShowLoading = false
+                            it.message?.let { it1 ->
+                                if (it.errorCode == 1) {
+                                    NPayLibrary.getInstance().listener.onPaymentFailed()
+                                    appViewModel.hideLoading()
+                                    inputViewModel.showNotification.value = true
+                                    inputViewModel.stringDialog.value = it1
+                                } else if (it.errorCode == 0) {
+                                    val orderId =
+                                        com.npsdk.module.utils.Utils.convertUrlToOrderId(it.data!!.redirectUrl!!)
+                                    val url = generateLinkWeb(orderId)
+
+                                    NPayLibrary.getInstance().openWallet(url)
+                                    finish()
+                                }
+                            }
+                        })
                         return@Footer
                     }
                     val intent = Intent(context, InputCardActivity::class.java)
@@ -222,6 +259,9 @@ class OrderActivity : ComponentActivity() {
         }
     }
 
+    private fun generateLinkWeb(orderId: String): String {
+        return "${Flavor.baseUrl}/v1/mobile-payment?b_type=${DataOrder.bankTokenSelected!!.getbType()}&order_id=$orderId&b_code=${DataOrder.bankTokenSelected!!.getbCode()}&b_token=${DataOrder.bankTokenSelected!!.getbToken()}"
+    }
 
     @Composable
     private fun Footer(modifier: Modifier, clickContinue: () -> Unit) {
@@ -252,10 +292,10 @@ class OrderActivity : ComponentActivity() {
         var isLimitItem by remember { mutableStateOf(true) }
         val maxItemLimit = 2
 
-        DisposableEffect(isLimitItem, DataOrder.userInfo) {
+        DisposableEffect(isLimitItem, userInfo) {
             listMethodsAll.clear()
             // Chua login thi khong limit item phuong thuc thanh toan
-            if (DataOrder.userInfo == null || (DataOrder.userInfo?.banks ?: arrayListOf()).isEmpty()) {
+            if (userInfo == null || (userInfo?.banks ?: arrayListOf()).isEmpty()) {
                 listMethodsAll.addAll(ArrayList(list))
             } else {
                 // Neu limit thi loc item limit
@@ -317,7 +357,7 @@ class OrderActivity : ComponentActivity() {
                     }
                     methodFind?.let { ItemRow(it, true) {} }
                 }
-                if (methodDefault != Constants.WALLET && (DataOrder.userInfo?.banks ?: arrayListOf()).isNotEmpty())
+                if (methodDefault != Constants.WALLET && (userInfo?.banks ?: arrayListOf()).isNotEmpty())
                     Column {
                         Box(
                             Modifier.padding(horizontal = 12.dp).padding(top = 12.dp).height(1.dp).fillMaxWidth()
@@ -343,15 +383,15 @@ class OrderActivity : ComponentActivity() {
     @Composable
     private fun LinkBank() {
 
-        if (methodDefault != Constants.WALLET && (DataOrder.userInfo?.banks ?: arrayListOf()).isNotEmpty()) Column {
+        if (methodDefault != Constants.WALLET && (userInfo?.banks ?: arrayListOf()).isNotEmpty()) Column {
 
             // Info bank list
-            DataOrder.userInfo?.banks?.let { banks ->
+            userInfo?.banks?.let { banks ->
                 banks.forEachIndexed { index, item ->
                     Row(
                         modifier = Modifier.background(colorResource(R.color.background))
                             .padding(horizontal = 12.dp, vertical = 10.dp).clickableWithoutRipple {
-                                DataOrder.bankTokenSelected = item.getbToken()
+                                DataOrder.bankTokenSelected = item
                             },
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
@@ -378,7 +418,7 @@ class OrderActivity : ComponentActivity() {
                                 )
                             )
                         }
-                        if (DataOrder.selectedItemMethod == Constants.LINK_BANK && DataOrder.bankTokenSelected == item.getbToken()) Icon(
+                        if (DataOrder.selectedItemMethod == Constants.LINK_BANK && DataOrder.bankTokenSelected?.getbToken() == item.getbToken()) Icon(
                             Icons.Rounded.Check,
                             contentDescription = null,
                             tint = initColor(),
@@ -394,7 +434,7 @@ class OrderActivity : ComponentActivity() {
     private fun ItemRow(item: Methods, isChecked: Boolean, onItemClick: () -> Unit) {
         val context = LocalContext.current
 
-        if (item.code == Constants.LINK_BANK && (DataOrder.userInfo?.banks ?: arrayListOf()).isEmpty()) {
+        if (item.code == Constants.LINK_BANK && (userInfo?.banks ?: arrayListOf()).isEmpty()) {
             return
         }
 
@@ -415,13 +455,13 @@ class OrderActivity : ComponentActivity() {
             ) {
                 val parseAmount: Int =
                     if (DataOrder.amount is Double) (DataOrder.amount as Double).toInt() else (DataOrder.amount as Int)
-                val phone = DataOrder.userInfo?.phone
+                val phone = userInfo?.phone
                 Column {
                     Text(
                         if (item.code.equals(Constants.WALLET) && phone != null) "Ví 9Pay: $phone" else item.name,
                         style = TextStyle(fontWeight = FontWeight.W600, fontSize = 13.sp, fontFamily = fontAppDefault)
                     )
-                    DataOrder.userInfo?.balance?.let {
+                    userInfo?.balance?.let {
                         if (it < parseAmount && item.code.equals(Constants.WALLET)) Text(
                             "${Utils.formatMoney(it)} - Không đủ",
                             style = TextStyle(
@@ -442,7 +482,7 @@ class OrderActivity : ComponentActivity() {
                     }
                 }
 
-                if (DataOrder.userInfo != null && DataOrder.userInfo?.balance!! < parseAmount && item.code.equals(
+                if (userInfo != null && userInfo?.balance!! < parseAmount && item.code.equals(
                         Constants.WALLET
                     )
                 ) Box(
