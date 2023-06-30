@@ -29,6 +29,10 @@ public class Data {
     @Expose
     private FeeData feeData;
 
+    @SerializedName("amount")
+    @Expose
+    private Integer amount;
+
     public List<PaymentData> getListPaymentData() {
         return listPaymentData;
     }
@@ -68,6 +72,10 @@ public class Data {
 
     public void setFeeData(FeeData feeData) {
         this.feeData = feeData;
+    }
+
+    public Integer getAmount() {
+        return amount;
     }
 
 }

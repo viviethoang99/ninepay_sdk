@@ -51,7 +51,7 @@ private fun BoxCollapse(data: ValidatePaymentModel, onClick: () -> Unit) {
                     ), fontSize = 12.sp, fontFamily = fontAppDefault
                 )
             )
-            DataOrder.feeTemp?.let {
+            DataOrder.totalAmount?.let {
                 Text(
                     text = formatMoney(it),
                     style = TextStyle(
@@ -117,7 +117,7 @@ fun HeaderOrder(data: ValidatePaymentModel) {
                         ), fontSize = 12.sp, fontFamily = fontAppDefault
                     )
                 )
-                DataOrder.feeTemp?.let {
+                DataOrder.totalAmount?.let {
                     Text(
                         text = formatMoney(it),
                         textAlign = TextAlign.Center,
@@ -153,6 +153,39 @@ fun HeaderOrder(data: ValidatePaymentModel) {
 
                         Text(
                             text = if (rowItem.value is Double || rowItem.value is Int) formatMoney(rowItem.value) else rowItem.value.toString(),
+                            modifier = Modifier.weight(1f),
+                            textAlign = TextAlign.End,
+                            style = TextStyle(fontFamily = fontAppBold, fontSize = 12.sp)
+
+                        )
+                    }
+                }
+
+                // Tính phí giao dịch
+                DataOrder.totalAmount?.let {
+
+                    // Phi = Tong cong tru di gia tri don hang
+                    val fee = it - DataOrder.dataOrderSaved!!.data.amount
+
+                    Row(
+                        modifier = Modifier.padding(bottom = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Text(
+                            "Phí giao dịch",
+                            modifier = Modifier.weight(1f),
+                            textAlign = TextAlign.Start,
+                            style = TextStyle(
+                                color = colorResource(id = R.color.titleText),
+                                fontWeight = FontWeight.W400,
+                                fontSize = 12.sp,
+                                fontFamily = fontAppDefault
+                            )
+                        )
+
+                        Text(
+                            text = formatMoney(fee),
                             modifier = Modifier.weight(1f),
                             textAlign = TextAlign.End,
                             style = TextStyle(fontFamily = fontAppBold, fontSize = 12.sp)

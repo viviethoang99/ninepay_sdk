@@ -181,10 +181,10 @@ object Validator {
 //            val y = intArrayOf(99, 1).contains(binLocaleAllow)
 
             if (intArrayOf(99, 1).contains(binLocaleAllow) && listFeeBank.contains(splitPrefix)) {
-                DataOrder.feeTemp = createCard?.inLand?.toInt()
+                DataOrder.totalAmount = createCard?.inLand
                 return true
             } else if (intArrayOf(99, 2).contains(binLocaleAllow)) {
-                DataOrder.feeTemp = createCard?.outLand?.toInt()
+                DataOrder.totalAmount = createCard?.outLand
                 return true
             }
         }

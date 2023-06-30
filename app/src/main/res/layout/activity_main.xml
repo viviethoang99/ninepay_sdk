@@ -445,6 +445,12 @@
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
                             android:text="Thanh toán phương thức CREDIT_CARD"/>
+                    <Button
+                            android:layout_width="wrap_content"
+                            android:id="@+id/btn_thanh_toan4"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:text="Thanh toán tùy chọn"/>
 
                 </LinearLayout>
                 <LinearLayout

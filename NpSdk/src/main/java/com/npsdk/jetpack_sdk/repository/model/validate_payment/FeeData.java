@@ -9,28 +9,28 @@ public class FeeData {
 
     @SerializedName("ATM_CARD")
     @Expose
-    private String atmCard;
+    private Integer atmCard;
     @SerializedName("CREDIT_CARD")
     @Expose
     private List<CreditCard> creditCard;
     @SerializedName("COLLECTION")
     @Expose
-    private String collection;
+    private Integer collection;
     @SerializedName("WALLET")
     @Expose
-    private String wallet;
+    private Integer wallet;
     @SerializedName("QR_PAY")
     @Expose
-    private String qrPay;
+    private Integer qrPay;
     @SerializedName("BUY_NOW_PAY_LATER")
     @Expose
-    private String buyNowPayLater;
+    private Integer buyNowPayLater;
 
-    public String getAtmCard() {
+    public Integer getAtmCard() {
         return atmCard;
     }
 
-    public void setAtmCard(String atmCard) {
+    public void setAtmCard(Integer atmCard) {
         this.atmCard = atmCard;
     }
 
@@ -42,35 +42,35 @@ public class FeeData {
         this.creditCard = creditCard;
     }
 
-    public String getCollection() {
+    public Integer getCollection() {
         return collection;
     }
 
-    public void setCollection(String collection) {
+    public void setCollection(Integer collection) {
         this.collection = collection;
     }
 
-    public String getWallet() {
+    public Integer getWallet() {
         return wallet;
     }
 
-    public void setWallet(String wallet) {
+    public void setWallet(Integer wallet) {
         this.wallet = wallet;
     }
 
-    public String getQrPay() {
+    public Integer getQrPay() {
         return qrPay;
     }
 
-    public void setQrPay(String qrPay) {
+    public void setQrPay(Integer qrPay) {
         this.qrPay = qrPay;
     }
 
-    public String getBuyNowPayLater() {
+    public Integer getBuyNowPayLater() {
         return buyNowPayLater;
     }
 
-    public void setBuyNowPayLater(String buyNowPayLater) {
+    public void setBuyNowPayLater(Integer buyNowPayLater) {
         this.buyNowPayLater = buyNowPayLater;
     }
 

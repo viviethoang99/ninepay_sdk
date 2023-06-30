@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button btnThanhToan = findViewById(R.id.btn_thanh_toan);
         Button btnThanhToan2 = findViewById(R.id.btn_thanh_toan2);
         Button btnThanhToan3 = findViewById(R.id.btn_thanh_toan3);
+        Button btnThanhToan4 = findViewById(R.id.btn_thanh_toan4);
         View btnClose = findViewById(R.id.btnClose);
         txtMoney = findViewById(R.id.txt_money);
         userInfo = findViewById(R.id.txt_name);
@@ -88,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnThanhToan.setOnClickListener(this);
         btnThanhToan2.setOnClickListener(this);
         btnThanhToan3.setOnClickListener(this);
+        btnThanhToan4.setOnClickListener(this);
         testClick.setOnClickListener(this);
         // Create flavor by packagen name test
         String flavorEnv = Flavor.setEnvTest(this);
@@ -229,8 +231,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //paste url thanh toán vào hàm pay
                 NPayLibrary.getInstance().payWithWallet(url, Constants.CREDIT_CARD, true);
                 break;
-            case R.id.test_click:
+            case R.id.btn_thanh_toan4:
+                //paste url thanh toán vào hàm pay
                 NPayLibrary.getInstance().payWithWallet(url, null, true);
+                break;
+            case R.id.test_click:
 //                NPayLibrary.getInstance().openWallet(url);
 //                String old = Preference.getString(this, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
 //                Preference.save(this, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN, old + "a");
@@ -241,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                Intent i = new Intent(this, TestWebviewActivity.class);
 //                startActivity(i);
 
-//                NPayLibrary.getInstance().openWallet("https://stg-sdk.9pay.mobi/v1/cookie");
+                NPayLibrary.getInstance().openWallet("https://stg-sdk.9pay.mobi/v1/cookie");
                 break;
         }
         edtUrlPaygate.setText("");

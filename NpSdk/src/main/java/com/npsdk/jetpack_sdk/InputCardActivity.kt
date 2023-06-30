@@ -118,10 +118,10 @@ class InputCardActivity : ComponentActivity() {
             CheckValidatePayment().check(context, DataOrder.urlData, CallbackOrder { data ->
                 DataOrder.dataOrderSaved = data
                 // Default wallet
-                DataOrder.amount = data!!.data.feeData.wallet.toInt()
+                DataOrder.amount = data!!.data.amount
                 setDefaultAmount()
                 if (method == Constants.ATM_CARD) {
-                    DataOrder.feeTemp = data.data.feeData.atmCard.toInt()
+                    DataOrder.totalAmount = data.data.feeData.atmCard
                 }
             })
 
@@ -308,7 +308,7 @@ fun createOrderInternational(
     val expCardStr = viewModel.expirationDateCardInter.value.split("/")
     val month: String = expCardStr.first()
     val year: String = expCardStr[1]
-    var amount: Any? = DataOrder.feeTemp
+    var amount: Any? = DataOrder.totalAmount
     if (amount is Double) amount = amount.toInt()
     val params = CreateOrderParamsInter(
         url = DataOrder.urlData,
@@ -369,7 +369,7 @@ fun createOrderInland(
     val expCardStr = dateCard.split("/")
     val month: String = expCardStr.first()
     val year: String = expCardStr[1]
-    var amount: Any? = DataOrder.feeTemp
+    var amount: Any? = DataOrder.totalAmount
     if (amount is Double) amount = amount.toInt()
     val params = CreateOrderParamsInland(
         url = DataOrder.urlData,
@@ -401,7 +401,7 @@ fun createOrderInland(
 fun setDefaultAmount() {
     try {
         DataOrder.amount?.let {
-            DataOrder.feeTemp = it.toString().toInt()
+            DataOrder.totalAmount = it.toString().toInt()
         }
 
     } catch (e: Exception) {

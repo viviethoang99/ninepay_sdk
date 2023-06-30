@@ -141,7 +141,7 @@ class ResultPayment : ComponentActivity() {
                                             ), fontSize = 12.sp, fontFamily = fontAppDefault
                                         )
                                     )
-                                    DataOrder.feeTemp?.let {
+                                    DataOrder.totalAmount?.let {
                                         Text(
                                             text = Utils.formatMoney(it),
                                             textAlign = TextAlign.Center,

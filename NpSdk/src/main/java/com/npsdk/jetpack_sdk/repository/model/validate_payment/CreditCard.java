@@ -10,10 +10,10 @@ public class CreditCard {
     private String cardBrand;
     @SerializedName("IN_LAND")
     @Expose
-    private String inLand;
+    private Integer inLand;
     @SerializedName("OUT_LAND")
     @Expose
-    private String outLand;
+    private Integer outLand;
 
     public String getCardBrand() {
         return cardBrand;
@@ -23,19 +23,19 @@ public class CreditCard {
         this.cardBrand = cardBrand;
     }
 
-    public String getInLand() {
+    public Integer getInLand() {
         return inLand;
     }
 
-    public void setInLand(String inLand) {
+    public void setInLand(Integer inLand) {
         this.inLand = inLand;
     }
 
-    public String getOutLand() {
+    public Integer getOutLand() {
         return outLand;
     }
 
-    public void setOutLand(String outLand) {
+    public void setOutLand(Integer outLand) {
         this.outLand = outLand;
     }
 

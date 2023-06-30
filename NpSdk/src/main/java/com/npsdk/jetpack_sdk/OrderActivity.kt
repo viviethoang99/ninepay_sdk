@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.npsdk.R
+import com.npsdk.jetpack_sdk.DataOrder.Companion.bankTokenSelected
 import com.npsdk.jetpack_sdk.DataOrder.Companion.isProgressing
 import com.npsdk.jetpack_sdk.DataOrder.Companion.isStartScreen
 import com.npsdk.jetpack_sdk.DataOrder.Companion.userInfo
@@ -71,7 +72,7 @@ class DataOrder {
         var selectedItemMethod by mutableStateOf<String?>(null)
         var userInfo by mutableStateOf<UserInfoModel?>(null)
 
-        var feeTemp by mutableStateOf<Int?>(null)
+        var totalAmount by mutableStateOf<Int?>(null)
         var bankTokenSelected by mutableStateOf<Bank?>(null)
         var isProgressing = false
         var isStartScreen = false
@@ -87,9 +88,9 @@ class OrderActivity : ComponentActivity() {
         isProgressing = false
         isStartScreen = false
         DataOrder.amount = null
-        DataOrder.feeTemp = null
+        DataOrder.totalAmount = null
         DataOrder.dataOrderSaved = null
-        DataOrder.bankTokenSelected = null
+        bankTokenSelected = null
         DataOrder.selectedItemMethod = null
 
         DataOrder.activityOrder = this
@@ -129,13 +130,30 @@ class OrderActivity : ComponentActivity() {
                 modelOrderData = data
                 DataOrder.dataOrderSaved = data
                 DataOrder.amount =
-                    (DataOrder.dataOrderSaved!!.data.feeData.wallet).toInt()
+                    DataOrder.dataOrderSaved!!.data.amount
                 setDefaultAmount()
             })
             if (!Utils.isHavePublicKey().isNullOrBlank()) {
                 // Get user info
                 NPayLibrary.getInstance().getUserInfoSendToPayment(null)
             }
+        }
+
+        DisposableEffect(DataOrder.dataOrderSaved, userInfo) {
+            if (DataOrder.dataOrderSaved != null) {
+                // Neu mac dinh chon duy nhat vi 9Pay
+                if (methodDefault == Constants.WALLET) {
+                    DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.wallet
+                }
+            }
+            // Chon mac dinh ngan hang lien ket dau tien neu co
+            userInfo?.let {
+                if (methodDefault == null && (it.banks ?: arrayListOf()).isNotEmpty()) {
+                    bankTokenSelected = it.banks.first()
+                }
+            }
+
+            onDispose { }
         }
 
         if (modelOrderData == null) {
@@ -150,6 +168,8 @@ class OrderActivity : ComponentActivity() {
             }
         }
 
+
+
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopStart) {
             LazyColumn(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
                 item {
@@ -157,21 +177,39 @@ class OrderActivity : ComponentActivity() {
                         finish()
                     })
                 }
+                // Card giao dien thong tin don hang
                 item {
                     Box(modifier = Modifier.padding(12.dp)) {
                         HeaderOrder(modelOrderData!!)
                     }
                 }
+
+                // Show tat ca phuong thuc thanh toan
                 item {
                     modelOrderData?.data?.methods?.let {
                         Box(modifier = Modifier.padding(horizontal = 12.dp)) {
                             ShowMethodPayment(it, onItemClick = { itemCallback ->
                                 DataOrder.selectedItemMethod = itemCallback.code
+                                // Tinh phi mac dinh (chưa co phi)
+                                DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.amount
+
+                                // Phi Vi 9Pay
+                                if (DataOrder.selectedItemMethod == Constants.WALLET) {
+                                    DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.wallet
+                                    return@ShowMethodPayment
+                                }
+
+                                // Phi the ATM
+                                if (DataOrder.selectedItemMethod == Constants.ATM_CARD) {
+                                    DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.atmCard
+                                    return@ShowMethodPayment
+                                }
                             })
                         }
                     }
                 }
 
+                // Thong bao tao giao dich (neu co loi xay ra)
                 item {
                     if (inputViewModel.showNotification.value) {
                         DialogNotification(contextString = inputViewModel.stringDialog.value, onDismiss = {
@@ -179,6 +217,8 @@ class OrderActivity : ComponentActivity() {
                         })
                     }
                 }
+
+                // Hien thi dialog nap tien neu khong du tien
                 item {
                     if (showDialogDeposit) ShowDepositDialog(onDismiss = {
                         showDialogDeposit = !showDialogDeposit
@@ -189,6 +229,8 @@ class OrderActivity : ComponentActivity() {
                     })
                 }
             }
+
+            // Loading khi goi API
             if (appViewModel.isShowLoading) Box(modifier = Modifier.align(Alignment.Center)) {
                 LoadingView()
             }
@@ -210,7 +252,7 @@ class OrderActivity : ComponentActivity() {
                             return@Footer
                         }
                         userInfo?.balance?.let { it1 ->
-                            DataOrder.feeTemp?.let { it2 ->
+                            DataOrder.totalAmount?.let { it2 ->
                                 if (it1 < it2) {
                                     showDialogDeposit = true
                                     return@Footer
@@ -223,7 +265,7 @@ class OrderActivity : ComponentActivity() {
                         return@Footer
                     }
                     if (DataOrder.selectedItemMethod == Constants.LINK_BANK) {
-                        if (DataOrder.bankTokenSelected == null) {
+                        if (bankTokenSelected == null) {
                             inputViewModel.showNotification.value = true
                             inputViewModel.stringDialog.value = "Vui lòng chọn ngân hàng liên kết để thanh toán!"
                             return@Footer
@@ -260,7 +302,7 @@ class OrderActivity : ComponentActivity() {
     }
 
     private fun generateLinkWeb(orderId: String): String {
-        return "${Flavor.baseUrl}/v1/mobile-payment?b_type=${DataOrder.bankTokenSelected!!.getbType()}&order_id=$orderId&b_code=${DataOrder.bankTokenSelected!!.getbCode()}&b_token=${DataOrder.bankTokenSelected!!.getbToken()}"
+        return "${Flavor.baseUrl}/v1/mobile-payment?b_type=${bankTokenSelected!!.getbType()}&order_id=$orderId&b_code=${bankTokenSelected!!.getbCode()}&b_token=${bankTokenSelected!!.getbToken()}"
     }
 
     @Composable
@@ -391,7 +433,7 @@ class OrderActivity : ComponentActivity() {
                     Row(
                         modifier = Modifier.background(colorResource(R.color.background))
                             .padding(horizontal = 12.dp, vertical = 10.dp).clickableWithoutRipple {
-                                DataOrder.bankTokenSelected = item
+                                bankTokenSelected = item
                             },
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
@@ -418,7 +460,7 @@ class OrderActivity : ComponentActivity() {
                                 )
                             )
                         }
-                        if (DataOrder.selectedItemMethod == Constants.LINK_BANK && DataOrder.bankTokenSelected?.getbToken() == item.getbToken()) Icon(
+                        if (DataOrder.selectedItemMethod == Constants.LINK_BANK && bankTokenSelected?.getbToken() == item.getbToken()) Icon(
                             Icons.Rounded.Check,
                             contentDescription = null,
                             tint = initColor(),
