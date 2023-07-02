@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.jetpack_sdk.OrderActivity;
+import com.npsdk.jetpack_sdk.ResultPayment;
 import com.npsdk.module.NPayActivity;
 import com.npsdk.module.NPayLibrary;
 import org.json.JSONException;
@@ -153,6 +154,12 @@ public class JsHandler {
                         activity.startActivity(intentEmail);
                     } catch (Exception e) {}
                     break;
+                case result_payment_token:
+                    Intent intentResult = new Intent(activity, ResultPayment.class);
+                    intentResult.putExtra("status", Constants.SUCCESS);
+                    activity.startActivity(intentResult);
+                    System.out.println(paramJson);
+                        break;
                 default:
             }
         } catch (Exception e) {
@@ -252,6 +259,7 @@ public class JsHandler {
         onError, getAllToken, getDeviceID, requestCamera,
         openSchemaApp, showKeyboard, requestGallery,
         backToApp,
-        callbackToApp, send_email
+        callbackToApp, send_email,
+        result_payment_token
     }
 }

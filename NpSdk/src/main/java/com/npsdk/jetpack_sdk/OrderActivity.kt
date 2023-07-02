@@ -170,71 +170,76 @@ class OrderActivity : ComponentActivity() {
 
 
 
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopStart) {
-            LazyColumn(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
-                item {
-                    TopAppBarApp(isShowBack = true, onBack = {
-                        finish()
-                    })
-                }
-                // Card giao dien thong tin don hang
-                item {
-                    Box(modifier = Modifier.padding(12.dp)) {
-                        HeaderOrder(modelOrderData!!)
+        Column {
+            TopAppBarApp(isShowBack = true, onBack = {
+                finish()
+            })
+
+            Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.TopStart) {
+                LazyColumn(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
+                    // Card giao dien thong tin don hang
+                    item {
+                        Box(modifier = Modifier.padding(12.dp)) {
+                            HeaderOrder(modelOrderData!!)
+                        }
                     }
-                }
 
-                // Show tat ca phuong thuc thanh toan
-                item {
-                    modelOrderData?.data?.methods?.let {
-                        Box(modifier = Modifier.padding(horizontal = 12.dp)) {
-                            ShowMethodPayment(it, onItemClick = { itemCallback ->
-                                DataOrder.selectedItemMethod = itemCallback.code
-                                // Tinh phi mac dinh (chưa co phi)
-                                DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.amount
+                    // Show tat ca phuong thuc thanh toan
+                    item {
+                        modelOrderData?.data?.methods?.let {
+                            Box(modifier = Modifier.padding(horizontal = 12.dp)) {
+                                ShowMethodPayment(it, onItemClick = { itemCallback ->
+                                    DataOrder.selectedItemMethod = itemCallback.code
+                                    // Tinh phi mac dinh (chưa co phi)
+                                    DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.amount
 
-                                // Phi Vi 9Pay
-                                if (DataOrder.selectedItemMethod == Constants.WALLET) {
-                                    DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.wallet
-                                    return@ShowMethodPayment
-                                }
+                                    // Phi Vi 9Pay
+                                    if (DataOrder.selectedItemMethod == Constants.WALLET) {
+                                        DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.wallet
+                                        return@ShowMethodPayment
+                                    }
 
-                                // Phi the ATM
-                                if (DataOrder.selectedItemMethod == Constants.ATM_CARD) {
-                                    DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.atmCard
-                                    return@ShowMethodPayment
-                                }
+                                    // Phi the ATM
+                                    if (DataOrder.selectedItemMethod == Constants.ATM_CARD) {
+                                        DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.atmCard
+                                        return@ShowMethodPayment
+                                    }
+                                })
+                            }
+                        }
+                    }
+
+                    item {
+                        Spacer(modifier = Modifier.height(30.dp))
+                    }
+
+                    // Thong bao tao giao dich (neu co loi xay ra)
+                    item {
+                        if (inputViewModel.showNotification.value) {
+                            DialogNotification(contextString = inputViewModel.stringDialog.value, onDismiss = {
+                                inputViewModel.showNotification.value = false
                             })
                         }
                     }
-                }
 
-                // Thong bao tao giao dich (neu co loi xay ra)
-                item {
-                    if (inputViewModel.showNotification.value) {
-                        DialogNotification(contextString = inputViewModel.stringDialog.value, onDismiss = {
-                            inputViewModel.showNotification.value = false
+                    // Hien thi dialog nap tien neu khong du tien
+                    item {
+                        if (showDialogDeposit) ShowDepositDialog(onDismiss = {
+                            showDialogDeposit = !showDialogDeposit
+                        }, onDeposit = {
+                            isProgressing = true
+                            val phone = Preference.getString(context, Flavor.prefKey + Constants.PHONE, "")
+                            NPayLibrary.getInstance().openWallet(Actions.deposit(phone, null))
                         })
                     }
                 }
 
-                // Hien thi dialog nap tien neu khong du tien
-                item {
-                    if (showDialogDeposit) ShowDepositDialog(onDismiss = {
-                        showDialogDeposit = !showDialogDeposit
-                    }, onDeposit = {
-                        isProgressing = true
-                        val phone = Preference.getString(context, Flavor.prefKey + Constants.PHONE, "")
-                        NPayLibrary.getInstance().openWallet(Actions.deposit(phone, null))
-                    })
+                // Loading khi goi API
+                if (appViewModel.isShowLoading) Box(modifier = Modifier.align(Alignment.Center)) {
+                    LoadingView()
                 }
             }
-
-            // Loading khi goi API
-            if (appViewModel.isShowLoading) Box(modifier = Modifier.align(Alignment.Center)) {
-                LoadingView()
-            }
-            Footer(modifier = Modifier.align(Alignment.BottomCenter).padding(horizontal = 16.dp),
+            Footer(modifier = Modifier.padding(horizontal = 16.dp),
 
                 clickContinue = { ->
                     if (methodDefault == Constants.WALLET || DataOrder.selectedItemMethod == Constants.WALLET) {

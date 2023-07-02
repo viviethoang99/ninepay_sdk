@@ -31,23 +31,31 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.npsdk.R
-import com.npsdk.jetpack_sdk.base.Utils
+import com.npsdk.jetpack_sdk.base.Utils.formatMoney
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
 import com.npsdk.jetpack_sdk.theme.fontAppBold
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
 import com.npsdk.jetpack_sdk.theme.initColor
 import com.npsdk.module.NPayLibrary
+import com.npsdk.module.utils.Constants
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
 class ResultPayment : ComponentActivity() {
 
     var activity: Activity? = null
+    var status: String? = null
+    var message: String? = null
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity = this
+        val bundle = intent.extras
+        if (bundle != null) {
+            status = bundle.getString("status")
+            message = bundle.getString("message")
+        }
         val callback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
 
@@ -76,9 +84,16 @@ class ResultPayment : ComponentActivity() {
         }
     }
 
+    private fun isPaymentSuccess(): Boolean {
+        status?.let {
+            return it.lowercase().contains(Constants.SUCCESS.lowercase())
+        }
+        return false
+    }
+
     @Composable
     private fun Body(paddingValues: PaddingValues?) {
-        var ticks by remember { mutableStateOf(3) }
+        var ticks by remember { mutableStateOf(4) }
 
         LaunchedEffect(true) {
             while (ticks > 0) {
@@ -86,8 +101,13 @@ class ResultPayment : ComponentActivity() {
                 ticks--
             }
             if (ticks == 0) {
-                // Done
-                NPayLibrary.getInstance().listener.onPaySuccessful()
+                if (isPaymentSuccess()) {
+                    // Done
+                    NPayLibrary.getInstance().listener.onPaySuccessful()
+                } else {
+                    NPayLibrary.getInstance().listener.onPaymentFailed()
+                }
+
                 activity?.finish()
             }
         }
@@ -128,7 +148,7 @@ class ResultPayment : ComponentActivity() {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Image(
                                         modifier = Modifier.size(52.dp),
-                                        painter = painterResource(R.drawable.success),
+                                        painter = painterResource(if (isPaymentSuccess()) R.drawable.success else R.drawable.failed),
                                         contentDescription = null
                                     )
                                     Text(
@@ -141,9 +161,21 @@ class ResultPayment : ComponentActivity() {
                                             ), fontSize = 12.sp, fontFamily = fontAppDefault
                                         )
                                     )
-                                    DataOrder.totalAmount?.let {
+                                    message?.let { value ->
                                         Text(
-                                            text = Utils.formatMoney(it),
+                                            modifier = Modifier.padding(vertical = 4.dp),
+                                            text = value,
+                                            textAlign = TextAlign.Center,
+                                            style = TextStyle(
+                                                fontWeight = FontWeight.W400, color = colorResource(
+                                                    id = R.color.titleText
+                                                ), fontSize = 12.sp, fontFamily = fontAppDefault
+                                            )
+                                        )
+                                    }
+                                    DataOrder.totalAmount?.let { total ->
+                                        Text(
+                                            text = formatMoney(total),
                                             textAlign = TextAlign.Center,
                                             style = TextStyle(
                                                 fontWeight = FontWeight.W600, fontSize = 18.sp, fontFamily = fontAppBold
@@ -175,9 +207,35 @@ class ResultPayment : ComponentActivity() {
                                             )
 
                                             Text(
-                                                text = if (rowItem.value is Double || rowItem.value is Int) Utils.formatMoney(
+                                                text = if (rowItem.value is Double || rowItem.value is Int) formatMoney(
                                                     rowItem.value
                                                 ) else rowItem.value.toString(),
+                                                modifier = Modifier.weight(1f),
+                                                textAlign = TextAlign.End,
+                                                style = TextStyle(fontFamily = fontAppBold, fontSize = 12.sp)
+
+                                            )
+                                        }
+                                    }
+
+                                    DataOrder.totalAmount?.let { total ->
+                                        // Phi = Tong cong tru di gia tri don hang
+                                        val fee = total - DataOrder.dataOrderSaved!!.data.amount
+                                        Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                                            Text(
+                                                "Phí giao dịch",
+                                                modifier = Modifier.weight(1f),
+                                                textAlign = TextAlign.Start,
+                                                style = TextStyle(
+                                                    color = colorResource(id = R.color.titleText),
+                                                    fontWeight = FontWeight.W400,
+                                                    fontSize = 12.sp,
+                                                    fontFamily = fontAppDefault
+                                                )
+                                            )
+
+                                            Text(
+                                                text = formatMoney(fee),
                                                 modifier = Modifier.weight(1f),
                                                 textAlign = TextAlign.End,
                                                 style = TextStyle(fontFamily = fontAppBold, fontSize = 12.sp)

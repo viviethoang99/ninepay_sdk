@@ -36,6 +36,7 @@ import com.npsdk.jetpack_sdk.base.view.ShowConfirmDialog
 import com.npsdk.jetpack_sdk.base.view.TopAppBarApp
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
 import com.npsdk.module.NPayLibrary
+import com.npsdk.module.utils.Constants
 import java.net.URLDecoder
 import java.util.regex.Pattern
 
@@ -131,7 +132,9 @@ class WebviewComposeActivity : ComponentActivity() {
                                         if (NPayLibrary.getInstance().listener != null) {
                                             if (DataOrder.isShowResultScreen) {
                                                 // Move to result screen
-                                                context.startActivity(Intent(context, ResultPayment::class.java))
+                                                val intent = Intent(context, ResultPayment::class.java)
+                                                intent.putExtra("status", Constants.SUCCESS)
+                                                context.startActivity(intent)
                                             } else {
                                                 NPayLibrary.getInstance().listener.onPaySuccessful()
                                             }
@@ -145,7 +148,6 @@ class WebviewComposeActivity : ComponentActivity() {
                             }
 
                             if (url.contains("error/payment")) {
-                                NPayLibrary.getInstance().listener.onPaymentFailed()
                                 finish()
                                 moveToErrorPage(view!!.context, "Payment failed")
                                 return false
@@ -190,10 +192,15 @@ class WebviewComposeActivity : ComponentActivity() {
     }
 
     private fun moveToErrorPage(context: Context, error: String) {
-        // Move to error page
-        val intent = Intent(context, ErrorPaymentActivity::class.java)
-        intent.putExtra("message", decodeMessage(error))
-        startActivity(intent)
+        if (DataOrder.isShowResultScreen) {
+            // Move to error page
+            val intent = Intent(context, ResultPayment::class.java)
+            intent.putExtra("status", Constants.FAIL)
+            intent.putExtra("message", decodeMessage(error))
+            startActivity(intent)
+        } else {
+            NPayLibrary.getInstance().listener.onPaymentFailed()
+        }
     }
 
     private fun decodeMessage(encodedMessage: String): String? {
