@@ -212,24 +212,25 @@ class OrderActivity : ComponentActivity() {
                     item {
                         Spacer(modifier = Modifier.height(30.dp))
                     }
+                }
 
-                    // Thong bao tao giao dich (neu co loi xay ra)
-                    item {
-                        if (inputViewModel.showNotification.value) {
-                            DialogNotification(contextString = inputViewModel.stringDialog.value, onDismiss = {
-                                inputViewModel.showNotification.value = false
-                            })
-                        }
-                    }
 
-                    // Hien thi dialog nap tien neu khong du tien
-                    item {
-                        if (showDialogDeposit) ShowDepositDialog(onDismiss = {
-                            showDialogDeposit = !showDialogDeposit
-                        }, onDeposit = {
-                            isProgressing = true
-                            val phone = Preference.getString(context, Flavor.prefKey + Constants.PHONE, "")
-                            NPayLibrary.getInstance().openWallet(Actions.deposit(phone, null))
+                // Hien thi dialog nap tien neu khong du tien
+                if (showDialogDeposit) Box(modifier = Modifier.align(Alignment.Center)) {
+                    ShowDepositDialog(onDismiss = {
+                        showDialogDeposit = !showDialogDeposit
+                    }, onDeposit = {
+                        isProgressing = true
+                        val phone = Preference.getString(context, Flavor.prefKey + Constants.PHONE, "")
+                        NPayLibrary.getInstance().openWallet(Actions.deposit(phone, null))
+                    })
+                }
+
+                // Thong bao tao giao dich (neu co loi xay ra)
+                if (inputViewModel.showNotification.value) {
+                    Box(modifier = Modifier.align(Alignment.Center)) {
+                        DialogNotification(contextString = inputViewModel.stringDialog.value, onDismiss = {
+                            inputViewModel.showNotification.value = false
                         })
                     }
                 }
