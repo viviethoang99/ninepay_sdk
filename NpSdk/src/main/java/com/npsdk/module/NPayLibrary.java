@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
+import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.android.material.snackbar.Snackbar;
@@ -13,6 +14,7 @@ import com.npsdk.LibListener;
 import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.jetpack_sdk.InputCardActivity;
 import com.npsdk.jetpack_sdk.OrderActivity;
+import com.npsdk.jetpack_sdk.repository.GetInfoMerchant;
 import com.npsdk.module.api.GetInfoTask;
 import com.npsdk.module.api.RefreshTokenTask;
 import com.npsdk.module.model.SdkConfig;
@@ -67,6 +69,7 @@ public class NPayLibrary {
         this.sdkConfig = sdkConfig;
         this.listener = listener;
         flavor.configFlavor(sdkConfig.getEnv());
+        new GetInfoMerchant().get();
     }
 
     public void openWallet(String actions) {
@@ -94,6 +97,10 @@ public class NPayLibrary {
 
 
     public void payWithWallet(String url, @Nullable String type, Boolean isShowResultScreen) {
+        if (url == null || url.trim().isEmpty()) {
+            Toast.makeText(activity, "Vui lòng nhập URL thanh toán!", Toast.LENGTH_SHORT).show();
+            return;
+        }
         DataOrder.Companion.setUrlData(url);
         DataOrder.Companion.setShowResultScreen(isShowResultScreen);
 

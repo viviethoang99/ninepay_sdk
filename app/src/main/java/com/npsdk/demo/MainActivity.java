@@ -93,7 +93,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         testClick.setOnClickListener(this);
         // Create flavor by packagen name test
         String flavorEnv = Flavor.setEnvTest(this);
-        SdkConfig sdkConfig = new SdkConfig.Builder(this).merchantCode("sdk_test").uid(null).env(flavorEnv).brandColor("15AE62").build();
+        Bundle bundle = getIntent().getExtras();
+        String mcCode = ""; // sdk_test
+        String colorCode = ""; // 15AE62
+        if (bundle != null) {
+            colorCode = bundle.getString("color_code");
+            mcCode = bundle.getString("merchant_code");
+        }
+        SdkConfig sdkConfig = new SdkConfig.Builder(this).merchantCode(mcCode).uid(null).env(flavorEnv).brandColor(colorCode).build();
         initSdk(sdkConfig);
     }
 
@@ -144,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         String url = edtUrlPaygate.getText().toString();
         if (url.isEmpty())
-            url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODgxODAwMjYsImludm9pY2Vfbm8iOiJzdHpWMlc2eSIsImFtb3VudCI6MTAwMDAwLCJkZXNjcmlwdGlvbiI6Ik11YSBoYW5nIDlQYXkiLCJyZXR1cm5fdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJiYWNrX3VybCI6Imh0dHA6Ly9mY2RjYzQ3NjdhY2Iubmdyb2suaW8vIiwibWV0aG9kIjoiOVBBWSIsImlzX2N1c3RvbWVyX3BheV9mZWUiOjF9&signature=u6n4sMgN5ji9%2BLpdOr3V6MYbUKdMPmaVdbNjuU7IyeE%3D";
+            url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODgzNTU3MzcsImludm9pY2Vfbm8iOiJ5cVVBSkpPOSIsImFtb3VudCI6MTAwMDAwLCJkZXNjcmlwdGlvbiI6Ik11YSBoYW5nIDlQYXkiLCJyZXR1cm5fdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJiYWNrX3VybCI6Imh0dHA6Ly9mY2RjYzQ3NjdhY2Iubmdyb2suaW8vIiwibWV0aG9kIjoiOVBBWSIsImlzX2N1c3RvbWVyX3BheV9mZWUiOjF9&signature=c2N6sc%2BsZyl3BDv5VIXaUFEZWvUcnEd0GgLdou2CvZM%3D";
         switch (v.getId()) {
             case R.id.ll_quet_ma:
                 Log.d(TAG, "onClick: ll_rut_tien");
@@ -246,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                Intent i = new Intent(this, TestWebviewActivity.class);
 //                startActivity(i);
 
-                NPayLibrary.getInstance().openWallet("https://stg-sdk.9pay.mobi/v1/cookie");
+//                NPayLibrary.getInstance().openWallet("https://stg-sdk.9pay.mobi/v1/cookie");
                 break;
         }
         edtUrlPaygate.setText("");

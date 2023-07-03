@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        tools:context=".SetupActivity">
+
+    <TextView
+            android:text="Mã màu"
+            android:textColor="@color/black"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+    />
+    <EditText
+            android:id="@+id/colorCode"
+            android:text="15AE62"
+            android:textColor="@color/black"
+            android:hint="Hex code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    <TextView
+            android:layout_marginTop="16dp"
+            android:textColor="@color/black"
+            android:text="Merchant code"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+    />
+    <EditText
+            android:id="@+id/merchantCode"
+            android:text="livwell"
+            android:textColor="@color/black"
+            android:hint="Merchant code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    <Button
+            android:id="@+id/btn_open_sdk"
+            android:text="Go to SDK"
+            android:textColor="@color/white"
+            android:layout_marginTop="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+</LinearLayout>

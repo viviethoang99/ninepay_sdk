@@ -86,4 +86,5 @@ dependencies {
     implementation project(path: ':NpSdk')
     implementation 'androidx.webkit:webkit:1.6.0'
     implementation 'commons-codec:commons-codec:1.15'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
 }

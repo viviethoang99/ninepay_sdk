@@ -168,7 +168,7 @@ public class NPayActivity extends AppCompatActivity {
         String accessToken = Preference.getString(this, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
         String refreshToken = Preference.getString(this, Flavor.prefKey + Constants.REFRESH_TOKEN, "");
         String publicKey = Preference.getString(this, Flavor.prefKey + Constants.PUBLIC_KEY, "");
-        publicKey = URLEncoder.encode(publicKey);
+        publicKey = (URLEncoder.encode(publicKey)).replace("++++", "");
 
         CookieManager cookieManager = CookieManager.getInstance();
 

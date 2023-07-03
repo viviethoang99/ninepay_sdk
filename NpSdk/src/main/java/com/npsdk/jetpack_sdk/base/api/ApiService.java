@@ -2,6 +2,7 @@ package com.npsdk.jetpack_sdk.base.api;
 
 import com.npsdk.jetpack_sdk.repository.model.CreateOrderCardModel;
 import com.npsdk.jetpack_sdk.repository.model.ListBankModel;
+import com.npsdk.jetpack_sdk.repository.model.MerchantModel;
 import com.npsdk.jetpack_sdk.repository.model.ValidatePaymentModel;
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -62,4 +63,7 @@ public interface ApiService {
     @FormUrlEncoded
     @POST("/sdk/v1/reset-password/check-info")
     Call<String> verifyPassword(@Field("password") String password);
+
+    @GET("/sdk/v1/func/list")
+    Call<MerchantModel> getMerchant();
 }

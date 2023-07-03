@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -43,6 +44,7 @@ import com.npsdk.jetpack_sdk.base.view.*
 import com.npsdk.jetpack_sdk.repository.*
 import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamsWallet
 import com.npsdk.jetpack_sdk.repository.model.ListBankModel
+import com.npsdk.jetpack_sdk.repository.model.MerchantInfo
 import com.npsdk.jetpack_sdk.repository.model.ValidatePaymentModel
 import com.npsdk.jetpack_sdk.repository.model.validate_payment.Methods
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
@@ -71,6 +73,7 @@ class DataOrder {
         var activityOrder: Activity? = null
         var selectedItemMethod by mutableStateOf<String?>(null)
         var userInfo by mutableStateOf<UserInfoModel?>(null)
+        var merchantInfo: MerchantInfo? = null
 
         var totalAmount by mutableStateOf<Int?>(null)
         var bankTokenSelected by mutableStateOf<Bank?>(null)
@@ -478,6 +481,13 @@ class OrderActivity : ComponentActivity() {
         }
     }
 
+    private fun getNameMerchant(): String {
+        DataOrder.merchantInfo?.let {
+            return (it?.merchantName) ?: "Ví điện tử 9Pay"
+        }
+        return "Ví điện tử 9Pay"
+    }
+
     @Composable
     private fun ItemRow(item: Methods, isChecked: Boolean, onItemClick: () -> Unit) {
         val context = LocalContext.current
@@ -505,10 +515,25 @@ class OrderActivity : ComponentActivity() {
                     if (DataOrder.amount is Double) (DataOrder.amount as Double).toInt() else (DataOrder.amount as Int)
                 val phone = userInfo?.phone
                 Column {
-                    Text(
-                        if (item.code.equals(Constants.WALLET) && phone != null) "Ví 9Pay: $phone" else item.name,
+                    if (item.code.equals(Constants.WALLET) && phone == null) Text(
+                        getNameMerchant(),
                         style = TextStyle(fontWeight = FontWeight.W600, fontSize = 13.sp, fontFamily = fontAppDefault)
                     )
+
+                    if (item.code.equals(Constants.WALLET) && phone != null) Text(
+                        "${getNameMerchant()}: $phone",
+                        style = TextStyle(fontWeight = FontWeight.W600, fontSize = 13.sp, fontFamily = fontAppDefault)
+                    )
+
+                    if (!item.code.equals(Constants.WALLET))
+                        Text(
+                            item.name,
+                            style = TextStyle(
+                                fontWeight = FontWeight.W600,
+                                fontSize = 13.sp,
+                                fontFamily = fontAppDefault
+                            )
+                        )
                     userInfo?.balance?.let {
                         if (it < parseAmount && item.code.equals(Constants.WALLET)) Text(
                             "${Utils.formatMoney(it)} - Không đủ",
@@ -555,7 +580,8 @@ class OrderActivity : ComponentActivity() {
                     Image(
                         painter = painterResource(if (isChecked) R.drawable.radio_checked else R.drawable.radio_no_check),
                         contentDescription = null,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(20.dp),
+                        colorFilter = ColorFilter.tint(color = if (isChecked) initColor() else colorResource(R.color.grey))
                     )
             }
         }
