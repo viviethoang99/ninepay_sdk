@@ -329,6 +329,7 @@ fun createOrderInternational(
             if (it.errorCode == 1) {
                 viewModel.showNotification.value = true
                 viewModel.stringDialog.value = it1
+                NPayLibrary.getInstance().listener.onPaymentFailed()
             } else if (it.errorCode == 0) {
                 (context as Activity).finish() // Close input card
                 openWebviewOTP(context, it.data!!.redirectUrl!!)
@@ -389,6 +390,7 @@ fun createOrderInland(
             if (it.errorCode == 1) {
                 viewModel.showNotification.value = true
                 viewModel.stringDialog.value = it1
+                NPayLibrary.getInstance().listener.onPaymentFailed()
             } else if (it.errorCode == 0) {
                 (context as Activity).finish() // Close input card
                 openWebviewOTP(context, it.data!!.redirectUrl!!)
