@@ -388,7 +388,9 @@ class PasswordActivity : ComponentActivity() {
                                             DataOrder.activityOrder?.finish()
                                             if (DataOrder.isShowResultScreen) {
                                                 // Move to result screen
-                                                context.startActivity(Intent(context, ResultPayment::class.java))
+                                                val intent = Intent(context, ResultPayment::class.java)
+                                                intent.putExtra("status", Constants.SUCCESS)
+                                                context.startActivity(intent)
                                             } else {
                                                 // Done
                                                 NPayLibrary.getInstance().listener.onPaySuccessful()

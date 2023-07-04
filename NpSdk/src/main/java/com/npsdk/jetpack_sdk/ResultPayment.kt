@@ -31,7 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.npsdk.R
-import com.npsdk.jetpack_sdk.base.Utils.formatMoney
+import com.npsdk.jetpack_sdk.base.AppUtils.formatMoney
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
 import com.npsdk.jetpack_sdk.theme.fontAppBold
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
@@ -168,7 +168,7 @@ class ResultPayment : ComponentActivity() {
                                             textAlign = TextAlign.Center,
                                             style = TextStyle(
                                                 fontWeight = FontWeight.W400, color = colorResource(
-                                                    id = R.color.titleText
+                                                    id = if (isPaymentSuccess()) R.color.titleText else R.color.red
                                                 ), fontSize = 12.sp, fontFamily = fontAppDefault
                                             )
                                         )

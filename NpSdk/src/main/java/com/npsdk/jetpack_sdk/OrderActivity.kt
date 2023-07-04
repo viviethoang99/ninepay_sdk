@@ -39,7 +39,7 @@ import com.npsdk.jetpack_sdk.DataOrder.Companion.bankTokenSelected
 import com.npsdk.jetpack_sdk.DataOrder.Companion.isProgressing
 import com.npsdk.jetpack_sdk.DataOrder.Companion.isStartScreen
 import com.npsdk.jetpack_sdk.DataOrder.Companion.userInfo
-import com.npsdk.jetpack_sdk.base.Utils
+import com.npsdk.jetpack_sdk.base.AppUtils
 import com.npsdk.jetpack_sdk.base.view.*
 import com.npsdk.jetpack_sdk.repository.*
 import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamsWallet
@@ -136,7 +136,7 @@ class OrderActivity : ComponentActivity() {
                     DataOrder.dataOrderSaved!!.data.amount
                 setDefaultAmount()
             })
-            if (!Utils.isHavePublicKey().isNullOrBlank()) {
+            if (!AppUtils.isHavePublicKey().isNullOrBlank()) {
                 // Get user info
                 NPayLibrary.getInstance().getUserInfoSendToPayment(null)
             }
@@ -164,7 +164,7 @@ class OrderActivity : ComponentActivity() {
             return
         }
 
-        if (!Utils.isHavePublicKey().isNullOrBlank()) {
+        if (!AppUtils.isHavePublicKey().isNullOrBlank()) {
             if (userInfo == null) {
                 ShimmerLoading()
                 return
@@ -249,7 +249,7 @@ class OrderActivity : ComponentActivity() {
                     if (methodDefault == Constants.WALLET || DataOrder.selectedItemMethod == Constants.WALLET) {
                         if (userInfo == null) {
 
-                            if (Utils.isHavePublicKey().isNullOrBlank()) {
+                            if (AppUtils.isHavePublicKey().isNullOrBlank()) {
                                 isProgressing = true
                                 isStartScreen = false
                                 // Gọi sang webview login
@@ -483,7 +483,7 @@ class OrderActivity : ComponentActivity() {
 
     private fun getNameMerchant(): String {
         DataOrder.merchantInfo?.let {
-            return (it?.merchantName) ?: "Ví điện tử 9Pay"
+            return (it.merchantName) ?: "Ví điện tử 9Pay"
         }
         return "Ví điện tử 9Pay"
     }
@@ -501,7 +501,11 @@ class OrderActivity : ComponentActivity() {
                 onItemClick()
             }, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
         ) {
-            ImageFromUrl(
+            // Image method
+            // Neu la vi thi thay the sang logo thuong hieu rieng merchant. Khong thi mac dinh
+            if (!(DataOrder.merchantInfo?.logo.isNullOrBlank()) && item.code.contains(Constants.WALLET)) ImageFromUrl(
+                DataOrder.merchantInfo!!.logo!!, modifier = Modifier.width(36.dp).height(36.dp)
+            ) else ImageFromUrl(
                 item.icon, modifier = Modifier.width(36.dp).height(36.dp)
             )
 
@@ -536,7 +540,7 @@ class OrderActivity : ComponentActivity() {
                         )
                     userInfo?.balance?.let {
                         if (it < parseAmount && item.code.equals(Constants.WALLET)) Text(
-                            "${Utils.formatMoney(it)} - Không đủ",
+                            "${AppUtils.formatMoney(it)} - Không đủ",
                             style = TextStyle(
                                 fontWeight = FontWeight.W400,
                                 fontSize = 12.sp,
@@ -544,7 +548,7 @@ class OrderActivity : ComponentActivity() {
                                 color = colorResource(R.color.yellow)
                             )
                         ) else if (item.code.equals(Constants.WALLET)) Text(
-                            "Số dư ${Utils.formatMoney(it)}",
+                            "Số dư ${AppUtils.formatMoney(it)}",
                             style = TextStyle(
                                 fontWeight = FontWeight.W400,
                                 fontSize = 12.sp,

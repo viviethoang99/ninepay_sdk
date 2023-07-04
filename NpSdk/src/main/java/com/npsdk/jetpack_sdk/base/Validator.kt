@@ -107,7 +107,7 @@ object Validator {
 
         }
 
-        val (monthCurrent, yearCurrent) = Utils.getMonthYearCurrent()
+        val (monthCurrent, yearCurrent) = AppUtils.getMonthYearCurrent()
         year?.let {
             if (isEffectiveCard) {
                 // Hieu luc
@@ -132,7 +132,7 @@ object Validator {
         }
 
         year?.let {
-            val (monthCurrent, yearCurrent) = Utils.getMonthYearCurrent()
+            val (monthCurrent, yearCurrent) = AppUtils.getMonthYearCurrent()
             if (year < yearCurrent || (year == yearCurrent && month!! < monthCurrent)) {
                 stringError = "Ngày hết hạn không hợp lệ. Vui lòng kiểm tra lại."
             }

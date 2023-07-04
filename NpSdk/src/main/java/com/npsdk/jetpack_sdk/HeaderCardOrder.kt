@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import com.npsdk.R
-import com.npsdk.jetpack_sdk.base.Utils.formatMoney
+import com.npsdk.jetpack_sdk.base.AppUtils.formatMoney
 import com.npsdk.jetpack_sdk.repository.model.ValidatePaymentModel
 import com.npsdk.jetpack_sdk.theme.fontAppBold
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
@@ -94,7 +95,7 @@ private fun BoxCollapse(data: ValidatePaymentModel, onClick: () -> Unit) {
 @Composable
 fun HeaderOrder(data: ValidatePaymentModel) {
 
-    var isExpanded by remember { mutableStateOf(true) }
+    var isExpanded by rememberSaveable { mutableStateOf(true) }
     var nameMerchant: String = data.data.merchantInfo.name
 
     AnimatedContent(targetState = isExpanded) { showBoxCollapse ->

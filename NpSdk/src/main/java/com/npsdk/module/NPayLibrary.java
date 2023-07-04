@@ -14,6 +14,7 @@ import com.npsdk.LibListener;
 import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.jetpack_sdk.InputCardActivity;
 import com.npsdk.jetpack_sdk.OrderActivity;
+import com.npsdk.jetpack_sdk.base.AppUtils;
 import com.npsdk.jetpack_sdk.repository.GetInfoMerchant;
 import com.npsdk.module.api.GetInfoTask;
 import com.npsdk.module.api.RefreshTokenTask;
@@ -97,6 +98,11 @@ public class NPayLibrary {
 
 
     public void payWithWallet(String url, @Nullable String type, Boolean isShowResultScreen) {
+        if (AppUtils.INSTANCE.isNeedUpdateWebview(activity)) {
+            Toast.makeText(activity, "Bạn cần cập nhật Webview để tiếp tục thanh toán!", Toast.LENGTH_LONG).show();
+            AppUtils.INSTANCE.openPlayStore(activity);
+            return;
+        }
         if (url == null || url.trim().isEmpty()) {
             Toast.makeText(activity, "Vui lòng nhập URL thanh toán!", Toast.LENGTH_SHORT).show();
             return;

@@ -148,23 +148,48 @@ public class JsHandler {
                     break;
                 case send_email:
                     try {
-                        String email  = paramJson.getString("email");
+                        String email = paramJson.getString("email");
                         Intent intentEmail = new Intent(Intent.ACTION_SENDTO);
-                        intentEmail.setData(Uri.parse("mailto:"+email));
+                        intentEmail.setData(Uri.parse("mailto:" + email));
                         activity.startActivity(intentEmail);
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                    }
                     break;
                 case result_payment_token:
-                    Intent intentResult = new Intent(activity, ResultPayment.class);
-                    intentResult.putExtra("status", Constants.SUCCESS);
-                    activity.startActivity(intentResult);
-                    System.out.println(paramJson);
-                        break;
+                    handleCallbackPaymentToken(paramJson);
+                    break;
                 default:
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void handleCallbackPaymentToken(JSONObject jsonObject) {
+        activity.finish();
+
+        Intent intentResult = new Intent(activity, ResultPayment.class);
+        String status = Constants.SUCCESS;
+        try {
+            if (jsonObject != null) {
+                status = jsonObject.getString("order_status");
+                if (status.contains(Constants.FAIL)) {
+                    intentResult.putExtra("message", jsonObject.getString("message"));
+                }
+            }
+        } catch (JSONException exception) {
+            status = Constants.FAIL;
+        }
+
+        intentResult.putExtra("status", status);
+        if (DataOrder.Companion.isShowResultScreen()) {
+            activity.startActivity(intentResult);
+        } else {
+            if (status.contains(Constants.SUCCESS)) {
+                NPayLibrary.getInstance().listener.onPaySuccessful();
+            } else NPayLibrary.getInstance().listener.onPaymentFailed();
+        }
+
     }
 
     private void handleCallbackToApp(JSONObject params) {
@@ -188,13 +213,13 @@ public class JsHandler {
                             }
                         });
                     } else if (isLoginSuccess) {
-						if (DataOrder.Companion.isStartScreen()) {
-							// Co the la login den tu viec nap tien
-							Intent intent = new Intent(activity, OrderActivity.class);
-							intent.putExtra("method", Constants.WALLET);
-							intent.putExtra("url", DataOrder.Companion.getUrlData());
-							activity.startActivity(intent);
-						}
+                        if (DataOrder.Companion.isStartScreen()) {
+                            // Co the la login den tu viec nap tien
+                            Intent intent = new Intent(activity, OrderActivity.class);
+                            intent.putExtra("method", Constants.WALLET);
+                            intent.putExtra("url", DataOrder.Companion.getUrlData());
+                            activity.startActivity(intent);
+                        }
                     }
                 }
             }

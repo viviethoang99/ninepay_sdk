@@ -34,7 +34,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.npsdk.R
-import com.npsdk.jetpack_sdk.base.Utils
+import com.npsdk.jetpack_sdk.base.AppUtils
 import com.npsdk.jetpack_sdk.base.Validator
 import com.npsdk.jetpack_sdk.base.view.*
 import com.npsdk.jetpack_sdk.repository.*
@@ -125,7 +125,7 @@ class InputCardActivity : ComponentActivity() {
                 }
             })
 
-            if (!Utils.isHavePublicKey().isNullOrBlank()) {
+            if (!AppUtils.isHavePublicKey().isNullOrBlank()) {
                 NPayLibrary.getInstance().getUserInfoSendToPayment(null)
             }
         }
