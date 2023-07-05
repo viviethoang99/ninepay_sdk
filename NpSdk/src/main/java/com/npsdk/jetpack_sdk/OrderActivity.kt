@@ -64,7 +64,7 @@ import com.npsdk.module.utils.Preference
 class DataOrder {
     companion object {
         var urlData: String = ""
-        var isShowResultScreen = false
+        var isShowResultScreen = true
         var dataOrderSaved by mutableStateOf<ValidatePaymentModel?>(null)
         var amount: Any? = null
         var listBankModel: ListBankModel? = null
@@ -97,6 +97,7 @@ class OrderActivity : ComponentActivity() {
         DataOrder.dataOrderSaved = null
         bankTokenSelected = null
         DataOrder.selectedItemMethod = null
+        DataOrder.isLimitItem = true
 
         DataOrder.activityOrder = this
         val bundle = intent.extras
@@ -209,6 +210,18 @@ class OrderActivity : ComponentActivity() {
                                     if (DataOrder.selectedItemMethod == Constants.ATM_CARD) {
                                         DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.atmCard
                                         return@ShowMethodPayment
+                                    }
+
+                                    // Set mac dinh item dau tien neu link bank click
+                                    if (DataOrder.selectedItemMethod == Constants.LINK_BANK) {
+                                        if (bankTokenSelected == null) {
+                                            // Chon mac dinh ngan hang lien ket dau tien neu co
+                                            userInfo?.let {
+                                                if ((it.banks ?: arrayListOf()).isNotEmpty()) {
+                                                    bankTokenSelected = it.banks.first()
+                                                }
+                                            }
+                                        }
                                     }
                                 })
                             }

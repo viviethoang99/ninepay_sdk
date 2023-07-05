@@ -108,7 +108,7 @@ class ResultPayment : ComponentActivity() {
                     NPayLibrary.getInstance().listener.onPaymentFailed()
                 }
 
-                activity?.finish()
+//                activity?.finish()
             }
         }
 
@@ -280,7 +280,7 @@ class ResultPayment : ComponentActivity() {
 
                         Spacer(modifier = Modifier.height(30.dp))
                         Text(
-                            "Bạn sẽ được chuyển về trang gốc sau ${ticks}s ...",
+                            "Bạn sẽ được chuyển về trang gốc sau giây lát ...",
                             style = TextStyle(
                                 fontFamily = fontAppDefault,
                                 color = colorResource(R.color.titleText),

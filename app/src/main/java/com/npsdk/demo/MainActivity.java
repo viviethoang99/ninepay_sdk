@@ -12,6 +12,7 @@ import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.npsdk.LibListener;
+import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.jetpack_sdk.TestWebviewActivity;
 import com.npsdk.module.NPayLibrary;
 import com.npsdk.module.model.Bank;
@@ -151,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         String url = edtUrlPaygate.getText().toString();
         if (url.isEmpty() && NPayLibrary.getInstance().sdkConfig.getEnv().contains("staging"))
-            url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODg1MTkzMDksImludm9pY2Vfbm8iOiJRanJVcGJvbCIsImFtb3VudCI6MTAwMDAwLCJkZXNjcmlwdGlvbiI6Ik11YSBoYW5nIDlQYXkiLCJyZXR1cm5fdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJiYWNrX3VybCI6Imh0dHA6Ly9mY2RjYzQ3NjdhY2Iubmdyb2suaW8vIiwibWV0aG9kIjoiOVBBWSIsImlzX2N1c3RvbWVyX3BheV9mZWUiOjF9&signature=8rzlcN4nvL%2F3TFQUxgwOEO%2Bf7bfMB%2BoPu4lTle7NX3Y%3D";
+            url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODg1MjczMjYsImludm9pY2Vfbm8iOiIySll0YzJxZCIsImFtb3VudCI6MTAwMDAwLCJkZXNjcmlwdGlvbiI6Ik11YSBoYW5nIDlQYXkiLCJyZXR1cm5fdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJiYWNrX3VybCI6Imh0dHA6Ly9mY2RjYzQ3NjdhY2Iubmdyb2suaW8vIiwibWV0aG9kIjoiOVBBWSIsImlzX2N1c3RvbWVyX3BheV9mZWUiOjF9&signature=tLMNfpwGgX8eoGRXKlRi5%2BlJNgYVD8dhwRmWqQfJfXg%3D";
         switch (v.getId()) {
             case R.id.ll_quet_ma:
                 Log.d(TAG, "onClick: ll_rut_tien");
@@ -227,20 +228,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_thanh_toan:
                 //paste url thanh toán vào hàm pay
 
-                NPayLibrary.getInstance().payWithWallet(url, Constants.WALLET, true);
+                NPayLibrary.getInstance().payWithWallet(url, Constants.WALLET, DataOrder.Companion.isShowResultScreen());
                 edtUrlPaygate.setText("");
                 break;
             case R.id.btn_thanh_toan2:
-                NPayLibrary.getInstance().payWithWallet(url, Constants.ATM_CARD, true);
+                NPayLibrary.getInstance().payWithWallet(url, Constants.ATM_CARD, DataOrder.Companion.isShowResultScreen());
                 edtUrlPaygate.setText("");
                 break;
             case R.id.btn_thanh_toan3:
                 //paste url thanh toán vào hàm pay
-                NPayLibrary.getInstance().payWithWallet(url, Constants.CREDIT_CARD, true);
+                NPayLibrary.getInstance().payWithWallet(url, Constants.CREDIT_CARD, DataOrder.Companion.isShowResultScreen());
                 break;
             case R.id.btn_thanh_toan4:
                 //paste url thanh toán vào hàm pay
-                NPayLibrary.getInstance().payWithWallet(url, null, true);
+                NPayLibrary.getInstance().payWithWallet(url, null, DataOrder.Companion.isShowResultScreen());
                 break;
             case R.id.test_click:
 //                NPayLibrary.getInstance().openWallet(url);
