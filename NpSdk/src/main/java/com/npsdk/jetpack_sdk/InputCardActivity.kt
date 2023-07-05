@@ -126,7 +126,7 @@ class InputCardActivity : ComponentActivity() {
             })
 
             if (!AppUtils.isHavePublicKey().isNullOrBlank()) {
-                NPayLibrary.getInstance().getUserInfoSendToPayment(null)
+                if (DataOrder.userInfo == null) NPayLibrary.getInstance().getUserInfoSendToPayment(null)
             }
         }
 

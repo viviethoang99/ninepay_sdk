@@ -8,8 +8,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,74 +37,15 @@ import com.npsdk.jetpack_sdk.theme.fontAppDefault
 import kotlin.math.roundToInt
 
 
-@Composable
-private fun BoxCollapse(data: ValidatePaymentModel, onClick: () -> Unit) {
-    var nameMerchant: String = data.data.merchantInfo.name
-    Box(
-        modifier = Modifier.fillMaxWidth().clip(shape = RoundedCornerShape(12.dp)).background(Color.White)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 16.dp, end = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-            Text(
-                text = "Thanh toán cho $nameMerchant", style = TextStyle(
-                    fontWeight = FontWeight.W400, color = colorResource(
-                        id = R.color.titleText
-                    ), fontSize = 12.sp, fontFamily = fontAppDefault
-                )
-            )
-            DataOrder.totalAmount?.let {
-                Text(
-                    text = formatMoney(it),
-                    style = TextStyle(
-                        fontWeight = FontWeight.W600, fontSize = 18.sp, fontFamily = fontAppBold
-                    )
-                )
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            Box(
-                Modifier.height(1.dp).fillMaxWidth().background(Color.Gray, shape = DottedShape(step = 5.dp))
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 4.dp).height(40.dp).clickable {
-                    onClick()
-                }, horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Xem thêm", textAlign = TextAlign.Center, style = TextStyle(
-                        fontWeight = FontWeight.W600,
-                        fontFamily = fontAppBold,
-                        color = colorResource(R.color.blue),
-                        fontSize = 12.sp
-                    )
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Image(
-                    painterResource(R.drawable.arrow_down),
-                    modifier = Modifier.size(10.dp),
-                    contentDescription = null,
-                )
-            }
-
-
-        }
-    }
-}
-
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun HeaderOrder(data: ValidatePaymentModel) {
 
-    var isExpanded by rememberSaveable { mutableStateOf(true) }
-    var nameMerchant: String = data.data.merchantInfo.name
+    var isExpanded by rememberSaveable { mutableStateOf(false) }
+    val nameMerchant: String = data.data.merchantInfo.name
 
     AnimatedContent(targetState = isExpanded) { showBoxCollapse ->
-        if (showBoxCollapse) BoxCollapse(data = data) { ->
-            isExpanded = !isExpanded
-        } else Box(
+        Box(
             modifier = Modifier.fillMaxWidth().clip(shape = RoundedCornerShape(12.dp)).background(Color.White)
         ) {
             Column(
@@ -131,10 +75,10 @@ fun HeaderOrder(data: ValidatePaymentModel) {
                 Box(
                     Modifier.height(1.dp).fillMaxWidth().background(Color.Gray, shape = DottedShape(step = 5.dp))
                 )
-                Spacer(modifier = Modifier.height(10.dp))
+                if (showBoxCollapse) Spacer(modifier = Modifier.height(10.dp))
 
 
-                data.data.listPaymentData.map { rowItem ->
+                if (showBoxCollapse) data.data.listPaymentData.map { rowItem ->
                     Row(
                         modifier = Modifier.padding(bottom = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
@@ -163,7 +107,7 @@ fun HeaderOrder(data: ValidatePaymentModel) {
                 }
 
                 // Tính phí giao dịch
-                DataOrder.totalAmount?.let {
+                if (showBoxCollapse) DataOrder.totalAmount?.let {
 
                     // Phi = Tong cong tru di gia tri don hang
                     val fee = it - DataOrder.dataOrderSaved!!.data.amount
@@ -195,8 +139,7 @@ fun HeaderOrder(data: ValidatePaymentModel) {
                     }
                 }
 
-                Spacer(modifier = Modifier.height(10.dp))
-                Box(
+                if (showBoxCollapse) Box(
                     Modifier.height(1.dp).fillMaxWidth().background(Color.Gray, shape = DottedShape(step = 5.dp))
                 )
 
@@ -206,7 +149,7 @@ fun HeaderOrder(data: ValidatePaymentModel) {
                     }, horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Thu gọn", textAlign = TextAlign.Center,
+                        text = if (showBoxCollapse) "Thu gọn" else "Xem thêm", textAlign = TextAlign.Center,
                         style = TextStyle(
                             fontWeight = FontWeight.W600,
                             fontFamily = fontAppBold,
@@ -216,7 +159,7 @@ fun HeaderOrder(data: ValidatePaymentModel) {
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Image(
-                        painterResource(R.drawable.arrow_up),
+                        painterResource(if (showBoxCollapse) R.drawable.arrow_up else R.drawable.arrow_down),
                         modifier = Modifier.size(10.dp),
                         contentDescription = null,
                     )
