@@ -1,7 +1,6 @@
 package com.npsdk.demo;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -13,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.npsdk.LibListener;
 import com.npsdk.jetpack_sdk.DataOrder;
-import com.npsdk.jetpack_sdk.TestWebviewActivity;
 import com.npsdk.module.NPayLibrary;
 import com.npsdk.module.model.Bank;
 import com.npsdk.module.model.SdkConfig;
@@ -228,20 +226,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_thanh_toan:
                 //paste url thanh toán vào hàm pay
 
-                NPayLibrary.getInstance().payWithWallet(url, Constants.WALLET, DataOrder.Companion.isShowResultScreen());
+                NPayLibrary.getInstance().pay(url, Constants.WALLET, DataOrder.Companion.isShowResultScreen());
                 edtUrlPaygate.setText("");
                 break;
             case R.id.btn_thanh_toan2:
-                NPayLibrary.getInstance().payWithWallet(url, Constants.ATM_CARD, DataOrder.Companion.isShowResultScreen());
+                NPayLibrary.getInstance().pay(url, Constants.ATM_CARD, DataOrder.Companion.isShowResultScreen());
                 edtUrlPaygate.setText("");
                 break;
             case R.id.btn_thanh_toan3:
                 //paste url thanh toán vào hàm pay
-                NPayLibrary.getInstance().payWithWallet(url, Constants.CREDIT_CARD, DataOrder.Companion.isShowResultScreen());
+                NPayLibrary.getInstance().pay(url, Constants.CREDIT_CARD, DataOrder.Companion.isShowResultScreen());
                 break;
             case R.id.btn_thanh_toan4:
                 //paste url thanh toán vào hàm pay
-                NPayLibrary.getInstance().payWithWallet(url, null, DataOrder.Companion.isShowResultScreen());
+                NPayLibrary.getInstance().pay(url, null, DataOrder.Companion.isShowResultScreen());
                 break;
             case R.id.test_click:
 //                NPayLibrary.getInstance().openWallet(url);

@@ -64,9 +64,6 @@ public class JsHandler {
             Log.i(TAG, "executeFunctionP: command = " + command + "; params = " + params);
             JSONObject paramJson = new JSONObject(params);
             switch (switchCommandJS.valueOf(command)) {
-                case showKeyboard:
-                    NPayLibrary.showKeyboard(NPayActivity.webView);
-                    break;
                 case open9PayApp:
                     String appPackageName = "vn.ninepay.ewallet";
                     Intent intent = activity.getPackageManager().getLaunchIntentForPackage(appPackageName);
@@ -282,7 +279,7 @@ public class JsHandler {
         open9PayApp, close, logout, openOtherUrl, share, copy,
         call, message, clearToken, onLoggedInSuccess, onPaymentSuccess,
         onError, getAllToken, getDeviceID, requestCamera,
-        openSchemaApp, showKeyboard, requestGallery,
+        openSchemaApp, requestGallery,
         backToApp,
         callbackToApp, send_email,
         result_payment_token

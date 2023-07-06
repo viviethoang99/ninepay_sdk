@@ -101,14 +101,13 @@ class ResultPayment : ComponentActivity() {
                 ticks--
             }
             if (ticks == 0) {
+                activity?.finish()
                 if (isPaymentSuccess()) {
                     // Done
                     NPayLibrary.getInstance().listener.onPaySuccessful()
                 } else {
                     NPayLibrary.getInstance().listener.onPaymentFailed()
                 }
-
-//                activity?.finish()
             }
         }
 

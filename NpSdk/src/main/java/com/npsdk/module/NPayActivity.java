@@ -9,16 +9,11 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.net.Uri;
-import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.webkit.*;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
 import android.window.OnBackInvokedDispatcher;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -26,8 +21,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.npsdk.R;
+import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.module.utils.*;
-import com.rw.keyboardlistener.KeyboardUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -42,7 +37,6 @@ public class NPayActivity extends AppCompatActivity {
     private View btnClose;
     private Toolbar toolbar;
     private BroadcastReceiver changeUrlBR;
-    private RelativeLayout rlOverlay;
     private JsHandler jsHandler;
 
     boolean isProgressDeposit = false;
@@ -95,35 +89,6 @@ public class NPayActivity extends AppCompatActivity {
             if (jsonObject.has("order_id")) {
                 orderId = jsonObject.getString("order_id");
             }
-            if (route.equals(Constants.VERIFY_PAYMENT_ROUTE) && !orderId.contains("/merchant/payment/")) {
-                if (orderId.isEmpty()) {
-                    Toast.makeText(NPayActivity.this, "Sai định dạng url", Toast.LENGTH_SHORT).show();
-                    finish();
-                    return;
-                }
-                webView.setVisibility(View.GONE);
-                webView2.clearCache(true);
-                webView2.loadUrl("javascript:document.open();document.close();");
-                webView2.clearHistory();
-                webView2.setVisibility(View.VISIBLE);
-                rlOverlay.setVisibility(View.VISIBLE);
-                webView2.loadUrl(orderId, headerWebView);
-                showOrHideToolbar();
-                //tạm thời dùng delay 30s để callback payment faield
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (webView2 != null && !webView2.getUrl().contains("/merchant/payment/")) {
-                            //thông báo cho merchant thông báo có lỗi khi k thể load đc url payment
-                            NPayLibrary.getInstance().listener.onError(249, "Sai định dạng url thanh toán.");
-                            finish();
-                        }
-                        handler.removeCallbacksAndMessages(null);
-                    }
-                }, 30 * 1000);
-                return;
-            }
 
             // Các route thuộc danh mục hóa đơn.
             if (Actions.listAllServices().contains(route)) {
@@ -150,7 +115,7 @@ public class NPayActivity extends AppCompatActivity {
                         .appendQueryParameter("platform", "android")
                         .appendQueryParameter("device", DeviceUtils.getDevice());
                 if (jsonObject.has("order_id")) {
-                    builder.appendQueryParameter("order_id", Utils.convertUrlToOrderId(jsonObject.getString("order_id")));
+                    builder.appendQueryParameter("order_id", Utils.convertUrlToOrderId(orderId));
                 }
                 Log.d(TAG, "onCreate: Flavor.baseUrl ==   " + builder);
                 clearWebview2NonToolbar();
@@ -160,8 +125,6 @@ public class NPayActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        KeyboardUtils.addKeyboardToggleListener(this, isVisible -> NPayLibrary.isKeyboardShowing = isVisible);
     }
 
     private void setCookieRefreshToken() {
@@ -191,10 +154,10 @@ public class NPayActivity extends AppCompatActivity {
     private void setUpweb1Client() {
         webView.setWebViewClient(new WebViewClient() {
 
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                handler.proceed();
-            }
+//            @Override
+//            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+//                handler.proceed();
+//            }
 
 
             @Override
@@ -222,7 +185,7 @@ public class NPayActivity extends AppCompatActivity {
                         Uri.Builder builder = new Uri.Builder();
 
                         builder.scheme("https")
-                                .encodedAuthority(/*"10.1.20.37:8080"*/ Flavor.baseUrl.replaceAll("https://", ""))
+                                .encodedAuthority(Flavor.baseUrl.replaceAll("https://", ""))
                                 .appendPath("v1")
                                 .appendPath("payment")
                                 .appendQueryParameter("route", Constants.VERIFY_PAYMENT_ROUTE)
@@ -234,18 +197,16 @@ public class NPayActivity extends AppCompatActivity {
                                 .appendQueryParameter("device", DeviceUtils.getDevice());
                         clearWebview2NonToolbar();
                         webView2.setVisibility(View.GONE);
-                        rlOverlay.setVisibility(View.GONE);
                         webView.setVisibility(View.VISIBLE);
                         webView.loadUrl(builder.toString(), headerWebView);
 
                     } catch (Exception ignored) {
                         System.out.println("Error webiew " + ignored);
                     }
-                    return false;
                 } else {
                     view.loadUrl(request.getUrl().toString(), headerWebView);
-                    return false;
                 }
+                return false;
             }
 
             @Override
@@ -260,11 +221,10 @@ public class NPayActivity extends AppCompatActivity {
     private void setUpWeb2Client() {
         webView2.setWebViewClient(new WebViewClient() {
 
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                handler.proceed();
-            }
-
+//            @Override
+//            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+//                handler.proceed();
+//            }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
@@ -318,6 +278,9 @@ public class NPayActivity extends AppCompatActivity {
                 if (intent.getAction().equals("nativeBroadcast")) {
                     if (intent.getStringExtra("action").equals("close")) {
                         finish();
+                        if (DataOrder.Companion.getActivityOrder() != null) {
+                            DataOrder.Companion.getActivityOrder().finish();
+                        }
                     }
                 }
             }
@@ -329,7 +292,6 @@ public class NPayActivity extends AppCompatActivity {
         webView2 = findViewById(R.id.webView2);
         toolbar = findViewById(R.id.toolbar);
         btnClose = findViewById(R.id.btnClose);
-        rlOverlay = findViewById(R.id.rl_overlay);
     }
 
     @SuppressLint("SetJavaScriptEnabled")

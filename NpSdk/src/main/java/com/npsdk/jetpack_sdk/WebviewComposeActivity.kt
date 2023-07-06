@@ -43,12 +43,11 @@ import java.util.regex.Pattern
 
 class WebviewComposeActivity : ComponentActivity() {
 
-    private var activity: Activity? = null
     private var urlLoad = ""
 
-    private val WEBVIEW_STATUS_CANCEL = -2
-    private val WEBVIEW_STATUS_FAIL = -1
-    private val WEBVIEW_STATUS_PENDING = 0
+//    private val WEBVIEW_STATUS_CANCEL = -2
+//    private val WEBVIEW_STATUS_FAIL = -1
+//    private val WEBVIEW_STATUS_PENDING = 0
     private val WEBVIEW_STATUS_PROCESSED = 1
     var showDialog by mutableStateOf(false)
 
@@ -56,7 +55,6 @@ class WebviewComposeActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        activity = this
         val callback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 showDialog = true

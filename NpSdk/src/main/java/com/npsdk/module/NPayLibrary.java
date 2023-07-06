@@ -4,12 +4,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
-import android.view.inputmethod.InputMethodManager;
-import android.webkit.WebView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import com.google.android.material.snackbar.Snackbar;
 import com.npsdk.LibListener;
 import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.jetpack_sdk.InputCardActivity;
@@ -33,7 +30,6 @@ public class NPayLibrary {
     public static final String PRODUCTION = "prod";
     private static final String TAG = NPayLibrary.class.getSimpleName();
     public static Flavor flavor;
-    public static boolean isKeyboardShowing = false;
     private static NPayLibrary INSTANCE;
     public SdkConfig sdkConfig;
     public Activity activity;
@@ -45,24 +41,6 @@ public class NPayLibrary {
             flavor = new Flavor();
         }
         return INSTANCE;
-    }
-
-    public static void showKeyboard(WebView webView) {
-        if (isKeyboardShowing) return;
-        webView.requestFocus();
-        InputMethodManager inputMethodManager = (InputMethodManager)
-                webView.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-    }
-
-    public static void hideSoftKeyboard(WebView webView) {
-        if (!isKeyboardShowing) return;
-        InputMethodManager inputMethodManager = (InputMethodManager)
-                webView.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(
-                webView.getWindowToken(),
-                0
-        );
     }
 
     public void init(Activity activity, SdkConfig sdkConfig, LibListener listener) {
@@ -79,25 +57,7 @@ public class NPayLibrary {
         activity.startActivity(intent);
     }
 
-    public void openUrl(String path) {
-        Intent intent = new Intent(activity, NPayActivity.class);
-        intent.putExtra("data", NPayLibrary.getInstance().pathData(path));
-        activity.startActivity(intent);
-    }
-
-    public void pay(String urlPayment) {
-        Intent intent = new Intent(activity, NPayActivity.class);
-        intent.putExtra("data", NPayLibrary.getInstance().paymentData(urlPayment));
-        activity.startActivity(intent);
-    }
-
-    private void showMessage(String message) {
-        Snackbar snackbar = Snackbar.make(activity.findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG);
-        snackbar.show();
-    }
-
-
-    public void payWithWallet(String url, @Nullable String type, Boolean isShowResultScreen) {
+    public void pay(String url, @Nullable String type, Boolean isShowResultScreen) {
         if (AppUtils.INSTANCE.isNeedUpdateWebview(activity)) {
             Toast.makeText(activity, "Bạn cần cập nhật Webview để tiếp tục thanh toán!", Toast.LENGTH_LONG).show();
             AppUtils.INSTANCE.openPlayStore(activity);
@@ -253,21 +213,6 @@ public class NPayLibrary {
     private String walletData(String route) {
         Map<String, String> data = getHeader();
         data.put("route", route);
-        JSONObject obj = new JSONObject(data);
-        return obj.toString();
-    }
-
-    private String pathData(String path) {
-        Map<String, String> data = getHeader();
-        data.put("path", path);
-        JSONObject obj = new JSONObject(data);
-        return obj.toString();
-    }
-
-    private String paymentData(String urlPayment) {
-        Map<String, String> data = getHeader();
-        data.put("route", Constants.VERIFY_PAYMENT_ROUTE);
-        data.put("order_id", urlPayment);
         JSONObject obj = new JSONObject(data);
         return obj.toString();
     }

@@ -60,7 +60,7 @@ public class RestfulApi {
                     .connectTimeout(30, TimeUnit.SECONDS)
                     .writeTimeout(30, TimeUnit.SECONDS)
                     .readTimeout(30, TimeUnit.SECONDS)
-                    .addInterceptor(logging)
+//                    .addInterceptor(logging)
                     .build();
         } catch (Exception e) {
             e.printStackTrace();
