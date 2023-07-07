@@ -17,51 +17,64 @@ public class Utils {
         String path = null;
         switch (action) {
             case Actions.SHOP:
-                return Flavor.baseShop + "/hoa-don-thanh-toan/";
+                path = "/sdk/billing";
+                break;
             case Actions.BILLING_DIEN:
-                path = "hoa-don-tien-dien";
+                path = "/hoa-don/hoa-don-tien-dien";
                 break;
             case Actions.BILLING_TRUYEN_HINH:
-                path = "hoa-don-truyen-hinh";
+                path = "/hoa-don/hoa-don-truyen-hinh";
                 break;
             case Actions.BILLING_DIEN_THOAI:
-                path = "hoa-don-dien-thoai-co-dinh";
+                path = "/hoa-don/hoa-don-dien-thoai-co-dinh";
                 break;
             case Actions.BILLING_INTERNET:
-                path = "hoa-don-internet";
+                path = "/hoa-don/hoa-don-internet";
                 break;
             case Actions.BILLING_NUOC:
-                path = "hoa-don-nuoc";
+                path = "/hoa-don/hoa-don-nuoc";
                 break;
             case Actions.BILLING_BAO_HIEM:
-                path = "hoa-don-bao-hiem";
+                path = "/hoa-don/hoa-don-bao-hiem";
                 break;
             case Actions.BILLING_TAI_CHINH:
-                path = "hoa-don-tai-chinh";
+                path = "/hoa-don/hoa-don-tai-chinh";
                 break;
             case Actions.BILLING_TRA_SAU:
-                path = "hoa-don-tra-sau";
+                path = "/hoa-don/hoa-don-tra-sau";
                 break;
             case Actions.BILLING_TIN_DUNG:
-                path = "hoa-don-the-tin-dung";
+                path = "/hoa-don/hoa-don-the-tin-dung";
                 break;
             case Actions.BILLING_HOC_PHI:
-                path = "hoa-don-hoc-phi";
+                path = "/hoa-don/hoa-don-hoc-phi";
                 break;
             case Actions.BILLING_TRA_GOP:
-                path = "hoa-don-tra-gop";
+                path = "/hoa-don/hoa-don-tra-gop";
                 break;
             case Actions.BILLING_VE_TAU_XE:
-                path = "hoa-don-ve-xe";
+                path = "/hoa-don/hoa-don-ve-xe";
                 break;
             case Actions.BILLING_VETC:
-                path = "hoa-don-duong-bo";
+                path = "/hoa-don/hoa-don-duong-bo";
+                break;
+            case Actions.TOPUP:
+                path = "/sdk/topup-phone";
+                break;
+            case Actions.PHONE_CARD:
+                path = "/sdk/phone-card";
+                break;
+            case Actions.DATA_CARD:
+                path = "/sdk/data-card";
+                break;
+            case Actions.GAME:
+                path = "/sdk/game";
+                break;
+            case Actions.SERVICE_CARD:
+                path = "/sdk/service-card";
                 break;
         }
 
-        if (path == null) {
-            return Flavor.baseShop + "/hoa-don-thanh-toan/";
-        }
-        return Flavor.baseShop + "/hoa-don/" + path;
+        return Flavor.baseShop + path;
     }
 }

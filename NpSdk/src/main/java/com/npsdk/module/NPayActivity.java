@@ -9,26 +9,24 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.net.Uri;
-import android.net.http.SslError;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.webkit.*;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
+import android.window.OnBackInvokedDispatcher;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.npsdk.R;
+import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.module.utils.*;
-import com.rw.keyboardlistener.KeyboardUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
+import java.net.URLEncoder;
 import java.util.Map;
 
 public class NPayActivity extends AppCompatActivity {
@@ -39,7 +37,6 @@ public class NPayActivity extends AppCompatActivity {
     private View btnClose;
     private Toolbar toolbar;
     private BroadcastReceiver changeUrlBR;
-    private RelativeLayout rlOverlay;
     private JsHandler jsHandler;
 
     boolean isProgressDeposit = false;
@@ -49,6 +46,21 @@ public class NPayActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_npay);
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+
+            }
+        };
+        this.getOnBackPressedDispatcher().addCallback(this, callback);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                    OnBackInvokedDispatcher.PRIORITY_DEFAULT, () -> {
+                    }
+            );
+        }
+
         findView();
         closeButtonWebview();
         jsHandler = new JsHandler(this);
@@ -66,63 +78,44 @@ public class NPayActivity extends AppCompatActivity {
         settingWebview(webView2);
 
         setUpweb1Client();
-        setUpWeb2Client(data);
+        setUpWeb2Client();
+        setCookieRefreshToken();
+
         try {
             Uri.Builder builder = new Uri.Builder();
             JSONObject jsonObject = new JSONObject(data);
             String route = jsonObject.getString("route");
-
-            if (route.equals(Constants.VERIFY_PAYMENT_ROUTE)) {
-                String orderId = jsonObject.getString("order_id");
-                if (orderId.isEmpty()) {
-                    Toast.makeText(NPayActivity.this, "Sai định dạng url", Toast.LENGTH_SHORT).show();
-                    finish();
-                    return;
-                }
-                webView.setVisibility(View.GONE);
-                webView2.clearCache(true);
-                webView2.loadUrl("javascript:document.open();document.close();");
-                webView2.clearHistory();
-                webView2.setVisibility(View.VISIBLE);
-                rlOverlay.setVisibility(View.VISIBLE);
-                webView2.loadUrl(orderId, headerWebView);
-                showOrHideToolbar();
-                //tạm thời dùng delay 30s để callback payment faield
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (webView2 != null && !webView2.getUrl().contains("/merchant/payment/")) {
-                            //thông báo cho merchant thông báo có lỗi khi k thể load đc url payment
-                            NPayLibrary.getInstance().listener.onError(249, "Sai định dạng url thanh toán.");
-                            finish();
-                        }
-                        handler.removeCallbacksAndMessages(null);
-                    }
-                }, 30 * 1000);
-                return;
+            String orderId = "";
+            if (jsonObject.has("order_id")) {
+                orderId = jsonObject.getString("order_id");
             }
 
             // Các route thuộc danh mục hóa đơn.
-            if (route.equals(Actions.SHOP) || route.contains("BILLING")) {
-                webView.setVisibility(View.GONE);
-                webView2.setVisibility(View.VISIBLE);
-                webView2.loadUrl(Utils.getUrlActionShop(route), headerWebView);
+            if (Actions.listAllServices().contains(route)) {
+                webView2.setVisibility(View.GONE);
+                webView.setVisibility(View.VISIBLE);
+                webView.loadUrl(Utils.getUrlActionShop(route), headerWebView);
                 showOrHideToolbar();
             } else {
+                if (route.startsWith("http")) {
+                    // Call load url direct
+                    webView2.setVisibility(View.GONE);
+                    webView.setVisibility(View.VISIBLE);
+                    webView.loadUrl(route, headerWebView);
+                    System.out.println("Webview 1 load url " + route);
+                    return;
+                }
                 builder.scheme("https")
                         .encodedAuthority(Flavor.baseUrl.replaceAll("https://", ""))
                         .appendPath("v1")
-//						.appendPath("header")
-//                        .appendQueryParameter("route", jsonObject.getString("route"))
+                        .appendQueryParameter("route", route)
                         .appendQueryParameter("Merchant-Code", jsonObject.getString("Merchant-Code"))
                         .appendQueryParameter("Merchant-Uid", jsonObject.getString("Merchant-Uid"))
-                        .appendQueryParameter("App-version-Code", "375")
-                        .appendQueryParameter("brand_color", String.valueOf(NPayLibrary.getInstance().sdkConfig.getBrandColor()))
+                        .appendQueryParameter("brand_color", NPayLibrary.getInstance().sdkConfig.getBrandColor())
                         .appendQueryParameter("platform", "android")
                         .appendQueryParameter("device", DeviceUtils.getDevice());
                 if (jsonObject.has("order_id")) {
-                    builder.appendQueryParameter("order_id", Utils.convertUrlToOrderId(jsonObject.getString("order_id")));
+                    builder.appendQueryParameter("order_id", Utils.convertUrlToOrderId(orderId));
                 }
                 Log.d(TAG, "onCreate: Flavor.baseUrl ==   " + builder);
                 clearWebview2NonToolbar();
@@ -132,77 +125,115 @@ public class NPayActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
-        KeyboardUtils.addKeyboardToggleListener(this, isVisible -> NPayLibrary.isKeyboardShowing = isVisible);
     }
 
-    @Override
-    protected void onStop() {
+    private void setCookieRefreshToken() {
+        String accessToken = Preference.getString(this, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
+        String refreshToken = Preference.getString(this, Flavor.prefKey + Constants.REFRESH_TOKEN, "");
+        String publicKey = Preference.getString(this, Flavor.prefKey + Constants.PUBLIC_KEY, "");
+        publicKey = (URLEncoder.encode(publicKey)).replace("++++", "");
 
-        Handler mainThread = new Handler(Looper.getMainLooper());
-        mainThread.post(new Runnable() {
+        CookieManager cookieManager = CookieManager.getInstance();
+
+        cookieManager.setAcceptCookie(true);
+        cookieManager.setAcceptThirdPartyCookies(webView, true);
+        cookieManager.setAcceptThirdPartyCookies(webView2, true);
+
+        if (!accessToken.isEmpty() && !refreshToken.isEmpty() && !publicKey.isEmpty()) {
+            String cookieAcccessToken = "actk=" + accessToken + "; path=/v1";
+            cookieManager.setCookie(Flavor.baseUrl.replaceAll("https://", ""), cookieAcccessToken);
+
+            String cookieRefreshToken = "rtk=" + refreshToken + "; path=/v1";
+            cookieManager.setCookie(Flavor.baseUrl.replaceAll("https://", ""), cookieRefreshToken);
+
+            String publicKeyString = "pk=" + publicKey + "; path=/v1";
+            cookieManager.setCookie(Flavor.baseUrl.replaceAll("https://", ""), publicKeyString);
+        }
+    }
+
+    private void setUpweb1Client() {
+        webView.setWebViewClient(new WebViewClient() {
+
+//            @Override
+//            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+//                handler.proceed();
+//            }
+
+
             @Override
-            public void run() {
-                String jsExcute = "javascript: window.hiddenAppHandle()";
-                webView.loadUrl(jsExcute);
-                webView2.loadUrl(jsExcute);
+            public void onPageFinished(WebView view, String url) {
+                CookieManager.getInstance().flush();
+                super.onPageFinished(view, url);
             }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+
+                String url = request.getUrl().toString();
+
+                System.out.println("shouldOverrideUrlLoading 1: " + url);
+
+                if (!url.contains(Flavor.baseUrl) && !url.contains(Flavor.baseShop)) {
+                    webView.setVisibility(View.GONE);
+                    clearWebview2NonToolbar();
+                    webView2.setVisibility(View.VISIBLE);
+                    webView2.loadUrl(url, headerWebView);
+                    return false;
+                }
+                if (url.contains("/merchant/payment/") || url.contains("/thanh-toan-qr/")) {
+                    try {
+                        Uri.Builder builder = new Uri.Builder();
+
+                        builder.scheme("https")
+                                .encodedAuthority(Flavor.baseUrl.replaceAll("https://", ""))
+                                .appendPath("v1")
+                                .appendPath("payment")
+                                .appendQueryParameter("route", Constants.VERIFY_PAYMENT_ROUTE)
+                                .appendQueryParameter("Merchant-Code", NPayLibrary.getInstance().sdkConfig.getMerchantCode())
+                                .appendQueryParameter("Merchant-Uid", NPayLibrary.getInstance().sdkConfig.getUid())
+                                .appendQueryParameter("brand_color", NPayLibrary.getInstance().sdkConfig.getBrandColor())
+                                .appendQueryParameter("platform", "android")
+                                .appendQueryParameter("order_id", Utils.convertUrlToOrderId(url))
+                                .appendQueryParameter("device", DeviceUtils.getDevice());
+                        clearWebview2NonToolbar();
+                        webView2.setVisibility(View.GONE);
+                        webView.setVisibility(View.VISIBLE);
+                        webView.loadUrl(builder.toString(), headerWebView);
+
+                    } catch (Exception ignored) {
+                        System.out.println("Error webiew " + ignored);
+                    }
+                } else {
+                    view.loadUrl(request.getUrl().toString(), headerWebView);
+                }
+                return false;
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                showOrHideToolbar();
+                super.onPageStarted(view, url, favicon);
+            }
+
         });
-        super.onStop();
     }
 
-    @Override
-    protected void onPause() {
-        NPayLibrary.hideSoftKeyboard(webView);
-        super.onPause();
-    }
-
-    private void setUpWeb2Client(String data) {
+    private void setUpWeb2Client() {
         webView2.setWebViewClient(new WebViewClient() {
 
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                handler.proceed();
-            }
+//            @Override
+//            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+//                handler.proceed();
+//            }
 
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                String url = request.getUrl().toString();
                 Log.d(TAG, "shouldOverrideUrlLoading 2: url ==   " + url);
 
                 if (url.endsWith("close-webview")) {
                     clearWebview2WithToolbar();
                     return false;
-                }
-
-                //dành cho thanh toán merchant, bóc tách orderID
-                if (url.contains("/merchant/payment/") || url.contains("/thanh-toan-qr/")) {
-                    try {
-                        Uri.Builder builder = new Uri.Builder();
-                        JSONObject jsonObject = new JSONObject(data);
-
-                        builder.scheme("https")
-								.encodedAuthority(/*"10.1.20.37:8080"*/ Flavor.baseUrl.replaceAll("https://", ""))
-								.appendPath("v1")
-								.appendPath("payment")
-								.appendQueryParameter("route", Constants.VERIFY_PAYMENT_ROUTE)
-								.appendQueryParameter("Merchant-Code", jsonObject.getString("Merchant-Code"))
-								.appendQueryParameter("Merchant-Uid", jsonObject.getString("Merchant-Uid"))
-								.appendQueryParameter("App-version-Code", "375")
-								.appendQueryParameter("brand_color", String.valueOf(NPayLibrary.getInstance().sdkConfig.getBrandColor()))
-								.appendQueryParameter("platform", "android")
-								.appendQueryParameter("order_id", Utils.convertUrlToOrderId(url))
-								.appendQueryParameter("device", DeviceUtils.getDevice());
-                        clearWebview2NonToolbar();
-                        webView2.setVisibility(View.GONE);
-                        rlOverlay.setVisibility(View.GONE);
-                        webView.setVisibility(View.VISIBLE);
-                        webView.loadUrl(builder.toString(), headerWebView);
-
-                    } catch (Exception ignored) {
-                    }
-                    return false;
-
                 }
 
                 if (url.startsWith(Flavor.baseUrl)) {
@@ -215,47 +246,12 @@ public class NPayActivity extends AppCompatActivity {
 
             @Override
             public void onPageFinished(WebView view, String url) {
+                CookieManager.getInstance().flush();
                 super.onPageFinished(view, url);
-                //TODO xử lý load lỗi
-                Log.d(TAG, "onPageFinished: " + url);
             }
         });
     }
 
-    private void setUpweb1Client() {
-        webView.setWebViewClient(new WebViewClient() {
-
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                handler.proceed();
-            }
-
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (!url.contains(Flavor.baseUrl)) {
-                    webView.setVisibility(View.GONE);
-                    clearWebview2NonToolbar();
-                    webView2.setVisibility(View.VISIBLE);
-                    webView2.loadUrl(url, headerWebView);
-                    return false;
-                }
-                return false;
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-            }
-
-
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                showOrHideToolbar();
-                super.onPageStarted(view, url, favicon);
-            }
-
-        });
-    }
 
     private void listentChangeUrlBroadcast() {
         changeUrlBR = new BroadcastReceiver() {
@@ -271,7 +267,7 @@ public class NPayActivity extends AppCompatActivity {
                     if (nameAction != null) {
                         isProgressDeposit = nameAction.equals("napas-deposit");
                     }
-                    if (!getURL.startsWith(Flavor.baseUrl)) {
+                    if (!getURL.startsWith(Flavor.baseUrl) && !getURL.startsWith(Flavor.baseShop)) {
                         webView.setVisibility(View.GONE);
                         webView2.setVisibility(View.VISIBLE);
                         webView2.loadUrl(getURL, headerWebView);
@@ -280,11 +276,11 @@ public class NPayActivity extends AppCompatActivity {
 
                 }
                 if (intent.getAction().equals("nativeBroadcast")) {
-                    switch (intent.getStringExtra("action")) {
-                        case "close":
-                            finish();
-                            break;
-
+                    if (intent.getStringExtra("action").equals("close")) {
+                        finish();
+                        if (DataOrder.Companion.getActivityOrder() != null) {
+                            DataOrder.Companion.getActivityOrder().finish();
+                        }
                     }
                 }
             }
@@ -296,7 +292,6 @@ public class NPayActivity extends AppCompatActivity {
         webView2 = findViewById(R.id.webView2);
         toolbar = findViewById(R.id.toolbar);
         btnClose = findViewById(R.id.btnClose);
-        rlOverlay = findViewById(R.id.rl_overlay);
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -304,6 +299,7 @@ public class NPayActivity extends AppCompatActivity {
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         webView.addJavascriptInterface(jsHandler, "JsHandler");
         WebSettings webSettings = webView.getSettings();
+        webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         webSettings.setJavaScriptEnabled(true);
         webSettings.setAllowFileAccess(true);
         webSettings.setDatabaseEnabled(true);
@@ -328,23 +324,6 @@ public class NPayActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public void onBackPressed() {
-//		webView.loadUrl("javascript: window.JsHandler.executeFunction('copy', '{\"text\": \"0988\"}')");
-//	super.onBackPressed();
-    }
-
-    @Override
-    protected void onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(changeUrlBR);
-//		webView.clearHistory();
-//		webView.clearCache(true);
-//		webView.destroy();
-        clearWebview2NonToolbar();
-        closeCamera();
-        super.onDestroy();
-    }
-
     public void clearWebview2WithToolbar() {
         if (webView2.getVisibility() == View.VISIBLE) {
             clearWebview2NonToolbar();
@@ -363,15 +342,12 @@ public class NPayActivity extends AppCompatActivity {
 
 
     void closeButtonWebview() {
-        btnClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isProgressDeposit) {
-                    webView.loadUrl("javascript: window.sendEventDismissScreen()");
-                    isProgressDeposit = false;
-                }
-                clearWebview2WithToolbar();
+        btnClose.setOnClickListener(view -> {
+            if (isProgressDeposit) {
+                webView.loadUrl("javascript: window.sendEventDismissScreen()");
+                isProgressDeposit = false;
             }
+            clearWebview2WithToolbar();
         });
     }
 
@@ -407,5 +383,27 @@ public class NPayActivity extends AppCompatActivity {
             JsHandler.sendStatusStorage(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    public void onBackPressed() {
+    }
+
+    @Override
+    protected void onDestroy() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(changeUrlBR);
+        clearWebview2NonToolbar();
+        closeCamera();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 }

@@ -8,5 +8,5 @@ data class CreateOrderParamsInland(
     var expireYear: String? = "",
     var amount: String? = "",
     var method: String? = "",
-
+    var saveToken: Int? = 0
     )

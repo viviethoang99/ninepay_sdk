@@ -8,7 +8,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,103 +30,62 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import com.npsdk.R
-import com.npsdk.jetpack_sdk.base.Utils
+import com.npsdk.jetpack_sdk.base.AppUtils.formatMoney
 import com.npsdk.jetpack_sdk.repository.model.ValidatePaymentModel
 import com.npsdk.jetpack_sdk.theme.fontAppBold
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
 import kotlin.math.roundToInt
 
 
-@Composable
-private fun BoxCollapse(data: ValidatePaymentModel, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier.fillMaxWidth().clip(shape = RoundedCornerShape(12.dp)).background(Color.White)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 16.dp, end = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = data.data.paymentData.description, style = TextStyle(
-                    fontWeight = FontWeight.W400, color = colorResource(
-                        id = R.color.titleText
-                    ), fontSize = 12.sp, fontFamily = fontAppDefault
-                )
-            )
-            Text(
-                text = Utils.formatMoney(data.data.paymentData.amount), style = TextStyle(
-                    fontWeight = FontWeight.W600, fontSize = 18.sp, fontFamily = fontAppBold
-                )
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            Box(
-                Modifier.height(1.dp).fillMaxWidth().background(Color.Gray, shape = DottedShape(step = 5.dp))
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 4.dp).height(40.dp).clickable {
-                    onClick()
-                }, horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Xem thêm", textAlign = TextAlign.Center, style = TextStyle(
-                        fontWeight = FontWeight.W600,
-                        fontFamily = fontAppBold,
-                        color = Color(0xFF1F92FC),
-                        fontSize = 12.sp
-                    )
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Image(
-                    painterResource(R.drawable.arrow_down),
-                    modifier = Modifier.size(10.dp),
-                    contentDescription = null,
-                )
-            }
-
-
-        }
-    }
-}
-
-//@Preview(showBackground = true)
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun HeaderOrder(data: ValidatePaymentModel) {
-    val labelItem: ArrayList<LabelItem> = arrayListOf()
-    val paymentData = data.data.paymentData
-    val merchantInfo = data.data.merchantInfo
 
-    val invoiceNo = paymentData.invoiceNo
-    val nameMerchant = merchantInfo.name
-    val description = paymentData.description
-    val amout = Utils.formatMoney(paymentData.amount)
-    labelItem.add(LabelItem("Mã giao dịch", invoiceNo))
-    labelItem.add(LabelItem("Đơn vị cung cấp", nameMerchant))
-    labelItem.add(LabelItem("Nội dung", description))
-    labelItem.add(LabelItem("Giá trị đơn hàng", amout))
-    labelItem.add(LabelItem("Phí giao dịch", ""))
-
-    var isExpanded by remember { mutableStateOf(true) }
-
+    var isExpanded by rememberSaveable { mutableStateOf(false) }
+    val nameMerchant: String = data.data.merchantInfo.name
 
     AnimatedContent(targetState = isExpanded) { showBoxCollapse ->
-        if (showBoxCollapse) BoxCollapse(data = data) { ->
-            isExpanded = !isExpanded
-        } else Box(
+        Box(
             modifier = Modifier.fillMaxWidth().clip(shape = RoundedCornerShape(12.dp)).background(Color.White)
         ) {
             Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 0.dp)
             ) {
-                labelItem.map { labelItem ->
+
+                Text(
+                    text = "Thanh toán cho $nameMerchant",
+                    textAlign = TextAlign.Center,
+                    style = TextStyle(
+                        fontWeight = FontWeight.W400, color = colorResource(
+                            id = R.color.titleText
+                        ), fontSize = 12.sp, fontFamily = fontAppDefault
+                    )
+                )
+                DataOrder.totalAmount?.let {
+                    Text(
+                        text = formatMoney(it),
+                        textAlign = TextAlign.Center,
+                        style = TextStyle(
+                            fontWeight = FontWeight.W600, fontSize = 18.sp, fontFamily = fontAppBold
+                        )
+                    )
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                Box(
+                    Modifier.height(1.dp).fillMaxWidth().background(Color.Gray, shape = DottedShape(step = 5.dp))
+                )
+                if (showBoxCollapse) Spacer(modifier = Modifier.height(10.dp))
+
+
+                if (showBoxCollapse) data.data.listPaymentData.map { rowItem ->
                     Row(
                         modifier = Modifier.padding(bottom = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.End
                     ) {
                         Text(
-                            labelItem.name,
+                            rowItem.name,
                             modifier = Modifier.weight(1f),
                             textAlign = TextAlign.Start,
                             style = TextStyle(
@@ -134,7 +97,7 @@ fun HeaderOrder(data: ValidatePaymentModel) {
                         )
 
                         Text(
-                            text = labelItem.value,
+                            text = if (rowItem.value is Double || rowItem.value is Int) formatMoney(rowItem.value) else rowItem.value.toString(),
                             modifier = Modifier.weight(1f),
                             textAlign = TextAlign.End,
                             style = TextStyle(fontFamily = fontAppBold, fontSize = 12.sp)
@@ -142,8 +105,41 @@ fun HeaderOrder(data: ValidatePaymentModel) {
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(10.dp))
-                Box(
+
+                // Tính phí giao dịch
+                if (showBoxCollapse) DataOrder.totalAmount?.let {
+
+                    // Phi = Tong cong tru di gia tri don hang
+                    val fee = it - DataOrder.dataOrderSaved!!.data.amount
+
+                    Row(
+                        modifier = Modifier.padding(bottom = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Text(
+                            "Phí giao dịch",
+                            modifier = Modifier.weight(1f),
+                            textAlign = TextAlign.Start,
+                            style = TextStyle(
+                                color = colorResource(id = R.color.titleText),
+                                fontWeight = FontWeight.W400,
+                                fontSize = 12.sp,
+                                fontFamily = fontAppDefault
+                            )
+                        )
+
+                        Text(
+                            text = formatMoney(fee),
+                            modifier = Modifier.weight(1f),
+                            textAlign = TextAlign.End,
+                            style = TextStyle(fontFamily = fontAppBold, fontSize = 12.sp)
+
+                        )
+                    }
+                }
+
+                if (showBoxCollapse) Box(
                     Modifier.height(1.dp).fillMaxWidth().background(Color.Gray, shape = DottedShape(step = 5.dp))
                 )
 
@@ -153,17 +149,17 @@ fun HeaderOrder(data: ValidatePaymentModel) {
                     }, horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Thu gọn", textAlign = TextAlign.Center,
+                        text = if (showBoxCollapse) "Thu gọn" else "Xem thêm", textAlign = TextAlign.Center,
                         style = TextStyle(
                             fontWeight = FontWeight.W600,
                             fontFamily = fontAppBold,
-                            color = Color(0xFF1F92FC),
+                            color = colorResource(R.color.blue),
                             fontSize = 12.sp
                         ),
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Image(
-                        painterResource(R.drawable.arrow_up),
+                        painterResource(if (showBoxCollapse) R.drawable.arrow_up else R.drawable.arrow_down),
                         modifier = Modifier.size(10.dp),
                         contentDescription = null,
                     )
@@ -173,16 +169,9 @@ fun HeaderOrder(data: ValidatePaymentModel) {
         }
 
     }
-
-
 }
 
-data class LabelItem(
-    val name: String,
-    val value: String,
-)
-
-private data class DottedShape(
+data class DottedShape(
     val step: Dp,
 ) : Shape {
     override fun createOutline(

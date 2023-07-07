@@ -4,10 +4,10 @@ package com.npsdk.jetpack_sdk.repository;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.widget.Toast;
 import com.npsdk.jetpack_sdk.base.api.BaseApiClient;
 import com.npsdk.jetpack_sdk.repository.model.CreateOrderCardModel;
 import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamsInter;
+import com.npsdk.module.NPayLibrary;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -22,23 +22,26 @@ public class CreateOrderInterRepo extends BaseApiClient {
 
     public void create(Context context, CreateOrderParamsInter param, CallbackCreateOrder callbackCreateOrder) {
         executor.execute(() -> {
-            Call<CreateOrderCardModel> call = apiService.createOrderCardInter(param.getUrl(), param.getCardNumber().replaceAll(" ", ""), param.getCardName().trim(), param.getExpireMonth(), param.getExpireYear(), param.getCvc(), param.getAmount(), param.getMethod());
+            Call<CreateOrderCardModel> call = apiService.createOrderCardInter(
+                    param.getUrl(), param.getCardNumber().replaceAll(" ", ""),
+                    param.getCardName().trim(), param.getExpireMonth(),
+                    param.getExpireYear(), param.getCvc(), param.getAmount(),
+                    param.getMethod(), param.getSaveToken());
             enqueue(call, new Callback<CreateOrderCardModel>() {
                 @Override
                 public void onResponse(Call<CreateOrderCardModel> call, Response<CreateOrderCardModel> response) {
-                    if (response != null && response.body() != null) {
+                    if (response.code() == 200 && response.body() != null) {
                         updateUI(() -> {
                             callbackCreateOrder.onSuccess(response.body());
                         });
                     } else {
-                        System.out.println("SERVER ERROR");
+                        NPayLibrary.getInstance().callbackError(1007, "Đã có lỗi xảy ra, code 1007");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<CreateOrderCardModel> call, Throwable t) {
-                    System.out.println(t.getMessage());
-                    Toast.makeText(context, "Đã có lỗi xảy ra, code 1002", Toast.LENGTH_SHORT).show();
+                    NPayLibrary.getInstance().callbackError(1007, "Đã có lỗi xảy ra, code 1007");
                 }
             });
         });

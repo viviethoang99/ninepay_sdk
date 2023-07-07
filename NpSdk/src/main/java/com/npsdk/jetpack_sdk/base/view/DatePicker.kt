@@ -14,6 +14,7 @@ import com.dt.composedatepicker.ComposeCalendar
 import com.dt.composedatepicker.SelectDateListener
 import java.util.*
 import com.npsdk.R
+import com.npsdk.jetpack_sdk.theme.initColor
 
 @Composable
 fun DatePicker(onDateSelected: (month: Int, year: Int) -> Unit, onCancel: () -> Unit) {
@@ -38,7 +39,7 @@ fun DatePicker(onDateSelected: (month: Int, year: Int) -> Unit, onCancel: () -> 
             title = "Chọn ngày hiệu lực/hết hạn",
             negativeButtonTitle = "Hủy bỏ",
             positiveButtonTitle = "OK",
-            themeColor = colorResource(id = R.color.green),
+            themeColor = initColor(),
             listener = object : SelectDateListener {
                 override fun onDateSelected(date: Date) {
                     val calendar: Calendar = Calendar.getInstance()

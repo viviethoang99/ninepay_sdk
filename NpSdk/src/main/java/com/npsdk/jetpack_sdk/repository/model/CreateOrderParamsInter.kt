@@ -9,5 +9,5 @@ data class CreateOrderParamsInter(
     var cvc: String? = "",
     var amount: String? = "",
     var method: String? = "",
-
+    var saveToken: Int? = 0
     )

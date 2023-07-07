@@ -4,9 +4,9 @@ package com.npsdk.jetpack_sdk.repository;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.widget.Toast;
 import com.npsdk.jetpack_sdk.base.api.BaseApiClient;
 import com.npsdk.jetpack_sdk.repository.model.ListBankModel;
+import com.npsdk.module.NPayLibrary;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -25,18 +25,18 @@ public class GetListBank extends BaseApiClient {
             enqueue(call, new Callback<ListBankModel>() {
                 @Override
                 public void onResponse(Call<ListBankModel> call, Response<ListBankModel> response) {
-                    if (response.body() != null) {
+                    if (response.code() == 200 && response.body() != null) {
                         updateUI(() -> {
                             callbackListBank.onSuccess(response.body());
                         });
                     } else {
-                        System.out.println("SERVER ERROR");
+                        NPayLibrary.getInstance().callbackError(1001, "Đã có lỗi xảy ra, code 1001");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ListBankModel> call, Throwable t) {
-                    Toast.makeText(context, "Đã có lỗi xảy ra, code 1001", Toast.LENGTH_SHORT).show();
+                    NPayLibrary.getInstance().callbackError(1001, "Đã có lỗi xảy ra, code 1001");
                 }
             });
         });

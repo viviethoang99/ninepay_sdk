@@ -15,6 +15,9 @@ public class MerchantInfo {
 	@SerializedName("logo")
 	@Expose
 	private String logo;
+	@SerializedName("bin_locale_allow")
+	@Expose
+	private Integer binLocaleAllow;
 
 	public Integer getMerchantId() {
 		return merchantId;
@@ -38,6 +41,14 @@ public class MerchantInfo {
 
 	public void setLogo(String logo) {
 		this.logo = logo;
+	}
+
+	public Integer getBinLocaleAllow() {
+		return binLocaleAllow;
+	}
+
+	public void setBinLocaleAllow(Integer binLocaleAllow) {
+		this.binLocaleAllow = binLocaleAllow;
 	}
 
 }

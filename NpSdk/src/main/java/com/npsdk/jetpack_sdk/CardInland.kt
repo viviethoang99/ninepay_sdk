@@ -29,8 +29,8 @@ fun CardInland(viewModel: InputViewModel) {
         viewModel.nameCardInLand.value = ""
         viewModel.nameCardErrorInLand.value = ""
 
-        viewModel.effectiveCardInLand.value = ""
-        viewModel.effectiveCardErrorInLand.value = ""
+        viewModel.dateCardInLand.value = ""
+        viewModel.dateCardErrorInLand.value = ""
 
         viewModel.monthNonParseInLand = null
         viewModel.yearNonParseInLand = null
@@ -51,26 +51,39 @@ fun CardInland(viewModel: InputViewModel) {
             maxLength = 19,
             errText = viewModel.numberCardErrorInLand.value,
             visualTransformation = CardNumberMaskCustom(" "),
+            onFocusOut = {
+                viewModel.numberCardErrorInLand.value =
+                    Validator.validateNumberCardATM(it, inputViewModel = viewModel, showError = true)
+            },
             onTextChanged = {
                 viewModel.numberCardInLand.value = it
-                viewModel.numberCardErrorInLand.value = Validator.validateNumberCardATM(it, inputViewModel = viewModel)
+                viewModel.numberCardErrorInLand.value =
+                    Validator.validateNumberCardATM(it, inputViewModel = viewModel, showError = false)
+                viewModel.dateCardErrorInLand.value = ""
             })
         Spacer(modifier = Modifier.height(12.dp))
-        MyEdittext("Họ và tên chủ thẻ", onTextChanged = {
-            viewModel.nameCardInLand.value = it
-            viewModel.nameCardErrorInLand.value = Validator.validateNameCard(it)
-        }, errText = viewModel.nameCardErrorInLand.value)
+        MyEdittext(
+            "Họ và tên chủ thẻ",
+            onTextChanged = {
+                viewModel.nameCardInLand.value = it
+            },
+            onFocusOut = {
+                viewModel.nameCardErrorInLand.value = Validator.validateNameCard(it)
+            },
+            errText = viewModel.nameCardErrorInLand.value,
+        )
+
         Spacer(modifier = Modifier.height(12.dp))
         MyEdittext(
-            "Ngày hiệu lực (MM/YY)",
+            label = if (viewModel.inlandBankDetect!!.isValidDate == 1) "Ngày hiệu lực (MM/YY)" else "Ngày hết hạn (MM/YY)",
             keyboardType = KeyboardType.Number,
             maxLength = 5,
             enabled = false,
             onTap = {
                 viewModel.updateDialogInland(true)
             },
-            initText = viewModel.effectiveCardInLand.value,
-            errText = viewModel.effectiveCardErrorInLand.value,
+            initText = viewModel.dateCardInLand.value,
+            errText = viewModel.dateCardErrorInLand.value,
         )
 
         // Dialog
@@ -82,20 +95,21 @@ fun CardInland(viewModel: InputViewModel) {
                     var monthStr = "$month"
                     if (monthStr.length == 1) monthStr = "0$month"
                     val year = year.toString().substring(2)
-                    viewModel.effectiveCardInLand.value = "$monthStr/${year}"
-                    viewModel.effectiveCardErrorInLand.value = Validator.validateEffectiveCard(
-                        viewModel.effectiveCardInLand.value, viewModel.monthNonParseInLand, viewModel.yearNonParseInLand
+                    viewModel.dateCardInLand.value = "$monthStr/${year}"
+                    viewModel.dateCardErrorInLand.value = Validator.validateDateCardInland(
+                        viewModel.dateCardInLand.value, viewModel.monthNonParseInLand, viewModel.yearNonParseInLand,
+                        inputViewModel = viewModel
                     )
                     closeDialog()
                 }
             }, onCancel = {
                 closeDialog()
-                viewModel.effectiveCardErrorInLand.value = Validator.validateEffectiveCard(
-                    viewModel.effectiveCardInLand.value, viewModel.monthNonParseInLand, viewModel.yearNonParseInLand
+                viewModel.dateCardErrorInLand.value = Validator.validateDateCardInland(
+                    viewModel.dateCardInLand.value, viewModel.monthNonParseInLand, viewModel.yearNonParseInLand,
+                    inputViewModel = viewModel
                 )
             })
         }, onClose = { closeDialog() })
         Spacer(modifier = Modifier.height(12.dp))
     }
-
 }

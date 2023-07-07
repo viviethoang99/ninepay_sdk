@@ -7,4 +7,7 @@
     <color name="grey">#A0A4A8</color>
     <color name="black">#25282B</color>
     <color name="titleText">#52575C</color>
+    <color name="yellow">#F6B70F</color>
+    <color name="divider">#F2F3F4</color>
+    <color name="blue">#1F92FC</color>
 </resources>

@@ -11,7 +11,7 @@ public class SdkConfig implements Serializable {
     private final String merchantCode;
     private final String uid;
     private final String env;
-    private static int brandColor;
+    private String brandColor;
 
     protected SdkConfig(Builder builder) {
         merchantCode = builder.mMerchantCode;
@@ -21,6 +21,7 @@ public class SdkConfig implements Serializable {
     }
 
     public String getMerchantCode() {
+        if (merchantCode == null) return "";
         return merchantCode;
     }
 
@@ -32,7 +33,7 @@ public class SdkConfig implements Serializable {
         return env;
     }
 
-    public static int getBrandColor() {
+    public String getBrandColor() {
         return brandColor;
     }
 
@@ -42,14 +43,13 @@ public class SdkConfig implements Serializable {
         private String mMerchantCode;
         private String mUid;
         private String mEnv;
-        private int mBrandColor;
+        private String mBrandColor;
         private Context context;
-        private String mPhone;
         public Builder(Context context) {
             this.context = context;
         }
 
-        public Builder(String merchantCode, String uid, String env, int brandColor) {
+        public Builder(String merchantCode, String uid, String env, String brandColor) {
             mMerchantCode = merchantCode;
             mUid = uid;
             mEnv = env;
@@ -75,11 +75,10 @@ public class SdkConfig implements Serializable {
         }
 
 
-        public Builder brandColor(int brandColor) {
+        public Builder brandColor(String brandColor) {
             mBrandColor = brandColor;
             return this;
         }
-
 
         public SdkConfig build() {
             return new SdkConfig(this);

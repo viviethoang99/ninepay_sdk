@@ -35,7 +35,7 @@ fun LineTypeCardInland() {
             style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.W600, fontFamily = fontAppBold)
         )
         Text(
-            inputViewModel.inlandBankDetect?.bankCode ?: "", modifier = Modifier.weight(1f), style = TextStyle(
+            inputViewModel.inlandBankDetect?.shortName ?: "", modifier = Modifier.weight(1f), style = TextStyle(
                 fontSize = 12.sp,
                 fontWeight = FontWeight.W400,
                 fontFamily = fontAppDefault,

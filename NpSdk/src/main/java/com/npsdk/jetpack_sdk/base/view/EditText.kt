@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.IconButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -16,10 +17,13 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -32,7 +36,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.npsdk.R
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
+import com.npsdk.jetpack_sdk.theme.initColor
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun MyEdittext(
     label: String,
@@ -44,6 +50,7 @@ fun MyEdittext(
     initText: String? = null,
     visualTransformation: VisualTransformation? = VisualTransformation.None,
     onTap: () -> Unit = {},
+    onFocusOut: (String) -> Unit = {},
     tooltipsText: String? = ""
 ) {
 
@@ -56,6 +63,9 @@ fun MyEdittext(
     }
 
     var isFirstFocus by remember { mutableStateOf(false) }
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     Column {
         Box(modifier = Modifier.height(56.dp).clip(shape = RoundedCornerShape(8.dp)).clickable {
@@ -81,6 +91,7 @@ fun MyEdittext(
 
                 },
                 textStyle = TextStyle(
+                    color = colorResource(id = R.color.black),
                     fontFamily = fontAppDefault, fontSize = 14.sp, fontWeight = FontWeight.W400
                 ),
                 visualTransformation = visualTransformation!!,
@@ -91,7 +102,11 @@ fun MyEdittext(
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
                     cursorColor = Color.Black,
-                    containerColor = Color.White
+                    containerColor = Color.White,
+                    selectionColors = TextSelectionColors(
+                        handleColor = Color.Black,
+                        backgroundColor = initColor().copy(0.6f)
+                    )
 
                 ),
                 singleLine = true,
@@ -112,7 +127,8 @@ fun MyEdittext(
                         isFirstFocus = true
                     } else {
                         if (isFirstFocus) {
-                            onTextChanged(textInput)
+                            onFocusOut(textInput)
+//                            onTextChanged(textInput)
                         }
                         isFirstFocus = false
                     }
@@ -156,7 +172,11 @@ fun MyEdittext(
                 if (!enabled) {
                     Box(contentAlignment = Alignment.CenterEnd) {
                         Box(modifier = Modifier.height(56.dp).background(Color.Transparent).fillMaxWidth()
-                            .clickable { onTap() })
+                            .clickable {
+                                keyboardController?.hide()
+                                focusManager.clearFocus()
+                                onTap()
+                            })
                         if (tooltipsText!!.isNotBlank()) Row(horizontalArrangement = Arrangement.End) {
                             if (!isFocused) TooltipView(label, tooltipsText)
                             Spacer(modifier = Modifier.padding(end = 12.dp))
@@ -165,9 +185,9 @@ fun MyEdittext(
                 }
             }
 
-            if (isFocused) Box(
+            if (isFocused || !errText.isNullOrBlank()) Box(
                 modifier = Modifier.align(Alignment.BottomStart).height(2.dp).padding(horizontal = 12.dp).fillMaxWidth()
-                    .background(colorResource(id = R.color.green))
+                    .background(if (errText!!.isNotBlank()) colorResource(R.color.red) else initColor())
             )
         }
         Spacer(modifier = Modifier.height(3.dp))
