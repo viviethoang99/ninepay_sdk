@@ -1,6 +1,5 @@
 package com.npsdk.jetpack_sdk
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -37,6 +36,7 @@ import com.npsdk.jetpack_sdk.base.view.TopAppBarApp
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
 import com.npsdk.module.NPayLibrary
 import com.npsdk.module.utils.Constants
+import com.npsdk.module.utils.NameCallback
 import java.net.URLDecoder
 import java.util.regex.Pattern
 
@@ -45,7 +45,7 @@ class WebviewComposeActivity : ComponentActivity() {
 
     private var urlLoad = ""
 
-//    private val WEBVIEW_STATUS_CANCEL = -2
+    //    private val WEBVIEW_STATUS_CANCEL = -2
 //    private val WEBVIEW_STATUS_FAIL = -1
 //    private val WEBVIEW_STATUS_PENDING = 0
     private val WEBVIEW_STATUS_PROCESSED = 1
@@ -134,7 +134,9 @@ class WebviewComposeActivity : ComponentActivity() {
                                                 intent.putExtra("status", Constants.SUCCESS)
                                                 context.startActivity(intent)
                                             } else {
-                                                NPayLibrary.getInstance().listener.onPaySuccessful()
+                                                NPayLibrary.getInstance().callBackToMerchant(
+                                                    NameCallback.SDK_PAYMENT, false, null
+                                                )
                                             }
                                         }
                                     } else {
@@ -177,7 +179,7 @@ class WebviewComposeActivity : ComponentActivity() {
 
             if (showDialog) ShowConfirmDialog(onLeft = {
                 showDialog = false
-                NPayLibrary.getInstance().listener.onPaymentFailed()
+                NPayLibrary.getInstance().callbackBackToAppfrom(NameCallback.PAYMENT_SCREEN)
                 finish()
             }, onRight = {
                 showDialog = false
@@ -197,7 +199,9 @@ class WebviewComposeActivity : ComponentActivity() {
             intent.putExtra("message", decodeMessage(error))
             startActivity(intent)
         } else {
-            NPayLibrary.getInstance().listener.onPaymentFailed()
+            NPayLibrary.getInstance().callBackToMerchant(
+                NameCallback.SDK_PAYMENT, false, null
+            )
         }
     }
 

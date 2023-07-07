@@ -4,9 +4,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
+import android.webkit.WebStorage;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import com.google.gson.Gson;
 import com.npsdk.LibListener;
 import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.jetpack_sdk.InputCardActivity;
@@ -51,7 +53,7 @@ public class NPayLibrary {
         new GetInfoMerchant().get();
     }
 
-    public void openWallet(String actions) {
+    public void openSDKWithAction(String actions) {
         Intent intent = new Intent(activity, NPayActivity.class);
         intent.putExtra("data", NPayLibrary.getInstance().walletData(actions));
         activity.startActivity(intent);
@@ -78,7 +80,7 @@ public class NPayLibrary {
                     DataOrder.Companion.setProgressing(true);
                     DataOrder.Companion.setStartScreen(true);
                     // Gọi sang webview login
-                    NPayLibrary.getInstance().openWallet(Actions.LOGIN);
+                    NPayLibrary.getInstance().openSDKWithAction(Actions.LOGIN);
                     return;
                 }
             }
@@ -106,8 +108,17 @@ public class NPayLibrary {
         GetInfoTask getInfoTask = new GetInfoTask(activity, "Bearer " + token, new GetInfoTask.OnGetInfoListener() {
             @Override
             public void onGetInfoSuccess(UserInfoModel userInfo) {
+                Gson gson = new Gson();
                 Preference.save(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PHONE, userInfo.getPhone());
                 DataOrder.Companion.setUserInfo(userInfo);
+                Map<String, Object> userInfoMap = new HashMap<>();
+                userInfoMap.put("phone", userInfo.getPhone());
+                userInfoMap.put("balance", userInfo.getBalance().toString());
+                userInfoMap.put("statusKyc", userInfo.getStatus().toString());
+                userInfoMap.put("name", userInfo.getName());
+                userInfoMap.put("banks", userInfo.getBanks());
+                String json = gson.toJson(userInfoMap);
+                listener.getInfoSuccess(json);
                 if (afterSuccess != null) {
                     afterSuccess.run();
                 }
@@ -142,8 +153,16 @@ public class NPayLibrary {
         GetInfoTask getInfoTask = new GetInfoTask(activity, "Bearer " + token, new GetInfoTask.OnGetInfoListener() {
             @Override
             public void onGetInfoSuccess(UserInfoModel userInfo) {
+                Gson gson = new Gson();
                 DataOrder.Companion.setUserInfo(userInfo);
-                listener.getInfoSuccess(userInfo.getPhone(), userInfo.getBalance().toString(), userInfo.getStatus().toString(), userInfo.getBanks(), userInfo.getName());
+                Map<String, Object> userInfoMap = new HashMap<>();
+                userInfoMap.put("phone", userInfo.getPhone());
+                userInfoMap.put("balance", userInfo.getBalance().toString());
+                userInfoMap.put("statusKyc", userInfo.getStatus().toString());
+                userInfoMap.put("name", userInfo.getName());
+                userInfoMap.put("banks", userInfo.getBanks());
+                String json = gson.toJson(userInfoMap);
+                listener.getInfoSuccess(json);
             }
 
             @Override
@@ -180,7 +199,7 @@ public class NPayLibrary {
     }
 
     public void logout() {
-//        WebStorage.getInstance().deleteAllData();
+        WebStorage.getInstance().deleteAllData();
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PHONE);
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN);
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.REFRESH_TOKEN);
@@ -215,5 +234,17 @@ public class NPayLibrary {
         data.put("route", route);
         JSONObject obj = new JSONObject(data);
         return obj.toString();
+    }
+
+    public void callBackToMerchant(String name, Object status, @Nullable Object params) {
+        listener.onCallbackListener(name, status, params);
+    }
+
+    public void callbackBackToAppfrom(String screen) {
+        listener.backToAppFrom(screen);
+    }
+
+    public void callbackError(int errorCode, String message) {
+        listener.onError(errorCode, message);
     }
 }

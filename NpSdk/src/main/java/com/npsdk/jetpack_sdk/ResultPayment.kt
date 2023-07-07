@@ -38,6 +38,7 @@ import com.npsdk.jetpack_sdk.theme.fontAppDefault
 import com.npsdk.jetpack_sdk.theme.initColor
 import com.npsdk.module.NPayLibrary
 import com.npsdk.module.utils.Constants
+import com.npsdk.module.utils.NameCallback
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
@@ -102,12 +103,9 @@ class ResultPayment : ComponentActivity() {
             }
             if (ticks == 0) {
                 activity?.finish()
-                if (isPaymentSuccess()) {
-                    // Done
-                    NPayLibrary.getInstance().listener.onPaySuccessful()
-                } else {
-                    NPayLibrary.getInstance().listener.onPaymentFailed()
-                }
+                NPayLibrary.getInstance().callBackToMerchant(
+                    NameCallback.SDK_PAYMENT, isPaymentSuccess(), null
+                )
             }
         }
 

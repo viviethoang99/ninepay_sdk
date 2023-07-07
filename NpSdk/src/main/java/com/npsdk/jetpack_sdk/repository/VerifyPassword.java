@@ -4,13 +4,13 @@ package com.npsdk.jetpack_sdk.repository;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.npsdk.jetpack_sdk.base.api.BaseApiClient;
 import com.npsdk.jetpack_sdk.base.api.EncryptServiceHelper;
 import com.npsdk.jetpack_sdk.repository.model.VerifyPaymentModel;
+import com.npsdk.module.NPayLibrary;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,16 +45,16 @@ public class VerifyPassword extends BaseApiClient {
                                 }
                             });
                         } catch (JsonSyntaxException e) {
-                            Toast.makeText(context, "Đã có lỗi phân tích cú pháp password", Toast.LENGTH_LONG).show();
+                            NPayLibrary.getInstance().callbackError(1005, "Đã có lỗi phân tích cú pháp verify payment.");
                         }
                     } else {
-                        Toast.makeText(context, "Đã có lỗi xảy ra, code 1005", Toast.LENGTH_LONG).show();
+                        NPayLibrary.getInstance().callbackError(1005, "Đã có lỗi xảy ra, code 1005");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-                    Toast.makeText(context, "Đã có lỗi xảy ra, code 1005", Toast.LENGTH_LONG).show();
+                    NPayLibrary.getInstance().callbackError(1005, "Đã có lỗi xảy ra, code 1005");
                 }
             });
         });

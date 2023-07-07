@@ -4,10 +4,10 @@ package com.npsdk.jetpack_sdk.repository;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.widget.Toast;
 import com.npsdk.jetpack_sdk.base.api.BaseApiClient;
 import com.npsdk.jetpack_sdk.repository.model.CreateOrderCardModel;
 import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamsInter;
+import com.npsdk.module.NPayLibrary;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,14 +35,13 @@ public class CreateOrderInterRepo extends BaseApiClient {
                             callbackCreateOrder.onSuccess(response.body());
                         });
                     } else {
-                        Toast.makeText(context, "Đã có lỗi xảy ra, code 10021", Toast.LENGTH_LONG).show();
+                        NPayLibrary.getInstance().callbackError(1007, "Đã có lỗi xảy ra, code 1007");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<CreateOrderCardModel> call, Throwable t) {
-                    System.out.println(t.getMessage());
-                    Toast.makeText(context, "Đã có lỗi xảy ra, code 1002", Toast.LENGTH_LONG).show();
+                    NPayLibrary.getInstance().callbackError(1007, "Đã có lỗi xảy ra, code 1007");
                 }
             });
         });

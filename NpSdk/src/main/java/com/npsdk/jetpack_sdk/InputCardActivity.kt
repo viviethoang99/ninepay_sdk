@@ -47,6 +47,7 @@ import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.npsdk.module.NPayLibrary
 import com.npsdk.module.utils.Actions
 import com.npsdk.module.utils.Constants
+import com.npsdk.module.utils.NameCallback
 
 class InputCardActivity : ComponentActivity() {
 
@@ -261,7 +262,7 @@ fun SaveCardView(callBack: (Boolean) -> Unit) {
         }, onRight = {
             showDialog = false
             DataOrder.isProgressing = true
-            NPayLibrary.getInstance().openWallet(Actions.LOGIN)
+            NPayLibrary.getInstance().openSDKWithAction(Actions.LOGIN)
 //            isChecked = !isChecked
 //            callBack(isChecked)
         }, title = "Bạn sẽ được chuyển đến trang đăng nhập",
@@ -329,7 +330,9 @@ fun createOrderInternational(
             if (it.errorCode == 1) {
                 viewModel.showNotification.value = true
                 viewModel.stringDialog.value = it1
-                NPayLibrary.getInstance().listener.onPaymentFailed()
+                NPayLibrary.getInstance().callBackToMerchant(
+                    NameCallback.SDK_PAYMENT, false, null
+                )
             } else if (it.errorCode == 0) {
                 (context as Activity).finish() // Close input card
                 openWebviewOTP(context, it.data!!.redirectUrl!!)
@@ -390,7 +393,9 @@ fun createOrderInland(
             if (it.errorCode == 1) {
                 viewModel.showNotification.value = true
                 viewModel.stringDialog.value = it1
-                NPayLibrary.getInstance().listener.onPaymentFailed()
+                NPayLibrary.getInstance().callBackToMerchant(
+                    NameCallback.SDK_PAYMENT, false, null
+                )
             } else if (it.errorCode == 0) {
                 (context as Activity).finish() // Close input card
                 openWebviewOTP(context, it.data!!.redirectUrl!!)

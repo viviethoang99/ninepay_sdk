@@ -13,7 +13,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
-import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ShareCompat;
 import androidx.core.content.ContextCompat;
@@ -76,7 +75,6 @@ public class JsHandler {
                     activity.startActivity(intent);
                     break;
                 case close:
-                case backToApp:
                     NPayLibrary.getInstance().close();
                     break;
                 case getDeviceID:
@@ -108,10 +106,12 @@ public class JsHandler {
                     activity.startActivity(messageIntent);
                     break;
                 case onLoggedInSuccess:
-                    NPayLibrary.getInstance().listener.onLoginSuccessful();
+                    NPayLibrary.getInstance().callBackToMerchant(
+                            NameCallback.LOGIN, "onSuccess", null);
                     break;
                 case onPaymentSuccess:
-                    NPayLibrary.getInstance().listener.onPaySuccessful();
+                    NPayLibrary.getInstance().callBackToMerchant(
+                            NameCallback.SDK_PAYMENT, true, null);
                     break;
                 case onError:
                     int errorCode = paramJson.getInt("error_code");
@@ -141,7 +141,7 @@ public class JsHandler {
                     requestStorage();
                     break;
                 case callbackToApp:
-                    handleCallbackToApp(paramJson);
+                    getCallbackFromJs(paramJson);
                     break;
                 case send_email:
                     try {
@@ -154,6 +154,9 @@ public class JsHandler {
                     break;
                 case result_payment_token:
                     handleCallbackPaymentToken(paramJson);
+                    break;
+                case backToApp:
+                    System.out.println("backToApp " + paramJson);
                     break;
                 default:
             }
@@ -182,20 +185,33 @@ public class JsHandler {
         if (DataOrder.Companion.isShowResultScreen()) {
             activity.startActivity(intentResult);
         } else {
-            if (status.contains(Constants.SUCCESS)) {
-                NPayLibrary.getInstance().listener.onPaySuccessful();
-            } else NPayLibrary.getInstance().listener.onPaymentFailed();
+            Boolean isSuccess = status.contains(Constants.SUCCESS);
+            NPayLibrary.getInstance().callBackToMerchant(
+                    NameCallback.SDK_PAYMENT, isSuccess, null);
         }
 
     }
 
-    private void handleCallbackToApp(JSONObject params) {
+    private void getCallbackFromJs(JSONObject jsonObject) {
         try {
-            Toast.makeText(activity, params.toString(), Toast.LENGTH_LONG).show();
-            System.out.println("params " + params);
-            Boolean isResetPassword = params.getString("name").equals("RESET_PASSWORD");
-            Boolean isDeposit = params.getString("name").equals("DEPOSIT");
-            Boolean isLoginSuccess = params.getString("name").equals("LOGIN") && (params.has("status") && params.getString("status").equals("onSuccess"));
+            System.out.println("params " + jsonObject);
+            String nameCallback = jsonObject.getString("name");
+            Object statusCallback = jsonObject.getString("status");
+            String params = null;
+            if (jsonObject.has("params")) {
+                params = jsonObject.getString("params");
+            }
+
+            // Send callback
+            NPayLibrary.getInstance().callBackToMerchant(
+                    nameCallback, statusCallback, params);
+
+
+            // Back to SDK
+            Boolean isResetPassword = nameCallback.equals("RESET_PASSWORD");
+            Boolean isDeposit = nameCallback.equals("DEPOSIT");
+            Boolean isLoginSuccess = nameCallback.equals("LOGIN") && (jsonObject.has("status") && jsonObject.getString("status").equals("onSuccess"));
+
 
             if (isResetPassword || isDeposit || isLoginSuccess) {
 

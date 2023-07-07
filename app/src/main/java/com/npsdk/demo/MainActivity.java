@@ -8,19 +8,17 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.*;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.npsdk.LibListener;
 import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.module.NPayLibrary;
-import com.npsdk.module.model.Bank;
 import com.npsdk.module.model.SdkConfig;
 import com.npsdk.module.utils.Actions;
 import com.npsdk.module.utils.Constants;
 import com.npsdk.module.utils.Flavor;
 import com.npsdk.module.utils.Preference;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String TAG = "MainActivityLOG";
@@ -106,20 +104,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initSdk(SdkConfig sdkConfig) {
         NPayLibrary.getInstance().init(MainActivity.this, sdkConfig, new LibListener() {
-            @Override
-            public void onLoginSuccessful() {
-                Toast.makeText(MainActivity.this, "onLoginSuccessful", Toast.LENGTH_LONG).show();
-            }
 
             @Override
-            public void onPaySuccessful() {
-                Toast.makeText(MainActivity.this, "Thanh toán thành công!", Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void getInfoSuccess(String phone, String balance, String ekycStatus, List<Bank> listBank, String name) {
-                userInfo.setText("Hi," + phone);
-                txtMoney.setText(balance + "đ");
+            public void getInfoSuccess(String jsonData) {
+                System.out.println(jsonData);
             }
 
             @Override
@@ -138,8 +126,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
 
             @Override
-            public void onPaymentFailed() {
-                Toast.makeText(MainActivity.this, "Thanh toán thất bại!", Toast.LENGTH_SHORT).show();
+            public void onCallbackListener(String name, Object status, @Nullable Object params) {
+                Toast.makeText(MainActivity.this, name +" "+ status, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void backToAppFrom(String screen) {
+                System.out.println(screen);
             }
         });
 
@@ -150,49 +143,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         String url = edtUrlPaygate.getText().toString();
         if (url.isEmpty() && NPayLibrary.getInstance().sdkConfig.getEnv().contains("staging"))
-            url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODg1MjczMjYsImludm9pY2Vfbm8iOiIySll0YzJxZCIsImFtb3VudCI6MTAwMDAwLCJkZXNjcmlwdGlvbiI6Ik11YSBoYW5nIDlQYXkiLCJyZXR1cm5fdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJiYWNrX3VybCI6Imh0dHA6Ly9mY2RjYzQ3NjdhY2Iubmdyb2suaW8vIiwibWV0aG9kIjoiOVBBWSIsImlzX2N1c3RvbWVyX3BheV9mZWUiOjF9&signature=tLMNfpwGgX8eoGRXKlRi5%2BlJNgYVD8dhwRmWqQfJfXg%3D";
+            url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODg3MjgzMzQsImludm9pY2Vfbm8iOiJlbkczRlc3SyIsImFtb3VudCI6MTAwMDAwLCJkZXNjcmlwdGlvbiI6Ik11YSBoYW5nIDlQYXkiLCJyZXR1cm5fdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJiYWNrX3VybCI6Imh0dHA6Ly9mY2RjYzQ3NjdhY2Iubmdyb2suaW8vIiwibWV0aG9kIjoiOVBBWSIsImlzX2N1c3RvbWVyX3BheV9mZWUiOjF9&signature=nQI5UcGkZYhud9%2Fn1%2F94Q5ckXEKDJLzQH1U4rq6jiIA%3D";
         switch (v.getId()) {
             case R.id.ll_quet_ma:
                 Log.d(TAG, "onClick: ll_rut_tien");
-                NPayLibrary.getInstance().openWallet(Actions.WITHDRAW);
+                NPayLibrary.getInstance().openSDKWithAction(Actions.WITHDRAW);
                 break;
             case R.id.ll_nap_tien:
                 Log.d(TAG, "onClick: ll_nap_tien");
                 String phoneDeposit = Preference.getString(this, Flavor.prefKey + Constants.PHONE, "");
-                NPayLibrary.getInstance().openWallet(Actions.deposit(phoneDeposit, null));
+                NPayLibrary.getInstance().openSDKWithAction(Actions.deposit(phoneDeposit, null));
                 break;
             case R.id.ll_chuyen_tien:
-                NPayLibrary.getInstance().openWallet(Actions.TRANSFER);
+                NPayLibrary.getInstance().openSDKWithAction(Actions.TRANSFER);
                 Log.d(TAG, "onClick: ll_chuyen_tien");
                 break;
             case R.id.ll_lich_su:
                 Log.d(TAG, "onClick: ll_lich_su");
-                NPayLibrary.getInstance().openWallet(Actions.HISTORY);
+                NPayLibrary.getInstance().openSDKWithAction(Actions.HISTORY);
                 break;
             case R.id.ll_thanh_toan_hoa_don:
                 Log.d(TAG, "onClick: ll_thanh_toan_hoa_don");
-                NPayLibrary.getInstance().openWallet(Actions.SHOP);
+                NPayLibrary.getInstance().openSDKWithAction(Actions.SHOP);
 
                 break;
             case R.id.ll_nap_tien_dt:
                 Log.d(TAG, "onClick: ll_nap_tien_dt");
-                NPayLibrary.getInstance().openWallet(Actions.TOPUP);
+                NPayLibrary.getInstance().openSDKWithAction(Actions.TOPUP);
                 break;
             case R.id.ll_mua_the_game:
                 Log.d(TAG, "onClick: ll_mua_the_game");
-                NPayLibrary.getInstance().openWallet(Actions.GAME);
+                NPayLibrary.getInstance().openSDKWithAction(Actions.GAME);
                 break;
             case R.id.ll_mua_the_dich_vu:
                 Log.d(TAG, "onClick: ll_mua_the_dich_vu");
-                NPayLibrary.getInstance().openWallet(Actions.SERVICE_CARD);
+                NPayLibrary.getInstance().openSDKWithAction(Actions.SERVICE_CARD);
                 break;
             case R.id.ll_mua_the_dt:
                 Log.d(TAG, "onClick: ll_mua_the_dt");
-                NPayLibrary.getInstance().openWallet(Actions.PHONE_CARD);
+                NPayLibrary.getInstance().openSDKWithAction(Actions.PHONE_CARD);
                 break;
             case R.id.ll_nap_data:
                 Log.d(TAG, "onClick: ll_nap_data");
-                NPayLibrary.getInstance().openWallet(Actions.DATA_CARD);
+                NPayLibrary.getInstance().openSDKWithAction(Actions.DATA_CARD);
                 break;
             case R.id.btn_bank_link_manage:
                 Log.d(TAG, "onClick: btn_bank_link_manage");
@@ -214,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.layout_sdv:
             case R.id.rl_info:
                 Log.d(TAG, "onClick: layout_sdv");
-                NPayLibrary.getInstance().openWallet(Actions.OPEN_WALLET);
+                NPayLibrary.getInstance().openSDKWithAction(Actions.OPEN_WALLET);
 //				String url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODU2MzExNzQsImludm9pY2Vfbm8iOiJCaVJSWnhzRSIsImFtb3VudCI6MTAwMDAsImRlc2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0NzY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJtZXRob2QiOiI5UEFZIn0%3D&signature=btYIvja%2B3ca4m%2Fy7g%2FtcIxxhzHgrJ7FM46seHsfTSWY%3D";
 //				Intent intent = new Intent(v.getContext(), OrderActivity.class);
 //				intent.putExtra("url", url);
@@ -242,6 +235,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 NPayLibrary.getInstance().pay(url, null, DataOrder.Companion.isShowResultScreen());
                 break;
             case R.id.test_click:
+                NPayLibrary.getInstance().getUserInfo();
 //                NPayLibrary.getInstance().openWallet(url);
 //                String old = Preference.getString(this, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
 //                Preference.save(this, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN, old + "a");

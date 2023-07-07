@@ -103,7 +103,7 @@ class CustomInterceptor implements Interceptor {
             new Handler(Looper.getMainLooper()).post(() -> {
                 // Gọi sang webview login
                 Toast.makeText(NPayLibrary.getInstance().activity, "Đăng nhập thất bại, vui lòng đăng nhập lại!", Toast.LENGTH_SHORT).show();
-                NPayLibrary.getInstance().openWallet(Actions.LOGIN);
+                NPayLibrary.getInstance().openSDKWithAction(Actions.LOGIN);
             });
         }
         return response;

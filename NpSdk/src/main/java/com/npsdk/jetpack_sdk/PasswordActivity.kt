@@ -185,7 +185,8 @@ class PasswordActivity : ComponentActivity() {
 
             if (showDialog) ShowConfirmDialog(onLeft = {
                 showDialog = false
-                NPayLibrary.getInstance().listener.onPaymentFailed()
+                NPayLibrary.getInstance().callbackBackToAppfrom(NameCallback.PAYMENT_SCREEN)
+
                 finish()
             }, onRight = {
                 showDialog = false
@@ -280,7 +281,7 @@ class PasswordActivity : ComponentActivity() {
                         DataOrder.isProgressing = true
                         // Gọi sang webview login
                         val phone = Preference.getString(context, Flavor.prefKey + Constants.PHONE, "")
-                        NPayLibrary.getInstance().openWallet(Actions.forgotPassword(phone))
+                        NPayLibrary.getInstance().openSDKWithAction(Actions.forgotPassword(phone))
                     },
                     text = "Quên mật khẩu?",
                     style = TextStyle(
@@ -358,7 +359,9 @@ class PasswordActivity : ComponentActivity() {
 
             it.message?.let { it1 ->
                 if (it.errorCode == 1) {
-                    NPayLibrary.getInstance().listener.onPaymentFailed()
+                    NPayLibrary.getInstance().callBackToMerchant(
+                        NameCallback.SDK_PAYMENT, false, null
+                    )
                     appViewModel.hideLoading()
                     inputView.showNotification.value = true
                     inputView.stringDialog.value = it1
@@ -367,7 +370,9 @@ class PasswordActivity : ComponentActivity() {
                     CreatePayment().create(context, orderId, CallbackCreatePayment { paymentId, message ->
                         run {
                             if (paymentId == null) {
-                                NPayLibrary.getInstance().listener.onPaymentFailed()
+                                NPayLibrary.getInstance().callBackToMerchant(
+                                    NameCallback.SDK_PAYMENT, false, null
+                                )
                                 appViewModel.hideLoading()
                                 inputView.showNotification.value = true
                                 inputView.stringDialog.value = message
@@ -381,7 +386,9 @@ class PasswordActivity : ComponentActivity() {
                                     CallbackVerifyPayment { message: String? ->
                                         appViewModel.hideLoading()
                                         if (message != null) {
-                                            NPayLibrary.getInstance().listener.onPaymentFailed()
+                                            NPayLibrary.getInstance().callBackToMerchant(
+                                                NameCallback.SDK_PAYMENT, false, null
+                                            )
                                             messageError(message)
                                         } else {
                                             (context as Activity).finish() // Close screen
@@ -393,7 +400,9 @@ class PasswordActivity : ComponentActivity() {
                                                 context.startActivity(intent)
                                             } else {
                                                 // Done
-                                                NPayLibrary.getInstance().listener.onPaySuccessful()
+                                                NPayLibrary.getInstance().callBackToMerchant(
+                                                    NameCallback.SDK_PAYMENT, true, null
+                                                )
                                             }
                                         }
                                     })

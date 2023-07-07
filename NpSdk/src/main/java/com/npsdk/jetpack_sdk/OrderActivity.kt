@@ -56,10 +56,7 @@ import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.npsdk.module.NPayLibrary
 import com.npsdk.module.model.Bank
 import com.npsdk.module.model.UserInfoModel
-import com.npsdk.module.utils.Actions
-import com.npsdk.module.utils.Constants
-import com.npsdk.module.utils.Flavor
-import com.npsdk.module.utils.Preference
+import com.npsdk.module.utils.*
 
 class DataOrder {
     companion object {
@@ -241,7 +238,7 @@ class OrderActivity : ComponentActivity() {
                     }, onDeposit = {
                         isProgressing = true
                         val phone = Preference.getString(context, Flavor.prefKey + Constants.PHONE, "")
-                        NPayLibrary.getInstance().openWallet(Actions.deposit(phone, null))
+                        NPayLibrary.getInstance().openSDKWithAction(Actions.deposit(phone, null))
                     })
                 }
 
@@ -269,7 +266,7 @@ class OrderActivity : ComponentActivity() {
                                 isProgressing = true
                                 isStartScreen = false
                                 // Gọi sang webview login
-                                NPayLibrary.getInstance().openWallet(Actions.LOGIN)
+                                NPayLibrary.getInstance().openSDKWithAction(Actions.LOGIN)
                                 return@Footer
                             }
                             inputViewModel.showNotification.value = true
@@ -303,16 +300,18 @@ class OrderActivity : ComponentActivity() {
                             appViewModel.isShowLoading = false
                             it.message?.let { it1 ->
                                 if (it.errorCode == 1) {
-                                    NPayLibrary.getInstance().listener.onPaymentFailed()
+                                    NPayLibrary.getInstance().callBackToMerchant(
+                                        NameCallback.SDK_PAYMENT, false, null
+                                    )
                                     appViewModel.hideLoading()
                                     inputViewModel.showNotification.value = true
                                     inputViewModel.stringDialog.value = it1
                                 } else if (it.errorCode == 0) {
                                     val orderId =
-                                        com.npsdk.module.utils.Utils.convertUrlToOrderId(it.data!!.redirectUrl!!)
+                                        Utils.convertUrlToOrderId(it.data!!.redirectUrl!!)
                                     val url = generateLinkWeb(orderId)
 
-                                    NPayLibrary.getInstance().openWallet(url)
+                                    NPayLibrary.getInstance().openSDKWithAction(url)
                                     finish()
                                 }
                             }
@@ -584,7 +583,7 @@ class OrderActivity : ComponentActivity() {
                         .background(colorResource(R.color.background)).clickableWithoutRipple {
                             isProgressing = true
                             val phone = Preference.getString(context, Flavor.prefKey + Constants.PHONE, "")
-                            NPayLibrary.getInstance().openWallet(Actions.deposit(phone, null))
+                            NPayLibrary.getInstance().openSDKWithAction(Actions.deposit(phone, null))
                         }
                 ) {
                     Text(
