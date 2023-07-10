@@ -388,7 +388,10 @@ public class NPayActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(changeUrlBR);
+        if (changeUrlBR != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(changeUrlBR);
+            changeUrlBR = null;
+        }
         clearWebview2NonToolbar();
         closeCamera();
         super.onDestroy();

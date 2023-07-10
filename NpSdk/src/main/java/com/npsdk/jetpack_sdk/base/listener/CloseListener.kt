@@ -15,7 +15,9 @@ class CloseListener {
         val filter = IntentFilter()
         filter.addAction("nativeBroadcast")
         handleListener(activity)
-        LocalBroadcastManager.getInstance(activity).registerReceiver(broadcastReceiver!!, filter)
+        broadcastReceiver?.let {
+            LocalBroadcastManager.getInstance(activity).registerReceiver(it, filter)
+        }
     }
 
     private fun handleListener(activity: Activity) {
@@ -31,6 +33,9 @@ class CloseListener {
     }
 
     fun cancelListener(activity: Activity) {
-        LocalBroadcastManager.getInstance(activity).unregisterReceiver(broadcastReceiver!!)
+        broadcastReceiver?.let {
+            LocalBroadcastManager.getInstance(activity).unregisterReceiver(it)
+            broadcastReceiver = null
+        }
     }
 }
