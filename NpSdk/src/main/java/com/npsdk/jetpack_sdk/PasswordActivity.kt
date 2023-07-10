@@ -30,10 +30,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.npsdk.R
+import com.npsdk.jetpack_sdk.base.listener.CloseListener
 import com.npsdk.jetpack_sdk.base.view.*
 import com.npsdk.jetpack_sdk.repository.*
 import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamsWallet
@@ -93,6 +94,12 @@ class PasswordActivity : ComponentActivity() {
                 }
             }
         }
+        CloseListener().listener(this)
+    }
+
+    override fun onDestroy() {
+        CloseListener().cancelListener(this)
+        super.onDestroy()
     }
 
     override fun onBackPressed() {
@@ -242,26 +249,30 @@ class PasswordActivity : ComponentActivity() {
                         focusRequester.requestFocus()
                         keyboardController?.show()
                     }) {
-                    BasicTextField(
-                        modifier = Modifier.fillMaxWidth().height(40.dp)
-                            .background(colorResource(R.color.white)).focusRequester(focusRequester),
-                        maxLines = 1,
-                        minLines = 1,
-                        singleLine = true,
-                        cursorBrush = SolidColor(Color.White),
-                        textStyle = TextStyle(colorResource(R.color.white)),
-                        keyboardOptions = KeyboardOptions(
-                            autoCorrect = false,
-                            imeAction = ImeAction.Done,
-                            keyboardType = KeyboardType.NumberPassword
-                        ),
-                        value = passwordStr,
-                        onValueChange = {
-                            if (it.length <= 6) {
-                                passwordStr = it
-                                onTextChanged(passwordStr)
-                            }
-                        })
+                    // Hide copy, cut, paste
+                    CompositionLocalProvider(LocalTextToolbar provides EmptyTextToolbar) {
+                        // PIN Field Password
+                        BasicTextField(
+                            modifier = Modifier.fillMaxWidth().height(40.dp)
+                                .background(colorResource(R.color.white)).focusRequester(focusRequester),
+                            maxLines = 1,
+                            minLines = 1,
+                            singleLine = true,
+                            cursorBrush = SolidColor(Color.White),
+                            textStyle = TextStyle(colorResource(R.color.white)),
+                            keyboardOptions = KeyboardOptions(
+                                autoCorrect = false,
+                                imeAction = ImeAction.Done,
+                                keyboardType = KeyboardType.NumberPassword
+                            ),
+                            value = passwordStr,
+                            onValueChange = {
+                                if (it.length <= 6) {
+                                    passwordStr = it
+                                    onTextChanged(passwordStr)
+                                }
+                            })
+                    }
                     LineDot(passwordStr.length)
                 }
 
@@ -315,6 +326,20 @@ class PasswordActivity : ComponentActivity() {
                 }
             }
 
+        }
+    }
+
+    object EmptyTextToolbar : TextToolbar {
+        // Hide copy, cut, paste
+        override val status: TextToolbarStatus = TextToolbarStatus.Hidden
+        override fun hide() {}
+        override fun showMenu(
+            rect: Rect,
+            onCopyRequested: (() -> Unit)?,
+            onPasteRequested: (() -> Unit)?,
+            onCutRequested: (() -> Unit)?,
+            onSelectAllRequested: (() -> Unit)?,
+        ) {
         }
     }
 

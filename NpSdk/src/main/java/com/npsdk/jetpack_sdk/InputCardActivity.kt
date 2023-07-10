@@ -36,6 +36,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.npsdk.R
 import com.npsdk.jetpack_sdk.base.AppUtils
 import com.npsdk.jetpack_sdk.base.Validator
+import com.npsdk.jetpack_sdk.base.listener.CloseListener
 import com.npsdk.jetpack_sdk.base.view.*
 import com.npsdk.jetpack_sdk.repository.*
 import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamsInland
@@ -96,6 +97,13 @@ class InputCardActivity : ComponentActivity() {
                 }
             }
         }
+
+        CloseListener().listener(this)
+    }
+
+    override fun onDestroy() {
+        CloseListener().cancelListener(this)
+        super.onDestroy()
     }
 
     @OptIn(ExperimentalComposeUiApi::class)

@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
 
             @Override
-            public void onCallbackListener(String name, Object status, @Nullable Object params) {
+            public void sdkDidComplete(String name, Object status, @Nullable Object params) {
                 Toast.makeText(MainActivity.this, name +" "+ status, Toast.LENGTH_SHORT).show();
             }
 
@@ -232,10 +232,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_thanh_toan4:
                 //paste url thanh toán vào hàm pay
-                NPayLibrary.getInstance().pay(url, null, DataOrder.Companion.isShowResultScreen());
+                NPayLibrary.getInstance().pay(url, Constants.DEFAULT, DataOrder.Companion.isShowResultScreen());
                 break;
             case R.id.test_click:
-                NPayLibrary.getInstance().getUserInfo();
+//                NPayLibrary.getInstance().getUserInfo();
 //                NPayLibrary.getInstance().openWallet(url);
 //                String old = Preference.getString(this, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
 //                Preference.save(this, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN, old + "a");

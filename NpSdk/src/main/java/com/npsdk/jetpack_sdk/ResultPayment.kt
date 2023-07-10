@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.npsdk.R
 import com.npsdk.jetpack_sdk.base.AppUtils.formatMoney
+import com.npsdk.jetpack_sdk.base.listener.CloseListener
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
 import com.npsdk.jetpack_sdk.theme.fontAppBold
 import com.npsdk.jetpack_sdk.theme.fontAppDefault
@@ -83,6 +84,13 @@ class ResultPayment : ComponentActivity() {
                 }
             }
         }
+
+        CloseListener().listener(this)
+    }
+
+    override fun onDestroy() {
+        CloseListener().cancelListener(this)
+        super.onDestroy()
     }
 
     private fun isPaymentSuccess(): Boolean {

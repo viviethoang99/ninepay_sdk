@@ -278,9 +278,6 @@ public class NPayActivity extends AppCompatActivity {
                 if (intent.getAction().equals("nativeBroadcast")) {
                     if (intent.getStringExtra("action").equals("close")) {
                         finish();
-                        if (DataOrder.Companion.getActivityOrder() != null) {
-                            DataOrder.Companion.getActivityOrder().finish();
-                        }
                     }
                 }
             }

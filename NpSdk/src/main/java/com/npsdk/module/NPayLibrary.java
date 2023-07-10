@@ -72,7 +72,7 @@ public class NPayLibrary {
         DataOrder.Companion.setUrlData(url);
         DataOrder.Companion.setShowResultScreen(isShowResultScreen);
 
-        if (type == null || type.equals(Constants.WALLET)) {
+        if (type == null || type.equals(Constants.DEFAULT) || type.equals(Constants.WALLET)) {
             if (type != null && type.equals(Constants.WALLET)) {
                 String pubKey = Preference.getString(activity, Flavor.prefKey + Constants.PUBLIC_KEY, "");
                 String token = Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
@@ -236,8 +236,8 @@ public class NPayLibrary {
         return obj.toString();
     }
 
-    public void callBackToMerchant(String name, Object status, @Nullable Object params) {
-        listener.onCallbackListener(name, status, params);
+    public void callBackToMerchant(String name, Object status, @Nullable Object param) {
+        listener.sdkDidComplete(name, status, param);
     }
 
     public void callbackBackToAppfrom(String screen) {
