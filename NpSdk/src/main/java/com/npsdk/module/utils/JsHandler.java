@@ -75,6 +75,7 @@ public class JsHandler {
                     activity.startActivity(intent);
                     break;
                 case close:
+                case backToApp:
                     NPayLibrary.getInstance().close();
                     break;
                 case getDeviceID:
@@ -154,9 +155,6 @@ public class JsHandler {
                     break;
                 case result_payment_token:
                     handleCallbackPaymentToken(paramJson);
-                    break;
-                case backToApp:
-                    System.out.println("backToApp " + paramJson);
                     break;
                 default:
             }
