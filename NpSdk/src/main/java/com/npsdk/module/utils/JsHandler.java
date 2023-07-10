@@ -75,8 +75,18 @@ public class JsHandler {
                     activity.startActivity(intent);
                     break;
                 case close:
+                    NPayLibrary.getInstance().close();
+                    break;
                 case backToApp:
                     NPayLibrary.getInstance().close();
+                    try {
+                        if (paramJson.has("name")) {
+                            String screenName = paramJson.getString("name");
+                            NPayLibrary.getInstance().callbackBackToAppfrom(screenName);
+                        }
+                    } catch (Exception e) {
+                        System.out.println("ERROR backToApp " + e.getMessage());
+                    }
                     break;
                 case getDeviceID:
                     break;
