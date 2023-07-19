@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Actions {
-    public static final String OPEN_WALLET = "direct";
+    public static final String OPEN_WALLET = "home";
     public static final String LOGIN = Flavor.baseUrl + "/v1/dang-nhap";
     public static final String HISTORY = Flavor.baseUrl + "/v1/lich-su-chuyen-tien";
-    public static final String TRANSFER = Flavor.baseUrl + "/v1/chuyen-tien?phone=";
-    public static final String WITHDRAW = Flavor.baseUrl + "/v1/rut-tien?phone=";
-    public static final String QR = "scan_qr_code";
+    public static final String TRANSFER = Flavor.baseUrl + "/v1/chuyen-tien";
+    public static final String DEPOSIT = Flavor.baseUrl + "/v1/nap-tien";
+    public static final String QR = Flavor.baseUrl + "/v1/scan_qr_code";
 
     // DANH MUC HOA DON
     public static final String SHOP = "shop";
@@ -28,11 +28,11 @@ public class Actions {
     public static final String BILLING_TRA_GOP = "BILLING_TRA_GOP";
     public static final String BILLING_VE_TAU_XE = "BILLING_VE_TAU_XE";
     public static final String BILLING_VETC = "BILLING_VETC";
-    public static final String TOPUP = "BILLING_TOPUP";
-    public static final String PHONE_CARD = "BILLING_PHONE_CARD";
-    public static final String DATA_CARD = "BILLING_DATA_CARD";
-    public static final String GAME = "BILLING_GAME";
-    public static final String SERVICE_CARD = "BILLING_SERVICE_CARD";
+    public static final String TOPUP = "TOPUP";
+    public static final String PHONE_CARD = "PHONE_CARD";
+    public static final String DATA_CARD = "DATA_CARD";
+    public static final String GAME = "GAME";
+    public static final String SERVICE_CARD = "SERVICE_CARD";
 
 
     public static final ArrayList<String> listAllServices() {
@@ -50,11 +50,5 @@ public class Actions {
     public static String forgotPassword(@Nullable String phone) {
         if (phone == null) phone = "";
         return Flavor.baseUrl + "/v1/quen-mat-khau?phone=" + phone;
-    }
-
-    public static String deposit(@Nullable String phone, @Nullable String amount) {
-        if (phone == null) phone = "";
-        if (amount == null) amount = "";
-        return Flavor.baseUrl + "/v1/nap-tien?phone=" + phone + "&amount=" + amount;
     }
 }

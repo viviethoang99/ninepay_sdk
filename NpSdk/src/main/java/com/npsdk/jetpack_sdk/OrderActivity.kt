@@ -121,6 +121,7 @@ class OrderActivity : ComponentActivity() {
         CloseListener().cancelListener(this)
         super.onDestroy()
     }
+
     @Composable
     private fun Body() {
         val inputViewModel: InputViewModel = viewModel()
@@ -243,8 +244,7 @@ class OrderActivity : ComponentActivity() {
                         showDialogDeposit = !showDialogDeposit
                     }, onDeposit = {
                         isProgressing = true
-                        val phone = Preference.getString(context, Flavor.prefKey + Constants.PHONE, "")
-                        NPayLibrary.getInstance().openSDKWithAction(Actions.deposit(phone, null))
+                        NPayLibrary.getInstance().openSDKWithAction(Actions.DEPOSIT)
                     })
                 }
 
@@ -588,8 +588,7 @@ class OrderActivity : ComponentActivity() {
                     modifier = Modifier.width(80.dp).height(28.dp).clip(RoundedCornerShape(14.dp))
                         .background(colorResource(R.color.background)).clickableWithoutRipple {
                             isProgressing = true
-                            val phone = Preference.getString(context, Flavor.prefKey + Constants.PHONE, "")
-                            NPayLibrary.getInstance().openSDKWithAction(Actions.deposit(phone, null))
+                            NPayLibrary.getInstance().openSDKWithAction(Actions.DEPOSIT)
                         }
                 ) {
                     Text(

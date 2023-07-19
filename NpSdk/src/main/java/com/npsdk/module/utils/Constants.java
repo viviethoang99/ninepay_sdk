@@ -32,4 +32,5 @@ public class Constants {
     public static final String LINK_BANK = "LINK_BANK";
     public static final String SUCCESS = "SUCCESS";
     public static final String FAIL = "FAIL";
+    public static final int NOT_LOGIN = 403;
 }

@@ -59,7 +59,7 @@ public class NPayLibrary {
         activity.startActivity(intent);
     }
 
-    public void pay(String url, @Nullable String type, Boolean isShowResultScreen) {
+    public void openPaymentOnSDK(String url, @Nullable String type, Boolean isShowResultScreen) {
         if (AppUtils.INSTANCE.isNeedUpdateWebview(activity)) {
             Toast.makeText(activity, "Bạn cần cập nhật Webview để tiếp tục thanh toán!", Toast.LENGTH_LONG).show();
             AppUtils.INSTANCE.openPlayStore(activity);
@@ -126,7 +126,7 @@ public class NPayLibrary {
 
             @Override
             public void onError(int errorCode, String message) {
-                if (errorCode == 403 || message.contains("đã hết hạn") || message.toLowerCase().contains("không tìm thấy")) {
+                if (errorCode == Constants.NOT_LOGIN || message.contains("đã hết hạn") || message.toLowerCase().contains("không tìm thấy")) {
                     refreshToken(deviceId, UID, new Runnable() { // Refresh success
                         @Override
                         public void run() {
@@ -143,7 +143,7 @@ public class NPayLibrary {
 
     public void getUserInfo() {
         if (Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "").isEmpty()) {
-            listener.onError(403, "Tài khoản chưa được đăng nhập!");
+            listener.onError(Constants.NOT_LOGIN, "Tài khoản chưa được đăng nhập!");
             return;
         }
         String token = Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
@@ -167,7 +167,7 @@ public class NPayLibrary {
 
             @Override
             public void onError(int errorCode, String message) {
-                if (errorCode == 403 || message.contains("đã hết hạn") || message.toLowerCase().contains("không tìm thấy")) {
+                if (errorCode == Constants.NOT_LOGIN || message.contains("đã hết hạn") || message.toLowerCase().contains("không tìm thấy")) {
                     refreshToken(deviceId, UID, null);
                     return;
                 }
