@@ -162,8 +162,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.ll_thanh_toan_hoa_don:
                 Log.d(TAG, "onClick: ll_thanh_toan_hoa_don");
-                NPayLibrary.getInstance().openSDKWithAction(Actions.SHOP);
-
+                NPayLibrary.getInstance().openSDKWithAction(Actions.BILLING);
                 break;
             case R.id.ll_nap_tien_dt:
                 Log.d(TAG, "onClick: ll_nap_tien_dt");
@@ -206,10 +205,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.rl_info:
                 Log.d(TAG, "onClick: layout_sdv");
                 NPayLibrary.getInstance().openSDKWithAction(Actions.OPEN_WALLET);
-//				String url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODU2MzExNzQsImludm9pY2Vfbm8iOiJCaVJSWnhzRSIsImFtb3VudCI6MTAwMDAsImRlc2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0NzY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJtZXRob2QiOiI5UEFZIn0%3D&signature=btYIvja%2B3ca4m%2Fy7g%2FtcIxxhzHgrJ7FM46seHsfTSWY%3D";
-//				Intent intent = new Intent(v.getContext(), OrderActivity.class);
-//				intent.putExtra("url", url);
-//				startActivity(intent);
                 break;
             case R.id.btnClose:
                 layoutGate.setVisibility(View.GONE);

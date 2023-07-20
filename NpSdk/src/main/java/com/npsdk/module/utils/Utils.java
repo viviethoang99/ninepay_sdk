@@ -17,6 +17,7 @@ public class Utils {
         String path = null;
         switch (action) {
             case Actions.SHOP:
+            case Actions.BILLING:
                 path = "/sdk/billing";
                 break;
             case Actions.BILLING_DIEN:
@@ -76,5 +77,30 @@ public class Utils {
         }
 
         return Flavor.baseShop + path;
+    }
+
+    public static String getUrlActionSdk(String action) {
+        String path = null;
+        switch (action) {
+            case Actions.OPEN_WALLET:
+                path = "/v1/home";
+                break;
+            case Actions.LOGIN:
+                path = "/v1/dang-nhap";
+                break;
+            case Actions.HISTORY:
+                path = "/v1/lich-su";
+                break;
+            case Actions.TRANSFER:
+                path = "/v1/chuyen-tien";
+                break;
+            case Actions.DEPOSIT:
+                path = "/v1/nap-tien";
+                break;
+            case Actions.QR:
+                path = "/v1/scan-qr-code";
+                break;
+        }
+        return Flavor.baseUrl + path;
     }
 }
