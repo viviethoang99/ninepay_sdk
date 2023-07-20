@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         String url = edtUrlPaygate.getText().toString();
         if (url.isEmpty() && NPayLibrary.getInstance().sdkConfig.getEnv().contains("staging"))
-            url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODg3MjgzMzQsImludm9pY2Vfbm8iOiJlbkczRlc3SyIsImFtb3VudCI6MTAwMDAwLCJkZXNjcmlwdGlvbiI6Ik11YSBoYW5nIDlQYXkiLCJyZXR1cm5fdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJiYWNrX3VybCI6Imh0dHA6Ly9mY2RjYzQ3NjdhY2Iubmdyb2suaW8vIiwibWV0aG9kIjoiOVBBWSIsImlzX2N1c3RvbWVyX3BheV9mZWUiOjF9&signature=nQI5UcGkZYhud9%2Fn1%2F94Q5ckXEKDJLzQH1U4rq6jiIA%3D";
+            url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODk4NDgxMDEsImludm9pY2Vfbm8iOiJLNGFxc0E4aCIsImFtb3VudCI6MTAwMDAwLCJkZXNjcmlwdGlvbiI6Ik11YSBoYW5nIDlQYXkiLCJyZXR1cm5fdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJiYWNrX3VybCI6Imh0dHA6Ly9mY2RjYzQ3NjdhY2Iubmdyb2suaW8vIiwibWV0aG9kIjoiOVBBWSJ9&signature=u%2FiWFdadv8N22nLq4irmfTxXnluFBMfIH%2BUD7W2Q0fA%3D";
         switch (v.getId()) {
             case R.id.ll_quet_ma:
                 Log.d(TAG, "onClick: ll_rut_tien");

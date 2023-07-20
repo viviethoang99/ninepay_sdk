@@ -6,10 +6,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.module.NPayLibrary;
-import com.npsdk.module.utils.Actions;
-import com.npsdk.module.utils.Constants;
-import com.npsdk.module.utils.Flavor;
-import com.npsdk.module.utils.Preference;
+import com.npsdk.module.utils.*;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -63,6 +60,7 @@ public class ApiClient {
                     .addInterceptor(chain -> {
                         Request.Builder builder = chain.request()
                                 .newBuilder()
+//                                .addHeader("Device-ID", DeviceUtils.getDeviceID(NPayLibrary.getInstance().activity))
                                 .addHeader("Merchant-Code", NPayLibrary.getInstance().sdkConfig.getMerchantCode())
                                 .addHeader("App-Type", "SDK");
                         String Rke = EncryptServiceHelper.INSTANCE.getRandomkeyEncrypt();

@@ -94,6 +94,7 @@ public class NPayActivity extends AppCompatActivity {
                 webView2.setVisibility(View.GONE);
                 webView.setVisibility(View.VISIBLE);
                 webView.loadUrl(Utils.getUrlActionShop(route), headerWebView);
+                System.out.println("Webview 1 load url " + Utils.getUrlActionShop(route));
                 showOrHideToolbar();
             } else {
                 if (Actions.listActionSdk().contains(route)) {
@@ -101,6 +102,11 @@ public class NPayActivity extends AppCompatActivity {
                     webView.setVisibility(View.VISIBLE);
                     webView.loadUrl(Utils.getUrlActionSdk(route), headerWebView);
                     System.out.println("Webview 1 load url " + Utils.getUrlActionSdk(route));
+                    return;
+                }
+                if (route.startsWith("http")) {
+                    webView.loadUrl(route, headerWebView);
+                    System.out.println("Webview 1 load url " + route);
                     return;
                 }
                 builder.scheme("https")
@@ -111,7 +117,7 @@ public class NPayActivity extends AppCompatActivity {
                         .appendQueryParameter("Merchant-Uid", jsonObject.getString("Merchant-Uid"))
                         .appendQueryParameter("brand_color", NPayLibrary.getInstance().sdkConfig.getBrandColor())
                         .appendQueryParameter("platform", "android")
-                        .appendQueryParameter("device", DeviceUtils.getDevice());
+                        .appendQueryParameter("device", DeviceUtils.getDeviceName());
                 if (jsonObject.has("order_id")) {
                     builder.appendQueryParameter("order_id", Utils.convertUrlToOrderId(orderId));
                 }
@@ -192,7 +198,7 @@ public class NPayActivity extends AppCompatActivity {
                                 .appendQueryParameter("brand_color", NPayLibrary.getInstance().sdkConfig.getBrandColor())
                                 .appendQueryParameter("platform", "android")
                                 .appendQueryParameter("order_id", Utils.convertUrlToOrderId(url))
-                                .appendQueryParameter("device", DeviceUtils.getDevice());
+                                .appendQueryParameter("device", DeviceUtils.getDeviceName());
                         clearWebview2NonToolbar();
                         webView2.setVisibility(View.GONE);
                         webView.setVisibility(View.VISIBLE);

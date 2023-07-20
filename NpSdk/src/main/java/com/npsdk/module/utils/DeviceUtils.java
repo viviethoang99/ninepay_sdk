@@ -18,7 +18,7 @@ public final class DeviceUtils {
 		return Build.MANUFACTURER + " " + Build.PRODUCT + " " + Build.VERSION.RELEASE + " " + Build.VERSION.SDK_INT;
 	}
 
-	public static String getDevice() {
+	public static String getDeviceName() {
 		String deviceModel = Build.BRAND +"-"+ Build.MODEL;
 		deviceModel = removeAccent(deviceModel);
 		return deviceModel;
