@@ -18,7 +18,6 @@ import com.npsdk.module.model.SdkConfig;
 import com.npsdk.module.utils.Actions;
 import com.npsdk.module.utils.Constants;
 import com.npsdk.module.utils.Flavor;
-import com.npsdk.module.utils.Preference;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String TAG = "MainActivityLOG";
@@ -126,8 +125,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
 
             @Override
-            public void onCallbackListener(String name, Object status, @Nullable Object params) {
-                Toast.makeText(MainActivity.this, name +" "+ status, Toast.LENGTH_SHORT).show();
+            public void sdkDidComplete(String name, Object status, @Nullable Object params) {
+                Toast.makeText(MainActivity.this, name + " " + status, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -147,12 +146,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.ll_quet_ma:
                 Log.d(TAG, "onClick: ll_rut_tien");
-                NPayLibrary.getInstance().openSDKWithAction(Actions.WITHDRAW);
+                NPayLibrary.getInstance().openSDKWithAction(Actions.TRANSFER);
                 break;
             case R.id.ll_nap_tien:
                 Log.d(TAG, "onClick: ll_nap_tien");
-                String phoneDeposit = Preference.getString(this, Flavor.prefKey + Constants.PHONE, "");
-                NPayLibrary.getInstance().openSDKWithAction(Actions.deposit(phoneDeposit, null));
+                NPayLibrary.getInstance().openSDKWithAction(Actions.DEPOSIT);
                 break;
             case R.id.ll_chuyen_tien:
                 NPayLibrary.getInstance().openSDKWithAction(Actions.TRANSFER);
@@ -164,8 +162,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.ll_thanh_toan_hoa_don:
                 Log.d(TAG, "onClick: ll_thanh_toan_hoa_don");
-                NPayLibrary.getInstance().openSDKWithAction(Actions.SHOP);
-
+                NPayLibrary.getInstance().openSDKWithAction(Actions.BILLING);
                 break;
             case R.id.ll_nap_tien_dt:
                 Log.d(TAG, "onClick: ll_nap_tien_dt");
@@ -208,10 +205,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.rl_info:
                 Log.d(TAG, "onClick: layout_sdv");
                 NPayLibrary.getInstance().openSDKWithAction(Actions.OPEN_WALLET);
-//				String url = "https://dev-payment.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2ODU2MzExNzQsImludm9pY2Vfbm8iOiJCaVJSWnhzRSIsImFtb3VudCI6MTAwMDAsImRlc2NyaXB0aW9uIjoiVGhpcyBpcyBkZXNjcmlwdGlvbiIsInJldHVybl91cmwiOiJodHRwOi8vZmNkY2M0NzY3YWNiLm5ncm9rLmlvLyIsImJhY2tfdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJtZXRob2QiOiI5UEFZIn0%3D&signature=btYIvja%2B3ca4m%2Fy7g%2FtcIxxhzHgrJ7FM46seHsfTSWY%3D";
-//				Intent intent = new Intent(v.getContext(), OrderActivity.class);
-//				intent.putExtra("url", url);
-//				startActivity(intent);
                 break;
             case R.id.btnClose:
                 layoutGate.setVisibility(View.GONE);
@@ -219,23 +212,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_thanh_toan:
                 //paste url thanh toán vào hàm pay
 
-                NPayLibrary.getInstance().pay(url, Constants.WALLET, DataOrder.Companion.isShowResultScreen());
+                NPayLibrary.getInstance().openPaymentOnSDK(url, Constants.WALLET, DataOrder.Companion.isShowResultScreen());
                 edtUrlPaygate.setText("");
                 break;
             case R.id.btn_thanh_toan2:
-                NPayLibrary.getInstance().pay(url, Constants.ATM_CARD, DataOrder.Companion.isShowResultScreen());
+                NPayLibrary.getInstance().openPaymentOnSDK(url, Constants.ATM_CARD, DataOrder.Companion.isShowResultScreen());
                 edtUrlPaygate.setText("");
                 break;
             case R.id.btn_thanh_toan3:
                 //paste url thanh toán vào hàm pay
-                NPayLibrary.getInstance().pay(url, Constants.CREDIT_CARD, DataOrder.Companion.isShowResultScreen());
+                NPayLibrary.getInstance().openPaymentOnSDK(url, Constants.CREDIT_CARD, DataOrder.Companion.isShowResultScreen());
                 break;
             case R.id.btn_thanh_toan4:
                 //paste url thanh toán vào hàm pay
-                NPayLibrary.getInstance().pay(url, null, DataOrder.Companion.isShowResultScreen());
+                NPayLibrary.getInstance().openPaymentOnSDK(url, Constants.DEFAULT, DataOrder.Companion.isShowResultScreen());
                 break;
             case R.id.test_click:
-                NPayLibrary.getInstance().getUserInfo();
+//                NPayLibrary.getInstance().getUserInfo();
 //                NPayLibrary.getInstance().openWallet(url);
 //                String old = Preference.getString(this, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
 //                Preference.save(this, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN, old + "a");

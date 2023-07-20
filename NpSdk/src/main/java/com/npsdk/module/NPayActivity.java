@@ -21,7 +21,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.npsdk.R;
-import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.module.utils.*;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -97,12 +96,11 @@ public class NPayActivity extends AppCompatActivity {
                 webView.loadUrl(Utils.getUrlActionShop(route), headerWebView);
                 showOrHideToolbar();
             } else {
-                if (route.startsWith("http")) {
-                    // Call load url direct
+                if (Actions.listActionSdk().contains(route)) {
                     webView2.setVisibility(View.GONE);
                     webView.setVisibility(View.VISIBLE);
-                    webView.loadUrl(route, headerWebView);
-                    System.out.println("Webview 1 load url " + route);
+                    webView.loadUrl(Utils.getUrlActionSdk(route), headerWebView);
+                    System.out.println("Webview 1 load url " + Utils.getUrlActionSdk(route));
                     return;
                 }
                 builder.scheme("https")
@@ -278,9 +276,6 @@ public class NPayActivity extends AppCompatActivity {
                 if (intent.getAction().equals("nativeBroadcast")) {
                     if (intent.getStringExtra("action").equals("close")) {
                         finish();
-                        if (DataOrder.Companion.getActivityOrder() != null) {
-                            DataOrder.Companion.getActivityOrder().finish();
-                        }
                     }
                 }
             }
@@ -391,7 +386,10 @@ public class NPayActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(changeUrlBR);
+        if (changeUrlBR != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(changeUrlBR);
+            changeUrlBR = null;
+        }
         clearWebview2NonToolbar();
         closeCamera();
         super.onDestroy();

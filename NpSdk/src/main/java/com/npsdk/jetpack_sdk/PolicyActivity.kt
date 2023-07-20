@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import com.npsdk.R
+import com.npsdk.jetpack_sdk.base.listener.CloseListener
 import com.npsdk.jetpack_sdk.base.view.TopAppBarApp
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
 import com.npsdk.jetpack_sdk.theme.initColor
@@ -51,6 +52,12 @@ class PolicyActivity : ComponentActivity() {
                 }
             }
         }
+        CloseListener().listener(this)
+    }
+
+    override fun onDestroy() {
+        CloseListener().cancelListener(this)
+        super.onDestroy()
     }
 
     @Composable

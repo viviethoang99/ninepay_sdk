@@ -40,6 +40,7 @@ import com.npsdk.jetpack_sdk.DataOrder.Companion.isProgressing
 import com.npsdk.jetpack_sdk.DataOrder.Companion.isStartScreen
 import com.npsdk.jetpack_sdk.DataOrder.Companion.userInfo
 import com.npsdk.jetpack_sdk.base.AppUtils
+import com.npsdk.jetpack_sdk.base.listener.CloseListener
 import com.npsdk.jetpack_sdk.base.view.*
 import com.npsdk.jetpack_sdk.repository.*
 import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamsWallet
@@ -113,6 +114,12 @@ class OrderActivity : ComponentActivity() {
             }
         }
 
+        CloseListener().listener(this)
+    }
+
+    override fun onDestroy() {
+        CloseListener().cancelListener(this)
+        super.onDestroy()
     }
 
     @Composable
@@ -237,8 +244,7 @@ class OrderActivity : ComponentActivity() {
                         showDialogDeposit = !showDialogDeposit
                     }, onDeposit = {
                         isProgressing = true
-                        val phone = Preference.getString(context, Flavor.prefKey + Constants.PHONE, "")
-                        NPayLibrary.getInstance().openSDKWithAction(Actions.deposit(phone, null))
+                        NPayLibrary.getInstance().openSDKWithAction(Actions.DEPOSIT)
                     })
                 }
 
@@ -395,7 +401,7 @@ class OrderActivity : ComponentActivity() {
                     .padding(vertical = 8.dp)
             ) {
                 // Khong chon method nao.
-                if (methodDefault == null) listMethodsAll.forEachIndexed { index, item ->
+                if (methodDefault == null || methodDefault.equals(Constants.DEFAULT)) listMethodsAll.forEachIndexed { index, item ->
 
                     Column {
                         ItemRow(item, item.code == DataOrder.selectedItemMethod) { ->
@@ -582,8 +588,7 @@ class OrderActivity : ComponentActivity() {
                     modifier = Modifier.width(80.dp).height(28.dp).clip(RoundedCornerShape(14.dp))
                         .background(colorResource(R.color.background)).clickableWithoutRipple {
                             isProgressing = true
-                            val phone = Preference.getString(context, Flavor.prefKey + Constants.PHONE, "")
-                            NPayLibrary.getInstance().openSDKWithAction(Actions.deposit(phone, null))
+                            NPayLibrary.getInstance().openSDKWithAction(Actions.DEPOSIT)
                         }
                 ) {
                     Text(

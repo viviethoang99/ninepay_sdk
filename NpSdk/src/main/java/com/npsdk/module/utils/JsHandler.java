@@ -77,6 +77,17 @@ public class JsHandler {
                 case close:
                     NPayLibrary.getInstance().close();
                     break;
+                case backToApp:
+                    NPayLibrary.getInstance().close();
+                    try {
+                        if (paramJson.has("name")) {
+                            String screenName = paramJson.getString("name");
+                            NPayLibrary.getInstance().callbackBackToAppfrom(screenName);
+                        }
+                    } catch (Exception e) {
+                        System.out.println("ERROR backToApp " + e.getMessage());
+                    }
+                    break;
                 case getDeviceID:
                     break;
                 case share:
@@ -154,9 +165,6 @@ public class JsHandler {
                     break;
                 case result_payment_token:
                     handleCallbackPaymentToken(paramJson);
-                    break;
-                case backToApp:
-                    System.out.println("backToApp " + paramJson);
                     break;
                 default:
             }

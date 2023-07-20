@@ -98,7 +98,7 @@ class CustomInterceptor implements Interceptor {
         Response response = chain.proceed(request);
 
 
-        if ((response.code() == 401 || response.code() == 403) && !DataOrder.Companion.isProgressing()) {
+        if ((response.code() == 401 || response.code() == Constants.NOT_LOGIN) && !DataOrder.Companion.isProgressing()) {
             DataOrder.Companion.setProgressing(true);
             new Handler(Looper.getMainLooper()).post(() -> {
                 // Gọi sang webview login

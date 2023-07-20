@@ -1,9 +1,6 @@
 package com.npsdk;
 
 import androidx.annotation.Nullable;
-import com.npsdk.module.model.Bank;
-
-import java.util.List;
 
 public interface LibListener {
 	public void getInfoSuccess(String jsonData);
@@ -13,7 +10,7 @@ public interface LibListener {
 	public void onLogoutSuccessful();
 
 	public void onCloseSDK();
-	public void onCallbackListener(String name, Object status, @Nullable Object params);
+	public void sdkDidComplete(String name, Object status, @Nullable Object params);
 
 	public void backToAppFrom(String screen);
 }
