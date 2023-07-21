@@ -46,7 +46,7 @@ public interface ApiService {
 
     @FormUrlEncoded
     @POST("/sdk/v1/paygate-whitelabel/create-order")
-    Call<CreateOrderCardModel> createOrderCardWallet(@Field("data") String url, @Field("method") String method);
+    Call<CreateOrderCardModel> createOrderCardWallet(@Field("data") String url, @Field("method") String method, @Field("amount") String amount);
 
     @GET("/sdk/v1/paygate-whitelabel/banks-support")
     Call<ListBankModel> getListBanks();

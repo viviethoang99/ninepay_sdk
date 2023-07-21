@@ -299,7 +299,8 @@ class OrderActivity : ComponentActivity() {
                             return@Footer
                         }
                         val paramsCreateOrder = CreateOrderParamsWallet(
-                            url = DataOrder.urlData, method = Constants.WALLET
+                            url = DataOrder.urlData, method = Constants.WALLET,
+                            amount = DataOrder.totalAmount.toString()
                         )
                         appViewModel.isShowLoading = true
                         CreateOrderWalletRepo().create(context, paramsCreateOrder, CallbackCreateOrder {
