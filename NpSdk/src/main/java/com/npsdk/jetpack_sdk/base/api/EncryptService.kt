@@ -2,6 +2,7 @@ package com.npsdk.jetpack_sdk.base.api
 
 import com.npsdk.module.NPayLibrary
 import com.npsdk.module.utils.Constants
+import com.npsdk.module.utils.DeviceUtils
 import com.npsdk.module.utils.Preference
 import org.bouncycastle.util.encoders.Base64
 import org.bouncycastle.util.io.pem.PemReader
@@ -46,11 +47,19 @@ object EncryptServiceHelper {
 
     fun getRandomkeyRaw(): String {
         if (randomKeyRaw != null) return randomKeyRaw!!
-        val date = System.currentTimeMillis().toString()
-        val md = MessageDigest.getInstance("MD5")
-        val bigInt = BigInteger(1, md.digest(date.toByteArray(Charsets.UTF_8)))
-        randomKeyRaw = String.format("%032x", bigInt) // Md5 date
+        val input = getUniqueID()
+        randomKeyRaw = getMd5Data(input)
         return randomKeyRaw!!
+    }
+
+    fun getMd5Data(data: String): String {
+        val md = MessageDigest.getInstance("MD5")
+        val bigInt = BigInteger(1, md.digest(data.toByteArray(Charsets.UTF_8)))
+        return String.format("%032x", bigInt) // Md5 date
+    }
+
+   private fun getUniqueID(): String {
+        return DeviceUtils.getUniqueID(NPayLibrary.getInstance().activity)
     }
 
     private fun getPublicKeySaved(): String? {
@@ -108,7 +117,7 @@ object EncryptServiceHelper {
         return jsonEncoded
     }
 
-    private fun encryptRandomkey(data: String, publicKey: String): String {
+    fun encryptRandomkey(data: String, publicKey: String): String {
         val publicKeyRaw = "-----BEGIN PUBLIC KEY-----$publicKey-----END PUBLIC KEY-----"
         val reader = PemReader(StringReader(publicKeyRaw))
         val pemObject = reader.readPemObject()

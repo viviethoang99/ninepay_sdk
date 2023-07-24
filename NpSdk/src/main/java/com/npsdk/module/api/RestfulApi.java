@@ -1,6 +1,8 @@
 package com.npsdk.module.api;
 
 import android.content.Context;
+import com.npsdk.jetpack_sdk.base.api.EncryptServiceHelper;
+import com.npsdk.jetpack_sdk.repository.model.PublickeyModel;
 import com.npsdk.module.NPayLibrary;
 import com.npsdk.module.model.ActionMerchantResponse;
 import com.npsdk.module.model.RefreshTokenResponse;
@@ -74,6 +76,11 @@ public class RestfulApi {
         return restService.getInfoTask(token);
     }
 
+    public Call<PublickeyModel> GetPublickeyTask() {
+        String uniqueID = EncryptServiceHelper.INSTANCE.getRandomkeyRaw();
+        return restService.getPublickey(uniqueID);
+    }
+
     public Call<RefreshTokenResponse> RefreshTokenTask(String refreshToken, String deviceId, String UID) {
         return restService.refreshToken(refreshToken, deviceId, UID);
     }
@@ -86,6 +93,9 @@ public class RestfulApi {
 
         @GET("/sdk/v2/user/info")
         Call<UserInfoResponse> getInfoTask(@Header("Authorization") String token);
+
+        @GET("sdk/v2/setting/keys")
+        Call<PublickeyModel> getPublickey(@Header("Device-Id") String deviceId);
 
         @FormUrlEncoded
         @POST("/sdk/v1/login/refresh_token")

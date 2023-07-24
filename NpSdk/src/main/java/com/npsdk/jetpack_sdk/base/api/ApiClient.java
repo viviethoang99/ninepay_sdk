@@ -6,7 +6,10 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.module.NPayLibrary;
-import com.npsdk.module.utils.*;
+import com.npsdk.module.utils.Actions;
+import com.npsdk.module.utils.Constants;
+import com.npsdk.module.utils.Flavor;
+import com.npsdk.module.utils.Preference;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -41,7 +44,7 @@ public class ApiClient {
     @Nullable
     private static String getToken() {
         try {
-            String token = Preference.getString(NPayLibrary.getInstance().activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN);
+            String token = Preference.getString(NPayLibrary.getInstance().activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN, null);
             if (token != null) token = "Bearer " + token;
             return token;
         } catch (Exception e) {
@@ -60,15 +63,15 @@ public class ApiClient {
                     .addInterceptor(chain -> {
                         Request.Builder builder = chain.request()
                                 .newBuilder()
-//                                .addHeader("Device-ID", DeviceUtils.getDeviceID(NPayLibrary.getInstance().activity))
                                 .addHeader("Merchant-Code", NPayLibrary.getInstance().sdkConfig.getMerchantCode())
                                 .addHeader("App-Type", "SDK");
                         String Rke = EncryptServiceHelper.INSTANCE.getRandomkeyEncrypt();
                         if (getToken() != null && Rke != null) {
                             builder.addHeader("Authorization", getToken())
                                     .addHeader("Rke", Rke);
+                        } else if (Rke != null){
+                            builder.addHeader("Rke", Rke);
                         }
-
 
                         Request request = builder.build();
                         return chain.proceed(request);
@@ -76,7 +79,7 @@ public class ApiClient {
                     .connectTimeout(30, TimeUnit.SECONDS)
                     .writeTimeout(30, TimeUnit.SECONDS)
                     .readTimeout(30, TimeUnit.SECONDS)
-//                    .addInterceptor(logging)
+                    .addInterceptor(logging)
                     .addInterceptor(new CustomInterceptor())
                     .build();
         } catch (Exception e) {

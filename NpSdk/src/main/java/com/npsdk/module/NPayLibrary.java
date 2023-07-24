@@ -16,6 +16,7 @@ import com.npsdk.jetpack_sdk.OrderActivity;
 import com.npsdk.jetpack_sdk.base.AppUtils;
 import com.npsdk.jetpack_sdk.repository.GetInfoMerchant;
 import com.npsdk.module.api.GetInfoTask;
+import com.npsdk.module.api.GetPublickeyTask;
 import com.npsdk.module.api.RefreshTokenTask;
 import com.npsdk.module.model.SdkConfig;
 import com.npsdk.module.model.UserInfoModel;
@@ -51,6 +52,10 @@ public class NPayLibrary {
         this.listener = listener;
         flavor.configFlavor(sdkConfig.getEnv());
         new GetInfoMerchant().get();
+        if (!AppUtils.INSTANCE.isLogged()) {
+            GetPublickeyTask getPublickeyTask = new GetPublickeyTask(activity);
+            getPublickeyTask.execute();
+        }
     }
 
     public void openSDKWithAction(String actions) {
@@ -76,6 +81,7 @@ public class NPayLibrary {
             if (type != null && type.equals(Constants.WALLET)) {
                 String pubKey = Preference.getString(activity, Flavor.prefKey + Constants.PUBLIC_KEY, "");
                 String token = Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
+
                 if (pubKey.isEmpty() || token.isEmpty()) {
                     DataOrder.Companion.setProgressing(true);
                     DataOrder.Companion.setStartScreen(true);
