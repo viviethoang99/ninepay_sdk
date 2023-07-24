@@ -28,14 +28,17 @@ public class GetPublickeyTask extends AsyncTask<Void, Void, Void> {
                 @Override
                 public void onResponse(@NonNull Call<PublickeyModel> call, @NonNull Response<PublickeyModel> response) {
                     Log.d("Response", "response.code() ==   " + response.code());
-                    if (response.code() != 200) {
+                    if (response.code() == 419) {
+                        GetPublickeyTask getPublickeyTask = new GetPublickeyTask(context);
+                        getPublickeyTask.execute();
                         return;
                     }
-                    PublickeyModel data = response.body();
-
-                    if (data != null && data.getErrorCode() == 0) {
-                        String publicKey = data.getData().getPublicKey();
-                        Preference.save(context, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PUBLIC_KEY, publicKey);
+                    if (response.code() == 200) {
+                        PublickeyModel data = response.body();
+                        if (data != null && data.getErrorCode() == 0) {
+                            String publicKey = data.getData().getPublicKey();
+                            Preference.save(context, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PUBLIC_KEY, publicKey);
+                        }
                     }
                 }
 
