@@ -75,10 +75,10 @@ public class JsHandler {
                     activity.startActivity(intent);
                     break;
                 case close:
-                    NPayLibrary.getInstance().close();
+                    activity.finish();
                     break;
                 case backToApp:
-                    NPayLibrary.getInstance().close();
+                    activity.finish();
                     try {
                         if (paramJson.has("name")) {
                             String screenName = paramJson.getString("name");
@@ -230,7 +230,7 @@ public class JsHandler {
                         NPayLibrary.getInstance().getUserInfoSendToPayment(new Runnable() {
                             @Override
                             public void run() {
-                                NPayLibrary.getInstance().close();
+                                activity.finish();
                             }
                         });
                     } else if (isLoginSuccess) {
