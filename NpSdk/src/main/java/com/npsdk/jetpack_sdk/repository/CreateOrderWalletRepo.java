@@ -22,7 +22,7 @@ public class CreateOrderWalletRepo extends BaseApiClient {
 
     public void create(Context context, CreateOrderParamsWallet param, CallbackCreateOrder callbackCreateOrder) {
         executor.execute(() -> {
-            Call<CreateOrderCardModel> call = apiService.createOrderCardWallet(param.getUrl(), param.getMethod());
+            Call<CreateOrderCardModel> call = apiService.createOrderCardWallet(param.getUrl(), param.getMethod(), param.getAmount());
             enqueue(call, new Callback<CreateOrderCardModel>() {
                 @Override
                 public void onResponse(Call<CreateOrderCardModel> call, Response<CreateOrderCardModel> response) {

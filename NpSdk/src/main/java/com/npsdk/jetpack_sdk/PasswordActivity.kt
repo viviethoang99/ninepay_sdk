@@ -378,7 +378,8 @@ class PasswordActivity : ComponentActivity() {
     ) {
         appViewModel.showLoading()
         val params = CreateOrderParamsWallet(
-            url = DataOrder.urlData, method = Constants.WALLET
+            url = DataOrder.urlData, method = Constants.WALLET,
+            amount = DataOrder.totalAmount.toString()
         )
         CreateOrderWalletRepo().create(context, params, CallbackCreateOrder {
 

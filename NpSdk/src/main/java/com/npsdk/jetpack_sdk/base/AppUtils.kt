@@ -51,11 +51,18 @@ object AppUtils {
         }
     }
 
-    fun isHavePublicKey(): String {
-        return Preference.getString(
+    fun isLogged(): Boolean {
+        val publicKey = Preference.getString(
             NPayLibrary.getInstance().activity,
             NPayLibrary.getInstance().sdkConfig.env + Constants.PUBLIC_KEY, ""
         )
+
+        val accessToken = Preference.getString(
+            NPayLibrary.getInstance().activity,
+            NPayLibrary.getInstance().sdkConfig.env + Constants.ACCESS_TOKEN, ""
+        )
+
+        return publicKey.isNotBlank() && accessToken.isNotBlank()
     }
 
     fun isNeedUpdateWebview(context: Context): Boolean {

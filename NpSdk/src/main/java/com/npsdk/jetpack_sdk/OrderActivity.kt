@@ -141,7 +141,7 @@ class OrderActivity : ComponentActivity() {
                     DataOrder.dataOrderSaved!!.data.amount
                 setDefaultAmount()
             })
-            if (!AppUtils.isHavePublicKey().isNullOrBlank()) {
+            if (AppUtils.isLogged()) {
                 // Get user info
                 NPayLibrary.getInstance().getUserInfoSendToPayment(null)
             }
@@ -169,7 +169,7 @@ class OrderActivity : ComponentActivity() {
             return
         }
 
-        if (!AppUtils.isHavePublicKey().isNullOrBlank()) {
+        if (AppUtils.isLogged()) {
             if (userInfo == null) {
                 ShimmerLoading()
                 return
@@ -268,7 +268,7 @@ class OrderActivity : ComponentActivity() {
                     if (methodDefault == Constants.WALLET || DataOrder.selectedItemMethod == Constants.WALLET) {
                         if (userInfo == null) {
 
-                            if (AppUtils.isHavePublicKey().isNullOrBlank()) {
+                            if (!AppUtils.isLogged()) {
                                 isProgressing = true
                                 isStartScreen = false
                                 // Gọi sang webview login
@@ -299,7 +299,8 @@ class OrderActivity : ComponentActivity() {
                             return@Footer
                         }
                         val paramsCreateOrder = CreateOrderParamsWallet(
-                            url = DataOrder.urlData, method = Constants.WALLET
+                            url = DataOrder.urlData, method = Constants.WALLET,
+                            amount = DataOrder.totalAmount.toString()
                         )
                         appViewModel.isShowLoading = true
                         CreateOrderWalletRepo().create(context, paramsCreateOrder, CallbackCreateOrder {
