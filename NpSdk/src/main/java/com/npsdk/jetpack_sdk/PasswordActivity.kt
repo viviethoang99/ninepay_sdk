@@ -54,6 +54,7 @@ import com.npsdk.jetpack_sdk.theme.initColor
 import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.npsdk.module.NPayLibrary
+import com.npsdk.module.PaymentMethod
 import com.npsdk.module.utils.*
 
 class PasswordActivity : ComponentActivity() {
@@ -378,7 +379,7 @@ class PasswordActivity : ComponentActivity() {
     ) {
         appViewModel.showLoading()
         val params = CreateOrderParamsWallet(
-            url = DataOrder.urlData, method = Constants.WALLET,
+            url = DataOrder.urlData, method = PaymentMethod.WALLET,
             amount = DataOrder.totalAmount.toString()
         )
         CreateOrderWalletRepo().create(context, params, CallbackCreateOrder {

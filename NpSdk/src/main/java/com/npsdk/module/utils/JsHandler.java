@@ -22,6 +22,7 @@ import com.npsdk.jetpack_sdk.OrderActivity;
 import com.npsdk.jetpack_sdk.ResultPayment;
 import com.npsdk.module.NPayActivity;
 import com.npsdk.module.NPayLibrary;
+import com.npsdk.module.PaymentMethod;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -237,7 +238,7 @@ public class JsHandler {
                         if (DataOrder.Companion.isStartScreen()) {
                             // Co the la login den tu viec nap tien
                             Intent intent = new Intent(activity, OrderActivity.class);
-                            intent.putExtra("method", Constants.WALLET);
+                            intent.putExtra("method", PaymentMethod.WALLET);
                             intent.putExtra("url", DataOrder.Companion.getUrlData());
                             activity.startActivity(intent);
                         }

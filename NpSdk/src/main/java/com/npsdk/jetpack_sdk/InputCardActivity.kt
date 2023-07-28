@@ -46,8 +46,8 @@ import com.npsdk.jetpack_sdk.theme.initColor
 import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.npsdk.module.NPayLibrary
+import com.npsdk.module.PaymentMethod
 import com.npsdk.module.utils.Actions
-import com.npsdk.module.utils.Constants
 import com.npsdk.module.utils.NameCallback
 
 class InputCardActivity : ComponentActivity() {
@@ -129,7 +129,7 @@ class InputCardActivity : ComponentActivity() {
                 // Default wallet
                 DataOrder.amount = data!!.data.amount
                 setDefaultAmount()
-                if (method == Constants.ATM_CARD) {
+                if (method == PaymentMethod.ATM_CARD) {
                     DataOrder.totalAmount = data.data.feeData.atmCard
                 }
             })
@@ -165,7 +165,7 @@ class InputCardActivity : ComponentActivity() {
                 }
 
                 item {
-                    if (method == Constants.ATM_CARD) CardInland(viewModel = inputViewModel) else if (method == Constants.CREDIT_CARD) CardInternational(
+                    if (method == PaymentMethod.ATM_CARD) CardInland(viewModel = inputViewModel) else if (method == PaymentMethod.CREDIT_CARD) CardInternational(
                         viewModel = inputViewModel
                     )
                 }
@@ -196,7 +196,7 @@ class InputCardActivity : ComponentActivity() {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (method == Constants.CREDIT_CARD && DataOrder.dataOrderSaved != null) PolicyView()
+                if (method == PaymentMethod.CREDIT_CARD && DataOrder.dataOrderSaved != null) PolicyView()
                 FooterButton(onClickBack = {
                     setDefaultAmount()
                     (context as Activity).finish()
@@ -204,14 +204,14 @@ class InputCardActivity : ComponentActivity() {
                     DataOrder.activityOrder?.finish() // Close order activity
 
                     when (method) {
-                        Constants.CREDIT_CARD -> createOrderInternational(
+                        PaymentMethod.CREDIT_CARD -> createOrderInternational(
                             inputViewModel,
                             context,
                             appViewModel,
                             isSaveToken
                         )
 
-                        Constants.ATM_CARD -> createOrderInland(
+                        PaymentMethod.ATM_CARD -> createOrderInland(
                             inputViewModel, context, appViewModel,
                             isSaveToken
                         )
@@ -327,7 +327,7 @@ fun createOrderInternational(
         expireYear = year,
         cvc = viewModel.cvvCardInter.value,
         amount = amount.toString(),
-        method = Constants.CREDIT_CARD,
+        method = PaymentMethod.CREDIT_CARD,
         saveToken = if (saveToken) 1 else 0
     )
 
@@ -390,7 +390,7 @@ fun createOrderInland(
         expireMonth = month,
         expireYear = year,
         amount = amount.toString(),
-        method = Constants.ATM_CARD,
+        method = PaymentMethod.ATM_CARD,
         saveToken = if (isSaveToken) 1 else 0
     )
 

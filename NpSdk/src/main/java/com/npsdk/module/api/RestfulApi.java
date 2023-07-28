@@ -94,7 +94,7 @@ public class RestfulApi {
         @GET("/sdk/v2/user/info")
         Call<UserInfoResponse> getInfoTask(@Header("Authorization") String token);
 
-        @GET("sdk/v2/setting/keys")
+        @GET("/sdk/v2/setting/keys")
         Call<PublickeyModel> getPublickey(@Header("Device-Id") String deviceId);
 
         @FormUrlEncoded

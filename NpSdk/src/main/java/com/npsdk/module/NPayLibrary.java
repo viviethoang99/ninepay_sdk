@@ -28,9 +28,6 @@ import java.util.Map;
 
 @SuppressLint("StaticFieldLeak")
 public class NPayLibrary {
-    public static final String STAGING = "staging";
-    public static final String SANDBOX = "sandbox";
-    public static final String PRODUCTION = "prod";
     private static final String TAG = NPayLibrary.class.getSimpleName();
     public static Flavor flavor;
     private static NPayLibrary INSTANCE;
@@ -65,11 +62,6 @@ public class NPayLibrary {
     }
 
     public void openPaymentOnSDK(String url, @Nullable String type, Boolean isShowResultScreen) {
-        if (AppUtils.INSTANCE.isNeedUpdateWebview(activity)) {
-            Toast.makeText(activity, "Bạn cần cập nhật Webview để tiếp tục thanh toán!", Toast.LENGTH_LONG).show();
-            AppUtils.INSTANCE.openPlayStore(activity);
-            return;
-        }
         if (url == null || url.trim().isEmpty()) {
             Toast.makeText(activity, "Vui lòng nhập URL thanh toán!", Toast.LENGTH_SHORT).show();
             return;
@@ -77,8 +69,8 @@ public class NPayLibrary {
         DataOrder.Companion.setUrlData(url);
         DataOrder.Companion.setShowResultScreen(isShowResultScreen);
 
-        if (type == null || type.equals(Constants.DEFAULT) || type.equals(Constants.WALLET)) {
-            if (type != null && type.equals(Constants.WALLET)) {
+        if (type == null || type.equals(PaymentMethod.DEFAULT) || type.equals(PaymentMethod.WALLET)) {
+            if (type != null && type.equals(PaymentMethod.WALLET)) {
                 String pubKey = Preference.getString(activity, Flavor.prefKey + Constants.PUBLIC_KEY, "");
                 String token = Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
 

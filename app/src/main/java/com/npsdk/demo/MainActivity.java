@@ -14,9 +14,9 @@ import androidx.appcompat.widget.Toolbar;
 import com.npsdk.LibListener;
 import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.module.NPayLibrary;
+import com.npsdk.module.PaymentMethod;
 import com.npsdk.module.model.SdkConfig;
 import com.npsdk.module.utils.Actions;
-import com.npsdk.module.utils.Constants;
 import com.npsdk.module.utils.Flavor;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -212,20 +212,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_thanh_toan:
                 //paste url thanh toán vào hàm pay
 
-                NPayLibrary.getInstance().openPaymentOnSDK(url, Constants.WALLET, DataOrder.Companion.isShowResultScreen());
+                NPayLibrary.getInstance().openPaymentOnSDK(url, PaymentMethod.WALLET, DataOrder.Companion.isShowResultScreen());
                 edtUrlPaygate.setText("");
                 break;
             case R.id.btn_thanh_toan2:
-                NPayLibrary.getInstance().openPaymentOnSDK(url, Constants.ATM_CARD, DataOrder.Companion.isShowResultScreen());
+                NPayLibrary.getInstance().openPaymentOnSDK(url, PaymentMethod.ATM_CARD, DataOrder.Companion.isShowResultScreen());
                 edtUrlPaygate.setText("");
                 break;
             case R.id.btn_thanh_toan3:
                 //paste url thanh toán vào hàm pay
-                NPayLibrary.getInstance().openPaymentOnSDK(url, Constants.CREDIT_CARD, DataOrder.Companion.isShowResultScreen());
+                NPayLibrary.getInstance().openPaymentOnSDK(url, PaymentMethod.CREDIT_CARD, DataOrder.Companion.isShowResultScreen());
                 break;
             case R.id.btn_thanh_toan4:
                 //paste url thanh toán vào hàm pay
-                NPayLibrary.getInstance().openPaymentOnSDK(url, Constants.DEFAULT, DataOrder.Companion.isShowResultScreen());
+                NPayLibrary.getInstance().openPaymentOnSDK(url, PaymentMethod.DEFAULT, DataOrder.Companion.isShowResultScreen());
                 break;
             case R.id.test_click:
 //                NPayLibrary.getInstance().getUserInfo();
