@@ -217,8 +217,11 @@ class OrderActivity : ComponentActivity() {
                                         return@ShowMethodPayment
                                     }
 
-                                    // Set mac dinh item dau tien neu link bank click
                                     if (DataOrder.selectedItemMethod == PaymentMethod.LINK_BANK) {
+                                        // Lấy phi theo giống hình thức số dư ví, bởi vì thẻ lưu trên ví.
+                                        DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.wallet
+
+                                        // Set mac dinh item dau tien neu link bank click
                                         if (bankTokenSelected == null) {
                                             // Chon mac dinh ngan hang lien ket dau tien neu co
                                             userInfo?.let {
@@ -299,6 +302,9 @@ class OrderActivity : ComponentActivity() {
                             inputViewModel.stringDialog.value = "Vui lòng chọn ngân hàng liên kết để thanh toán!"
                             return@Footer
                         }
+                        // Lấy phi theo giống hình thức số dư ví, bởi vì thẻ lưu trên ví.
+                        DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.wallet
+
                         val paramsCreateOrder = CreateOrderParamsWallet(
                             url = DataOrder.urlData, method = PaymentMethod.WALLET,
                             amount = DataOrder.totalAmount.toString()
@@ -465,6 +471,8 @@ class OrderActivity : ComponentActivity() {
                         modifier = Modifier.background(colorResource(R.color.background))
                             .padding(horizontal = 12.dp, vertical = 10.dp).clickableWithoutRipple {
                                 DataOrder.selectedItemMethod = PaymentMethod.LINK_BANK
+                                // Lấy phi theo giống hình thức số dư ví, bởi vì thẻ lưu trên ví.
+                                DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.wallet
                                 bankTokenSelected = item
                             },
                         verticalAlignment = Alignment.CenterVertically,
