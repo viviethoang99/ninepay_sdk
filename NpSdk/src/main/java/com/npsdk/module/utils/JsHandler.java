@@ -77,6 +77,7 @@ public class JsHandler {
                     break;
                 case close:
                     activity.finish();
+                    NPayLibrary.getInstance().listener.onCloseSDK();
                     break;
                 case backToApp:
                     activity.finish();
