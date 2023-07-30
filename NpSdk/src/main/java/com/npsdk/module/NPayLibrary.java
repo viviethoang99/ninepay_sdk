@@ -222,7 +222,7 @@ public class NPayLibrary {
         header.put("Access-Control-Allow-Origin", "*");
         header.put("brand_color", sdkConfig.getBrandColor());
         header.put("platform", "android");
-        header.put("device", DeviceUtils.getDeviceName());
+        header.put("device-name", DeviceUtils.getDeviceName());
         header.put("User-Agent", DeviceUtils.getDeviceName());
         return header;
     }

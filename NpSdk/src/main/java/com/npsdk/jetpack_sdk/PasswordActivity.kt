@@ -430,6 +430,7 @@ class PasswordActivity : ComponentActivity() {
                                                 NPayLibrary.getInstance().callBackToMerchant(
                                                     NameCallback.SDK_PAYMENT, true, null
                                                 )
+                                                NPayLibrary.getInstance().listener.onCloseSDK()
                                             }
                                         }
                                     })

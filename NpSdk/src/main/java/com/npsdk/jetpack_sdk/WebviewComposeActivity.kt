@@ -145,6 +145,7 @@ class WebviewComposeActivity : ComponentActivity() {
                                                 NPayLibrary.getInstance().callBackToMerchant(
                                                     NameCallback.SDK_PAYMENT, false, null
                                                 )
+                                                NPayLibrary.getInstance().listener.onCloseSDK()
                                             }
                                         }
                                     } else {
@@ -210,6 +211,7 @@ class WebviewComposeActivity : ComponentActivity() {
             NPayLibrary.getInstance().callBackToMerchant(
                 NameCallback.SDK_PAYMENT, false, null
             )
+            NPayLibrary.getInstance().listener.onCloseSDK()
         }
     }
 

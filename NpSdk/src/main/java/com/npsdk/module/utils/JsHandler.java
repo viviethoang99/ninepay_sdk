@@ -198,6 +198,7 @@ public class JsHandler {
             Boolean isSuccess = status.contains(Constants.SUCCESS);
             NPayLibrary.getInstance().callBackToMerchant(
                     NameCallback.SDK_PAYMENT, isSuccess, null);
+            NPayLibrary.getInstance().listener.onCloseSDK();
         }
 
     }
