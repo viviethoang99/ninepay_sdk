@@ -115,6 +115,9 @@ class ResultPayment : ComponentActivity() {
                     NameCallback.SDK_PAYMENT, isPaymentSuccess(), null
                 )
                 NPayLibrary.getInstance().listener.onCloseSDK()
+                if (!isPaymentSuccess()) {
+                    NPayLibrary.getInstance().callbackError(2002, "Lỗi khi thanh toán")
+                }
             }
         }
 

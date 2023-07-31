@@ -341,7 +341,7 @@ fun createOrderInternational(
                 NPayLibrary.getInstance().callBackToMerchant(
                     NameCallback.SDK_PAYMENT, false, null
                 )
-                NPayLibrary.getInstance().callbackError(2002, "Lỗi khi thanh toán")
+                NPayLibrary.getInstance().callbackError(2002, it1)
             } else if (it.errorCode == 0) {
                 (context as Activity).finish() // Close input card
                 openWebviewOTP(context, it.data!!.redirectUrl!!)
@@ -405,7 +405,7 @@ fun createOrderInland(
                 NPayLibrary.getInstance().callBackToMerchant(
                     NameCallback.SDK_PAYMENT, false, null
                 )
-                NPayLibrary.getInstance().callbackError(2002, "Lỗi khi thanh toán")
+                NPayLibrary.getInstance().callbackError(2002, it1)
             } else if (it.errorCode == 0) {
                 (context as Activity).finish() // Close input card
                 openWebviewOTP(context, it.data!!.redirectUrl!!)

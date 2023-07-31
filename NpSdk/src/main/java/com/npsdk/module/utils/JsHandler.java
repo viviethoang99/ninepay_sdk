@@ -199,6 +199,7 @@ public class JsHandler {
             NPayLibrary.getInstance().callBackToMerchant(
                     NameCallback.SDK_PAYMENT, isSuccess, null);
             NPayLibrary.getInstance().listener.onCloseSDK();
+            NPayLibrary.getInstance().callbackError(2002, "Lỗi khi thanh toán");
         }
 
     }

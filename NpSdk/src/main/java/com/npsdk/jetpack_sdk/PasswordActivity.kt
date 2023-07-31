@@ -389,7 +389,7 @@ class PasswordActivity : ComponentActivity() {
                     NPayLibrary.getInstance().callBackToMerchant(
                         NameCallback.SDK_PAYMENT, false, null
                     )
-                    NPayLibrary.getInstance().callbackError(2002, "Lỗi khi thanh toán")
+                    NPayLibrary.getInstance().callbackError(2002, it1)
                     appViewModel.hideLoading()
                     inputView.showNotification.value = true
                     inputView.stringDialog.value = it1
@@ -404,7 +404,7 @@ class PasswordActivity : ComponentActivity() {
                                 appViewModel.hideLoading()
                                 inputView.showNotification.value = true
                                 inputView.stringDialog.value = message
-                                NPayLibrary.getInstance().callbackError(2002, "Lỗi khi thanh toán")
+                                NPayLibrary.getInstance().callbackError(2002, it1)
                                 return@run
                             } else {
                                 // Tạo payment ví.

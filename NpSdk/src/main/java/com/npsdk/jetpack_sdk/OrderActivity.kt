@@ -320,7 +320,7 @@ class OrderActivity : ComponentActivity() {
                                     appViewModel.hideLoading()
                                     inputViewModel.showNotification.value = true
                                     inputViewModel.stringDialog.value = it1
-                                    NPayLibrary.getInstance().callbackError(2002, "Lỗi khi thanh toán")
+                                    NPayLibrary.getInstance().callbackError(2002, it1)
                                 } else if (it.errorCode == 0) {
                                     val orderId =
                                         Utils.convertUrlToOrderId(it.data!!.redirectUrl!!)
