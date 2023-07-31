@@ -146,6 +146,7 @@ class WebviewComposeActivity : ComponentActivity() {
                                                     NameCallback.SDK_PAYMENT, false, null
                                                 )
                                                 NPayLibrary.getInstance().listener.onCloseSDK()
+                                                NPayLibrary.getInstance().callbackError(2002, "Lỗi khi thanh toán")
                                             }
                                         }
                                     } else {
@@ -212,6 +213,7 @@ class WebviewComposeActivity : ComponentActivity() {
                 NameCallback.SDK_PAYMENT, false, null
             )
             NPayLibrary.getInstance().listener.onCloseSDK()
+            NPayLibrary.getInstance().callbackError(2002, "Lỗi khi thanh toán")
         }
     }
 

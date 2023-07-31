@@ -31,13 +31,13 @@ public class CreateOrderWalletRepo extends BaseApiClient {
                             callbackCreateOrder.onSuccess(response.body());
                         });
                     } else {
-                        NPayLibrary.getInstance().callbackError(1003, "Đã có lỗi xảy ra, code 1003");
+                        NPayLibrary.getInstance().callbackError(2005, "Lỗi không xác định");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<CreateOrderCardModel> call, Throwable t) {
-                    NPayLibrary.getInstance().callbackError(1003, "Đã có lỗi xảy ra, code 1003");
+                    NPayLibrary.getInstance().callbackError(2005, "Lỗi không xác định");
                 }
             });
         });

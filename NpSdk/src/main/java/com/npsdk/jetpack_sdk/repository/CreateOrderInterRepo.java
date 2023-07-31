@@ -64,19 +64,19 @@ public class CreateOrderInterRepo extends BaseApiClient {
                                 callbackCreateOrder.onSuccess(createOrderCardModel);
                             });
                         } catch (JsonSyntaxException e) {
-                            NPayLibrary.getInstance().callbackError(1007, "Đã có lỗi phân tích cú pháp create payment.");
+                            NPayLibrary.getInstance().callbackError(2004, "Không thể giải mã dữ liệu.");
                         } catch (DecoderException e) {
-                            NPayLibrary.getInstance().callbackError(1007, "Đã có lỗi phân tích cú pháp json");
+                            NPayLibrary.getInstance().callbackError(2005, "Lỗi không xác định");
                         }
 
                     } else {
-                        NPayLibrary.getInstance().callbackError(1007, "Đã có lỗi xảy ra, code 1007");
+                        NPayLibrary.getInstance().callbackError(2005, "Lỗi không xác định");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-                    NPayLibrary.getInstance().callbackError(1007, "Đã có lỗi xảy ra, code 1007");
+                    NPayLibrary.getInstance().callbackError(2005, "Lỗi không xác định");
                 }
             });
         });

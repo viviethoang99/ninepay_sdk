@@ -25,18 +25,18 @@ public class GetListBank extends BaseApiClient {
             enqueue(call, new Callback<ListBankModel>() {
                 @Override
                 public void onResponse(Call<ListBankModel> call, Response<ListBankModel> response) {
-                    if (response.code() == 200 && response.body() != null) {
+                    if (response.code() == 200 && response.body() != null && response.body().getErrorCode() == 0) {
                         updateUI(() -> {
                             callbackListBank.onSuccess(response.body());
                         });
                     } else {
-                        NPayLibrary.getInstance().callbackError(1001, "Đã có lỗi xảy ra, code 1001");
+                        NPayLibrary.getInstance().callbackError(2003, "Không thể lấy thông tin ngân hàng.");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ListBankModel> call, Throwable t) {
-                    NPayLibrary.getInstance().callbackError(1001, "Đã có lỗi xảy ra, code 1001");
+                    NPayLibrary.getInstance().callbackError(2005, "Lỗi không xác định");
                 }
             });
         });

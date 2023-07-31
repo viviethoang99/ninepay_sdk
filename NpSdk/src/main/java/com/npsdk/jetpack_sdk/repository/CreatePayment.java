@@ -41,16 +41,16 @@ public class CreatePayment extends BaseApiClient {
                                 callback.onSuccess(paymentModel.getData().getPaymentId(), paymentModel.getMessage());
                             });
                         } catch (JsonSyntaxException e) {
-                            NPayLibrary.getInstance().callbackError(1004, "Đã có lỗi phân tích cú pháp create payment.");
+                            NPayLibrary.getInstance().callbackError(2004, "Không thể giải mã dữ liệu.");
                         }
                     } else {
-                        NPayLibrary.getInstance().callbackError(1004, "Đã có lỗi xảy ra, code 1004");
+                        NPayLibrary.getInstance().callbackError(2005, "Lỗi không xác định");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-                    NPayLibrary.getInstance().callbackError(1004, "Đã có lỗi xảy ra, code 1004");
+                    NPayLibrary.getInstance().callbackError(2005, "Lỗi không xác định");
                 }
             });
         });

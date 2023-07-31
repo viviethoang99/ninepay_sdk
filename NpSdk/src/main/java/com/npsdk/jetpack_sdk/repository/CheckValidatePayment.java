@@ -26,18 +26,23 @@ public class CheckValidatePayment extends BaseApiClient {
             enqueue(call, new Callback<ValidatePaymentModel>() {
                 @Override
                 public void onResponse(Call<ValidatePaymentModel> call, Response<ValidatePaymentModel> response) {
-                    if (response.body() != null && response.code() == 200 && response.body().getErrorCode() == 0) {
-                        updateUI(() -> {
-                            callbackOrder.onSuccess(response.body());
-                        });
+                    if (response.body() != null && response.code() == 200) {
+                       if (response.body().getErrorCode() == 0) {
+                           updateUI(() -> {
+                               callbackOrder.onSuccess(response.body());
+                           });
+                       } else {
+                           NPayLibrary.getInstance().callbackError(2001, "Lỗi URL thanh toán.");
+                           NPayLibrary.getInstance().close();
+                       }
                     } else {
-                        NPayLibrary.getInstance().callbackError(1000, "Đã có lỗi xảy ra, code 1000");
+                        NPayLibrary.getInstance().callbackError(2005, "Lỗi không xác định");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ValidatePaymentModel> call, Throwable t) {
-                    NPayLibrary.getInstance().callbackError(1000, "Đã có lỗi xảy ra, code 1000");
+                    NPayLibrary.getInstance().callbackError(2005, "Lỗi không xác định");
                 }
             });
         });
