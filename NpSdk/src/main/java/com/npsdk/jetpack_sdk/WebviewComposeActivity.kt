@@ -145,6 +145,8 @@ class WebviewComposeActivity : ComponentActivity() {
                                                 NPayLibrary.getInstance().callBackToMerchant(
                                                     NameCallback.SDK_PAYMENT, false, null
                                                 )
+                                                NPayLibrary.getInstance().listener.onCloseSDK()
+                                                NPayLibrary.getInstance().callbackError(2002, "Lỗi khi thanh toán")
                                             }
                                         }
                                     } else {
@@ -157,7 +159,7 @@ class WebviewComposeActivity : ComponentActivity() {
 
                             if (url.contains("error/payment")) {
                                 finish()
-                                moveToErrorPage(view!!.context, "Payment failed")
+                                moveToErrorPage(view!!.context, "Lỗi khi thanh toán")
                                 return false
                             }
                             return super.shouldOverrideUrlLoading(view, url)
@@ -210,6 +212,8 @@ class WebviewComposeActivity : ComponentActivity() {
             NPayLibrary.getInstance().callBackToMerchant(
                 NameCallback.SDK_PAYMENT, false, null
             )
+            NPayLibrary.getInstance().listener.onCloseSDK()
+            NPayLibrary.getInstance().callbackError(2002, decodeMessage(error))
         }
     }
 

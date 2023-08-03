@@ -55,6 +55,7 @@ import com.npsdk.jetpack_sdk.theme.initColor
 import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.npsdk.module.NPayLibrary
+import com.npsdk.module.PaymentMethod
 import com.npsdk.module.model.Bank
 import com.npsdk.module.model.UserInfoModel
 import com.npsdk.module.utils.*
@@ -150,7 +151,7 @@ class OrderActivity : ComponentActivity() {
         DisposableEffect(DataOrder.dataOrderSaved) {
             if (DataOrder.dataOrderSaved != null) {
                 // Neu mac dinh chon duy nhat vi 9Pay
-                if (methodDefault == Constants.WALLET) {
+                if (methodDefault == PaymentMethod.WALLET) {
                     DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.wallet
                 }
             }
@@ -205,19 +206,22 @@ class OrderActivity : ComponentActivity() {
                                     DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.amount
 
                                     // Phi Vi 9Pay
-                                    if (DataOrder.selectedItemMethod == Constants.WALLET) {
+                                    if (DataOrder.selectedItemMethod == PaymentMethod.WALLET) {
                                         DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.wallet
                                         return@ShowMethodPayment
                                     }
 
                                     // Phi the ATM
-                                    if (DataOrder.selectedItemMethod == Constants.ATM_CARD) {
+                                    if (DataOrder.selectedItemMethod == PaymentMethod.ATM_CARD) {
                                         DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.atmCard
                                         return@ShowMethodPayment
                                     }
 
-                                    // Set mac dinh item dau tien neu link bank click
-                                    if (DataOrder.selectedItemMethod == Constants.LINK_BANK) {
+                                    if (DataOrder.selectedItemMethod == PaymentMethod.LINK_BANK) {
+                                        // Lấy phi theo giống hình thức số dư ví, bởi vì thẻ lưu trên ví.
+                                        DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.wallet
+
+                                        // Set mac dinh item dau tien neu link bank click
                                         if (bankTokenSelected == null) {
                                             // Chon mac dinh ngan hang lien ket dau tien neu co
                                             userInfo?.let {
@@ -265,7 +269,7 @@ class OrderActivity : ComponentActivity() {
             Footer(modifier = Modifier.padding(horizontal = 16.dp),
 
                 clickContinue = { ->
-                    if (methodDefault == Constants.WALLET || DataOrder.selectedItemMethod == Constants.WALLET) {
+                    if (methodDefault == PaymentMethod.WALLET || DataOrder.selectedItemMethod == PaymentMethod.WALLET) {
                         if (userInfo == null) {
 
                             if (!AppUtils.isLogged()) {
@@ -292,14 +296,17 @@ class OrderActivity : ComponentActivity() {
                         context.startActivity(intent)
                         return@Footer
                     }
-                    if (DataOrder.selectedItemMethod == Constants.LINK_BANK) {
+                    if (DataOrder.selectedItemMethod == PaymentMethod.LINK_BANK) {
                         if (bankTokenSelected == null) {
                             inputViewModel.showNotification.value = true
                             inputViewModel.stringDialog.value = "Vui lòng chọn ngân hàng liên kết để thanh toán!"
                             return@Footer
                         }
+                        // Lấy phi theo giống hình thức số dư ví, bởi vì thẻ lưu trên ví.
+                        DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.wallet
+
                         val paramsCreateOrder = CreateOrderParamsWallet(
-                            url = DataOrder.urlData, method = Constants.WALLET,
+                            url = DataOrder.urlData, method = PaymentMethod.WALLET,
                             amount = DataOrder.totalAmount.toString()
                         )
                         appViewModel.isShowLoading = true
@@ -313,6 +320,7 @@ class OrderActivity : ComponentActivity() {
                                     appViewModel.hideLoading()
                                     inputViewModel.showNotification.value = true
                                     inputViewModel.stringDialog.value = it1
+                                    NPayLibrary.getInstance().callbackError(2002, it1)
                                 } else if (it.errorCode == 0) {
                                     val orderId =
                                         Utils.convertUrlToOrderId(it.data!!.redirectUrl!!)
@@ -391,7 +399,7 @@ class OrderActivity : ComponentActivity() {
         Column(modifier = Modifier.fillMaxWidth()) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = if (methodDefault == Constants.WALLET) "Phương thức thanh toán" else "Chọn phương thức thanh toán",
+                text = if (methodDefault == PaymentMethod.WALLET) "Phương thức thanh toán" else "Chọn phương thức thanh toán",
                 style = TextStyle(
                     fontWeight = FontWeight.W600, fontSize = 12.sp, fontFamily = fontAppBold
                 )
@@ -402,16 +410,16 @@ class OrderActivity : ComponentActivity() {
                     .padding(vertical = 8.dp)
             ) {
                 // Khong chon method nao.
-                if (methodDefault == null || methodDefault.equals(Constants.DEFAULT)) listMethodsAll.forEachIndexed { index, item ->
+                if (methodDefault == null || methodDefault.equals(PaymentMethod.DEFAULT)) listMethodsAll.forEachIndexed { index, item ->
 
                     Column {
                         ItemRow(item, item.code == DataOrder.selectedItemMethod) { ->
                             onItemClick(item)
                         }
-                        if (item.code == Constants.LINK_BANK) {
+                        if (item.code == PaymentMethod.LINK_BANK) {
                             LinkBank()
                         }
-                        if (item.code != Constants.LINK_BANK && index != listMethodsAll.size - 1) Divider(
+                        if (item.code != PaymentMethod.LINK_BANK && index != listMethodsAll.size - 1) Divider(
                             modifier = Modifier.padding(start = 50.dp),
                             color = Color(0XFFF1F3F4)
                         )
@@ -429,7 +437,7 @@ class OrderActivity : ComponentActivity() {
                     }
                     methodFind?.let { ItemRow(it, true) {} }
                 }
-                if (methodDefault != Constants.WALLET && (userInfo?.banks ?: arrayListOf()).isNotEmpty())
+                if (methodDefault != PaymentMethod.WALLET && (userInfo?.banks ?: arrayListOf()).isNotEmpty())
                     Column {
                         Box(
                             Modifier.padding(horizontal = 12.dp).padding(top = 12.dp).height(1.dp).fillMaxWidth()
@@ -455,7 +463,7 @@ class OrderActivity : ComponentActivity() {
     @Composable
     private fun LinkBank() {
 
-        if (methodDefault != Constants.WALLET && (userInfo?.banks ?: arrayListOf()).isNotEmpty()) Column {
+        if (methodDefault != PaymentMethod.WALLET && (userInfo?.banks ?: arrayListOf()).isNotEmpty()) Column {
 
             // Info bank list
             userInfo?.banks?.let { banks ->
@@ -463,7 +471,9 @@ class OrderActivity : ComponentActivity() {
                     Row(
                         modifier = Modifier.background(colorResource(R.color.background))
                             .padding(horizontal = 12.dp, vertical = 10.dp).clickableWithoutRipple {
-                                DataOrder.selectedItemMethod = Constants.LINK_BANK
+                                DataOrder.selectedItemMethod = PaymentMethod.LINK_BANK
+                                // Lấy phi theo giống hình thức số dư ví, bởi vì thẻ lưu trên ví.
+                                DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.wallet
                                 bankTokenSelected = item
                             },
                         verticalAlignment = Alignment.CenterVertically,
@@ -514,7 +524,7 @@ class OrderActivity : ComponentActivity() {
     private fun ItemRow(item: Methods, isChecked: Boolean, onItemClick: () -> Unit) {
         val context = LocalContext.current
 
-        if (item.code == Constants.LINK_BANK && (userInfo?.banks ?: arrayListOf()).isEmpty()) {
+        if (item.code == PaymentMethod.LINK_BANK && (userInfo?.banks ?: arrayListOf()).isEmpty()) {
             return
         }
 
@@ -525,7 +535,7 @@ class OrderActivity : ComponentActivity() {
         ) {
             // Image method
             // Neu la vi thi thay the sang logo thuong hieu rieng merchant. Khong thi mac dinh
-            if (!(DataOrder.merchantInfo?.logo.isNullOrBlank()) && item.code.contains(Constants.WALLET)) ImageFromUrl(
+            if (!(DataOrder.merchantInfo?.logo.isNullOrBlank()) && item.code.contains(PaymentMethod.WALLET)) ImageFromUrl(
                 DataOrder.merchantInfo!!.logo!!, modifier = Modifier.width(36.dp).height(36.dp)
             ) else ImageFromUrl(
                 item.icon, modifier = Modifier.width(36.dp).height(36.dp)
@@ -541,17 +551,17 @@ class OrderActivity : ComponentActivity() {
                     if (DataOrder.amount is Double) (DataOrder.amount as Double).toInt() else (DataOrder.amount as Int)
                 val phone = userInfo?.phone
                 Column {
-                    if (item.code.equals(Constants.WALLET) && phone == null) Text(
+                    if (item.code.equals(PaymentMethod.WALLET) && phone == null) Text(
                         getNameMerchant(),
                         style = TextStyle(fontWeight = FontWeight.W600, fontSize = 13.sp, fontFamily = fontAppDefault)
                     )
 
-                    if (item.code.equals(Constants.WALLET) && phone != null) Text(
+                    if (item.code.equals(PaymentMethod.WALLET) && phone != null) Text(
                         "${getNameMerchant()}: $phone",
                         style = TextStyle(fontWeight = FontWeight.W600, fontSize = 13.sp, fontFamily = fontAppDefault)
                     )
 
-                    if (!item.code.equals(Constants.WALLET))
+                    if (!item.code.equals(PaymentMethod.WALLET))
                         Text(
                             item.name,
                             style = TextStyle(
@@ -561,7 +571,7 @@ class OrderActivity : ComponentActivity() {
                             )
                         )
                     userInfo?.balance?.let {
-                        if (it < parseAmount && item.code.equals(Constants.WALLET)) Text(
+                        if (it < parseAmount && item.code.equals(PaymentMethod.WALLET)) Text(
                             "${AppUtils.formatMoney(it)} - Không đủ",
                             style = TextStyle(
                                 fontWeight = FontWeight.W400,
@@ -569,7 +579,7 @@ class OrderActivity : ComponentActivity() {
                                 fontFamily = fontAppDefault,
                                 color = colorResource(R.color.yellow)
                             )
-                        ) else if (item.code.equals(Constants.WALLET)) Text(
+                        ) else if (item.code.equals(PaymentMethod.WALLET)) Text(
                             "Số dư ${AppUtils.formatMoney(it)}",
                             style = TextStyle(
                                 fontWeight = FontWeight.W400,
@@ -582,7 +592,7 @@ class OrderActivity : ComponentActivity() {
                 }
 
                 if (userInfo != null && userInfo?.balance!! < parseAmount && item.code.equals(
-                        Constants.WALLET
+                        PaymentMethod.WALLET
                     )
                 ) Box(
                     contentAlignment = Alignment.Center,

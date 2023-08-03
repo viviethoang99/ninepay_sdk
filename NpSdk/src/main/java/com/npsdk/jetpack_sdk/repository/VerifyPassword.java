@@ -45,16 +45,16 @@ public class VerifyPassword extends BaseApiClient {
                                 }
                             });
                         } catch (JsonSyntaxException e) {
-                            NPayLibrary.getInstance().callbackError(1005, "Đã có lỗi phân tích cú pháp verify payment.");
+                            NPayLibrary.getInstance().callbackError(2004, "Không thể giải mã dữ liệu.");
                         }
                     } else {
-                        NPayLibrary.getInstance().callbackError(1005, "Đã có lỗi xảy ra, code 1005");
+                        NPayLibrary.getInstance().callbackError(2005, "Lỗi không xác định");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-                    NPayLibrary.getInstance().callbackError(1005, "Đã có lỗi xảy ra, code 1005");
+                    NPayLibrary.getInstance().callbackError(2005, "Lỗi không xác định");
                 }
             });
         });

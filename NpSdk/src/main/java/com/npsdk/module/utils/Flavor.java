@@ -2,10 +2,9 @@ package com.npsdk.module.utils;
 
 import android.content.Context;
 
-import com.npsdk.module.NPayLibrary;
+import com.npsdk.module.EnvironmentKey;
 
 public class Flavor {
-
     public static String baseUrl;
     public static String prefKey;
     public static String baseApi;
@@ -14,21 +13,21 @@ public class Flavor {
 
     public void configFlavor(String env) {
         switch (env) {
-            case NPayLibrary.STAGING:
+            case EnvironmentKey.STAGING:
                 baseUrl = Constants.STAGING_URL;
-                prefKey = NPayLibrary.STAGING;
+                prefKey = EnvironmentKey.STAGING;
                 baseApi = Constants.STAGING_API;
                 baseShop = Constants.STAGING_SHOP;
                 break;
-            case NPayLibrary.SANDBOX:
+            case EnvironmentKey.SANDBOX:
                 baseUrl = Constants.SANDBOX_URL;
-                prefKey = NPayLibrary.SANDBOX;
+                prefKey = EnvironmentKey.SANDBOX;
                 baseApi = Constants.SANDBOX_API;
                 baseShop = Constants.SANDBOX_SHOP;
                 break;
-            case NPayLibrary.PRODUCTION:
+            case EnvironmentKey.PRODUCTION:
                 baseUrl = Constants.PROD_URL;
-                prefKey = NPayLibrary.PRODUCTION;
+                prefKey = EnvironmentKey.PRODUCTION;
                 baseApi = Constants.PROD_API;
                 baseShop = Constants.PROD_SHOP;
                 break;
@@ -38,11 +37,11 @@ public class Flavor {
     public static String setEnvTest(Context context) {
         String packageName = context.getPackageName();
         if (packageName.contains("stg")) {
-            return NPayLibrary.STAGING;
+            return EnvironmentKey.STAGING;
         } else if (packageName.contains("sand")) {
-           return NPayLibrary.SANDBOX;
+           return EnvironmentKey.SANDBOX;
         } else {
-           return NPayLibrary.PRODUCTION;
+           return EnvironmentKey.PRODUCTION;
         }
     }
 }

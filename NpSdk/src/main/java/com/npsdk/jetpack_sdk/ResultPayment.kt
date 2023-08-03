@@ -102,7 +102,7 @@ class ResultPayment : ComponentActivity() {
 
     @Composable
     private fun Body(paddingValues: PaddingValues?) {
-        var ticks by remember { mutableStateOf(4) }
+        var ticks by remember { mutableStateOf(5) }
 
         LaunchedEffect(true) {
             while (ticks > 0) {
@@ -114,6 +114,10 @@ class ResultPayment : ComponentActivity() {
                 NPayLibrary.getInstance().callBackToMerchant(
                     NameCallback.SDK_PAYMENT, isPaymentSuccess(), null
                 )
+                NPayLibrary.getInstance().listener.onCloseSDK()
+                if (!isPaymentSuccess()) {
+                    NPayLibrary.getInstance().callbackError(2002, "Lỗi khi thanh toán")
+                }
             }
         }
 

@@ -54,6 +54,7 @@ import com.npsdk.jetpack_sdk.theme.initColor
 import com.npsdk.jetpack_sdk.viewmodel.AppViewModel
 import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.npsdk.module.NPayLibrary
+import com.npsdk.module.PaymentMethod
 import com.npsdk.module.utils.*
 
 class PasswordActivity : ComponentActivity() {
@@ -378,7 +379,7 @@ class PasswordActivity : ComponentActivity() {
     ) {
         appViewModel.showLoading()
         val params = CreateOrderParamsWallet(
-            url = DataOrder.urlData, method = Constants.WALLET,
+            url = DataOrder.urlData, method = PaymentMethod.WALLET,
             amount = DataOrder.totalAmount.toString()
         )
         CreateOrderWalletRepo().create(context, params, CallbackCreateOrder {
@@ -388,6 +389,7 @@ class PasswordActivity : ComponentActivity() {
                     NPayLibrary.getInstance().callBackToMerchant(
                         NameCallback.SDK_PAYMENT, false, null
                     )
+                    NPayLibrary.getInstance().callbackError(2002, it1)
                     appViewModel.hideLoading()
                     inputView.showNotification.value = true
                     inputView.stringDialog.value = it1
@@ -402,6 +404,7 @@ class PasswordActivity : ComponentActivity() {
                                 appViewModel.hideLoading()
                                 inputView.showNotification.value = true
                                 inputView.stringDialog.value = message
+                                NPayLibrary.getInstance().callbackError(2002, it1)
                                 return@run
                             } else {
                                 // Tạo payment ví.
@@ -429,6 +432,7 @@ class PasswordActivity : ComponentActivity() {
                                                 NPayLibrary.getInstance().callBackToMerchant(
                                                     NameCallback.SDK_PAYMENT, true, null
                                                 )
+                                                NPayLibrary.getInstance().listener.onCloseSDK()
                                             }
                                         }
                                     })

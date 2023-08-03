@@ -144,7 +144,7 @@
                         <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Rut tien"
+                                android:text="Quét QR"
                                 android:textColor="@color/colorText"/>
 
                     </LinearLayout>

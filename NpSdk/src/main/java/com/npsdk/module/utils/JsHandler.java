@@ -22,6 +22,7 @@ import com.npsdk.jetpack_sdk.OrderActivity;
 import com.npsdk.jetpack_sdk.ResultPayment;
 import com.npsdk.module.NPayActivity;
 import com.npsdk.module.NPayLibrary;
+import com.npsdk.module.PaymentMethod;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -76,6 +77,7 @@ public class JsHandler {
                     break;
                 case close:
                     activity.finish();
+                    NPayLibrary.getInstance().listener.onCloseSDK();
                     break;
                 case backToApp:
                     activity.finish();
@@ -196,6 +198,8 @@ public class JsHandler {
             Boolean isSuccess = status.contains(Constants.SUCCESS);
             NPayLibrary.getInstance().callBackToMerchant(
                     NameCallback.SDK_PAYMENT, isSuccess, null);
+            NPayLibrary.getInstance().listener.onCloseSDK();
+            NPayLibrary.getInstance().callbackError(2002, "Lỗi khi thanh toán");
         }
 
     }
@@ -237,7 +241,7 @@ public class JsHandler {
                         if (DataOrder.Companion.isStartScreen()) {
                             // Co the la login den tu viec nap tien
                             Intent intent = new Intent(activity, OrderActivity.class);
-                            intent.putExtra("method", Constants.WALLET);
+                            intent.putExtra("method", PaymentMethod.WALLET);
                             intent.putExtra("url", DataOrder.Companion.getUrlData());
                             activity.startActivity(intent);
                         }

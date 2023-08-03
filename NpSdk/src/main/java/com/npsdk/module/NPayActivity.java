@@ -117,7 +117,7 @@ public class NPayActivity extends AppCompatActivity {
                         .appendQueryParameter("Merchant-Uid", jsonObject.getString("Merchant-Uid"))
                         .appendQueryParameter("brand_color", NPayLibrary.getInstance().sdkConfig.getBrandColor())
                         .appendQueryParameter("platform", "android")
-                        .appendQueryParameter("device", DeviceUtils.getDeviceName());
+                        .appendQueryParameter("device-name", DeviceUtils.getDeviceName());
                 if (jsonObject.has("order_id")) {
                     builder.appendQueryParameter("order_id", Utils.convertUrlToOrderId(orderId));
                 }
