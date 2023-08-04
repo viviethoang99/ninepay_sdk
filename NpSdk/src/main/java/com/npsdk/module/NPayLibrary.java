@@ -66,6 +66,14 @@ public class NPayLibrary {
             Toast.makeText(activity, "Vui lòng nhập URL thanh toán!", Toast.LENGTH_SHORT).show();
             return;
         }
+        long currentTime = System.currentTimeMillis();
+        long lastTimeGetPublickey = Preference.getLong(activity, Flavor.prefKey + Constants.LAST_TIME_PUBLIC_KEY, 0);
+        boolean isNeedGetPublickey = (currentTime - lastTimeGetPublickey) > 36000; // if last get more than 10 hours.
+
+        if (!AppUtils.INSTANCE.isLogged() && isNeedGetPublickey) {
+            GetPublickeyTask getPublickeyTask = new GetPublickeyTask(activity);
+            getPublickeyTask.execute();
+        }
         DataOrder.Companion.setUrlData(url);
         DataOrder.Companion.setShowResultScreen(isShowResultScreen);
 
@@ -202,6 +210,7 @@ public class NPayLibrary {
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN);
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.REFRESH_TOKEN);
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PUBLIC_KEY);
+        Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.LAST_TIME_PUBLIC_KEY);
         listener.onLogoutSuccessful();
     }
 
