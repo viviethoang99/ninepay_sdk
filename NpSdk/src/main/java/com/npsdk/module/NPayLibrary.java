@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
+import android.webkit.CookieManager;
 import android.webkit.WebStorage;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
@@ -205,6 +206,9 @@ public class NPayLibrary {
     }
 
     public void logout() {
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.removeAllCookies(null);
+        cookieManager.removeSessionCookies(null);
         WebStorage.getInstance().deleteAllData();
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PHONE);
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN);
