@@ -54,7 +54,6 @@ public class RestfulApi {
                     .addInterceptor(chain -> {
                         Request.Builder builder = chain.request()
                                 .newBuilder()
-//                                .addHeader("Device-ID", DeviceUtils.getDeviceID(NPayLibrary.getInstance().activity))
                                 .addHeader("Merchant-Code", NPayLibrary.getInstance().sdkConfig.getMerchantCode());
 
                         Request request = builder.build();

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
+import android.webkit.CookieManager;
 import android.webkit.WebStorage;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
@@ -65,6 +66,14 @@ public class NPayLibrary {
         if (url == null || url.trim().isEmpty()) {
             Toast.makeText(activity, "Vui lòng nhập URL thanh toán!", Toast.LENGTH_SHORT).show();
             return;
+        }
+        long currentTime = System.currentTimeMillis();
+        long lastTimeGetPublickey = Preference.getLong(activity, Flavor.prefKey + Constants.LAST_TIME_PUBLIC_KEY, 0);
+        boolean isNeedGetPublickey = (currentTime - lastTimeGetPublickey) > 36000; // if last get more than 10 hours.
+
+        if (!AppUtils.INSTANCE.isLogged() && isNeedGetPublickey) {
+            GetPublickeyTask getPublickeyTask = new GetPublickeyTask(activity);
+            getPublickeyTask.execute();
         }
         DataOrder.Companion.setUrlData(url);
         DataOrder.Companion.setShowResultScreen(isShowResultScreen);
@@ -197,11 +206,16 @@ public class NPayLibrary {
     }
 
     public void logout() {
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.removeAllCookies(null);
+        cookieManager.removeSessionCookies(null);
         WebStorage.getInstance().deleteAllData();
+        cookieManager.flush();
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PHONE);
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN);
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.REFRESH_TOKEN);
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PUBLIC_KEY);
+        Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.LAST_TIME_PUBLIC_KEY);
         listener.onLogoutSuccessful();
     }
 

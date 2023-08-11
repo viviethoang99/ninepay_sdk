@@ -38,6 +38,7 @@ public class GetPublickeyTask extends AsyncTask<Void, Void, Void> {
                         if (data != null && data.getErrorCode() == 0) {
                             String publicKey = data.getData().getPublicKey();
                             Preference.save(context, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PUBLIC_KEY, publicKey);
+                            Preference.save(context, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.LAST_TIME_PUBLIC_KEY, System.currentTimeMillis());
                         }
                     }
                 }
