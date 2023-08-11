@@ -29,15 +29,13 @@ public class ApiClient {
     private static Retrofit retrofit;
 
     public static Retrofit getClient() {
-        if (retrofit == null) {
-            OkHttpClient httpClient = getCommonClient();
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(Flavor.baseApi)
-                    .addConverterFactory(ScalarsConverterFactory.create())
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(httpClient)
-                    .build();
-        }
+        OkHttpClient httpClient = getCommonClient();
+        retrofit = new Retrofit.Builder()
+                .baseUrl(Flavor.baseApi)
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(httpClient)
+                .build();
         return retrofit;
     }
 
