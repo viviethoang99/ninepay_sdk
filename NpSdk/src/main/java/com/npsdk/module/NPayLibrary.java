@@ -30,7 +30,6 @@ import java.util.Map;
 @SuppressLint("StaticFieldLeak")
 public class NPayLibrary {
     private static final String TAG = NPayLibrary.class.getSimpleName();
-    public static Flavor flavor;
     private static NPayLibrary INSTANCE;
     public SdkConfig sdkConfig;
     public Activity activity;
@@ -39,7 +38,6 @@ public class NPayLibrary {
     public static NPayLibrary getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new NPayLibrary();
-            flavor = new Flavor();
         }
         return INSTANCE;
     }
@@ -48,7 +46,7 @@ public class NPayLibrary {
         this.activity = activity;
         this.sdkConfig = sdkConfig;
         this.listener = listener;
-        flavor.configFlavor(sdkConfig.getEnv());
+        Flavor.configFlavor(sdkConfig.getEnv());
         new GetInfoMerchant().get();
         if (!AppUtils.INSTANCE.isLogged()) {
             GetPublickeyTask getPublickeyTask = new GetPublickeyTask(activity);
