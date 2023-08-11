@@ -11,7 +11,7 @@ public class Flavor {
     public static String baseShop;
 
 
-    public void configFlavor(String env) {
+    public static void configFlavor(String env) {
         switch (env) {
             case EnvironmentKey.STAGING:
                 baseUrl = Constants.STAGING_URL;

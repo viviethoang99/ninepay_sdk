@@ -48,7 +48,7 @@ public class NPayLibrary {
         this.activity = activity;
         this.sdkConfig = sdkConfig;
         this.listener = listener;
-        flavor.configFlavor(sdkConfig.getEnv());
+        Flavor.configFlavor(sdkConfig.getEnv());
         new GetInfoMerchant().get();
         if (!AppUtils.INSTANCE.isLogged()) {
             GetPublickeyTask getPublickeyTask = new GetPublickeyTask(activity);
