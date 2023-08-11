@@ -30,7 +30,6 @@ import java.util.Map;
 @SuppressLint("StaticFieldLeak")
 public class NPayLibrary {
     private static final String TAG = NPayLibrary.class.getSimpleName();
-    public static Flavor flavor;
     private static NPayLibrary INSTANCE;
     public SdkConfig sdkConfig;
     public Activity activity;
@@ -39,7 +38,6 @@ public class NPayLibrary {
     public static NPayLibrary getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new NPayLibrary();
-            flavor = new Flavor();
         }
         return INSTANCE;
     }
