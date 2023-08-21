@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Build;
@@ -22,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.npsdk.R;
 import com.npsdk.module.utils.*;
 import org.json.JSONException;
@@ -37,6 +39,7 @@ public class NPayActivity extends AppCompatActivity {
     Map<String, String> headerWebView = NPayLibrary.getInstance().getHeader();
     private View btnClose;
     private Toolbar toolbar;
+    private LinearProgressIndicator progressBar;
     private BroadcastReceiver changeUrlBR;
     private JsHandler jsHandler;
 
@@ -65,6 +68,9 @@ public class NPayActivity extends AppCompatActivity {
         }
 
         findView();
+        // Set color progress bar webview loading
+        progressBar.getIndeterminateDrawable().setColorFilter(0xFF15AE62, PorterDuff.Mode.SRC_IN);
+        progressBar.getProgressDrawable().setColorFilter(0xFF15AE62, PorterDuff.Mode.SRC_IN);
         closeButtonWebview();
         jsHandler = new JsHandler(this);
         String data = getIntent().getStringExtra("data");
@@ -92,6 +98,9 @@ public class NPayActivity extends AppCompatActivity {
             if (jsonObject.has("order_id")) {
                 orderId = jsonObject.getString("order_id");
             }
+
+            // Chống load lặp màn cũ.
+            webView.loadUrl("javascript:document.open();document.close();");
 
             // Các route thuộc danh mục hóa đơn.
             if (Actions.listAllServices().contains(route)) {
@@ -297,6 +306,7 @@ public class NPayActivity extends AppCompatActivity {
         webView2 = findViewById(R.id.webView2);
         toolbar = findViewById(R.id.toolbar);
         btnClose = findViewById(R.id.btnClose);
+        progressBar = findViewById(R.id.progressBar);
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -330,6 +340,12 @@ public class NPayActivity extends AppCompatActivity {
 
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
+                if (newProgress >= 95) {
+                    progressBar.setVisibility(View.GONE);
+                } else {
+                    progressBar.setVisibility(View.VISIBLE);
+                    progressBar.setProgress(newProgress);
+                }
                 super.onProgressChanged(view, newProgress);
             }
         });
