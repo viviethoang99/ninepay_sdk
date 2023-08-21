@@ -305,9 +305,11 @@ class OrderActivity : ComponentActivity() {
                         // Lấy phi theo giống hình thức số dư ví, bởi vì thẻ lưu trên ví.
                         DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.wallet
 
+                        val typeMethod = convertTypeToMethod()
                         val paramsCreateOrder = CreateOrderParamsWallet(
-                            url = DataOrder.urlData, method = PaymentMethod.WALLET,
-                            amount = DataOrder.totalAmount.toString()
+                            url = DataOrder.urlData, method = typeMethod,
+                            amount = DataOrder.totalAmount.toString(),
+                            cardToken = if (typeMethod == PaymentMethod.CREDIT_CARD) bankTokenSelected!!.getbToken() else null
                         )
                         appViewModel.isShowLoading = true
                         CreateOrderWalletRepo().create(context, paramsCreateOrder, CallbackCreateOrder {
@@ -337,6 +339,13 @@ class OrderActivity : ComponentActivity() {
                     intent.putExtra("method", DataOrder.selectedItemMethod)
                     context.startActivity(intent)
                 })
+        }
+    }
+
+    private fun convertTypeToMethod(): String {
+        when (bankTokenSelected!!.getbType()) {
+            3 -> return PaymentMethod.CREDIT_CARD
+            else -> return PaymentMethod.WALLET
         }
     }
 

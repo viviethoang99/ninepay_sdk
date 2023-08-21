@@ -1,6 +1,7 @@
 package com.npsdk.jetpack_sdk.base.api;
 
 import com.npsdk.jetpack_sdk.repository.model.*;
+import org.jetbrains.annotations.Nullable;
 import retrofit2.Call;
 import retrofit2.http.*;
 
@@ -26,7 +27,11 @@ public interface ApiService {
 
     @FormUrlEncoded
     @POST("/sdk/v1/paygate-whitelabel/create-order")
-    Call<CreateOrderCardModel> createOrderCardWallet(@Field("data") String url, @Field("method") String method, @Field("amount") String amount);
+    Call<CreateOrderCardModel> createOrderCardWallet(
+            @Field("data") String url,
+            @Field("method") String method,
+            @Field("amount") String amount,
+            @Nullable @Field("card_token") String cardToken);
 
     @GET("/sdk/v1/paygate-whitelabel/banks-support")
     Call<ListBankModel> getListBanks();
