@@ -324,12 +324,13 @@ class OrderActivity : ComponentActivity() {
                                     inputViewModel.stringDialog.value = it1
                                     NPayLibrary.getInstance().callbackError(2002, it1)
                                 } else if (it.errorCode == 0) {
-                                    val orderId =
-                                        Utils.convertUrlToOrderId(it.data!!.redirectUrl!!)
-                                    val url = generateLinkWeb(orderId)
-
-                                    NPayLibrary.getInstance().openSDKWithAction(url)
+//                                    val orderId =
+//                                        Utils.convertUrlToOrderId(it.data!!.redirectUrl!!)
+//                                    val url = generateLinkWeb(orderId)
+//
+//                                    NPayLibrary.getInstance().openSDKWithAction(url)
                                     finish()
+                                    openWebviewOTP(context, it.data!!.redirectUrl!!)
                                 }
                             }
                         })

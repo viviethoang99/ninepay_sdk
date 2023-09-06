@@ -2,6 +2,7 @@ package com.npsdk.module;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,11 +12,12 @@ import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.hardware.Camera;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
+import android.os.*;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.webkit.*;
+import android.widget.Toast;
 import android.window.OnBackInvokedDispatcher;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -29,7 +31,10 @@ import com.npsdk.module.utils.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class NPayActivity extends AppCompatActivity {
@@ -46,6 +51,7 @@ public class NPayActivity extends AppCompatActivity {
     boolean isProgressDeposit = false;
     private ValueCallback<Uri[]> fileUploadCallback;
     private static final int FILE_CHOOSER_REQUEST_CODE = 10000;
+    private FileObserver fileObserver;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -61,10 +67,8 @@ public class NPayActivity extends AppCompatActivity {
         this.getOnBackPressedDispatcher().addCallback(this, callback);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
-                    OnBackInvokedDispatcher.PRIORITY_DEFAULT, () -> {
-                    }
-            );
+            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(OnBackInvokedDispatcher.PRIORITY_DEFAULT, () -> {
+            });
         }
 
         findView();
@@ -89,6 +93,10 @@ public class NPayActivity extends AppCompatActivity {
         setUpweb1Client();
         setUpWeb2Client();
         setCookieRefreshToken();
+
+        screenshotDetecter();
+        downloadWebview(webView);
+        downloadWebview(webView2);
 
         try {
             Uri.Builder builder = new Uri.Builder();
@@ -122,15 +130,7 @@ public class NPayActivity extends AppCompatActivity {
                     System.out.println("Webview 1 load url " + route);
                     return;
                 }
-                builder.scheme("https")
-                        .encodedAuthority(Flavor.baseUrl.replaceAll("https://", ""))
-                        .appendPath("v1")
-                        .appendQueryParameter("route", route)
-                        .appendQueryParameter("Merchant-Code", jsonObject.getString("Merchant-Code"))
-                        .appendQueryParameter("Merchant-Uid", jsonObject.getString("Merchant-Uid"))
-                        .appendQueryParameter("brand_color", NPayLibrary.getInstance().sdkConfig.getBrandColor())
-                        .appendQueryParameter("platform", "android")
-                        .appendQueryParameter("device-name", DeviceUtils.getDeviceName());
+                builder.scheme("https").encodedAuthority(Flavor.baseUrl.replaceAll("https://", "")).appendPath("v1").appendQueryParameter("route", route).appendQueryParameter("Merchant-Code", jsonObject.getString("Merchant-Code")).appendQueryParameter("Merchant-Uid", jsonObject.getString("Merchant-Uid")).appendQueryParameter("brand_color", NPayLibrary.getInstance().sdkConfig.getBrandColor()).appendQueryParameter("platform", "android").appendQueryParameter("device-name", DeviceUtils.getDeviceName());
                 if (jsonObject.has("order_id")) {
                     builder.appendQueryParameter("order_id", Utils.convertUrlToOrderId(orderId));
                 }
@@ -141,6 +141,86 @@ public class NPayActivity extends AppCompatActivity {
 
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+
+    }
+
+    private void screenshotDetecter() {
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        if (Build.VERSION.SDK_INT >= 29) {
+            final List<File> files = new ArrayList<>();
+            final List<String> paths = new ArrayList<>();
+            for (Path path : Path.values()) {
+                files.add(new File(path.getPath()));
+                paths.add(path.getPath());
+            }
+            fileObserver = new FileObserver(files) {
+                @Override
+                public void onEvent(int event, final String filename) {
+                    if (event == FileObserver.CREATE) {
+                        for (String fullPath : paths) {
+                            File file = new File(fullPath + filename);
+                            if (file.exists()) {
+                                String mime = getMimeType(file.getPath());
+                                if (mime != null && mime.contains("image")) {
+                                    sendStatusScreenshot();
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+        } else {
+            for (final Path path : Path.values()) {
+                fileObserver = new FileObserver(path.getPath()) {
+                    @Override
+                    public void onEvent(int event, final String filename) {
+                        File file = new File(path.getPath() + filename);
+                        if (event == FileObserver.CREATE) {
+                            if (file.exists()) {
+                                String mime = getMimeType(file.getPath());
+                                if (mime != null && mime.contains("image")) {
+                                    sendStatusScreenshot();
+                                }
+                            }
+                        }
+                    }
+                };
+            }
+        }
+        fileObserver.startWatching();
+    }
+
+    private void sendStatusScreenshot() {
+        String jsExcute = "javascript: window.sendStatusTakeScreenshot()";
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+        Runnable myRunnable = () -> {
+            webView.loadUrl(jsExcute);
+        };
+        mainHandler.post(myRunnable);
+    }
+
+    private static String getMimeType(String url) {
+        String type = null;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+        return type;
+    }
+
+    private enum Path {
+        DCIM(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + File.separator + "Screenshots" + File.separator), PICTURES(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + "Screenshots" + File.separator);
+
+        final private String path;
+
+        public String getPath() {
+            return path;
+        }
+
+        Path(String path) {
+            this.path = path;
         }
     }
 
@@ -201,17 +281,7 @@ public class NPayActivity extends AppCompatActivity {
                     try {
                         Uri.Builder builder = new Uri.Builder();
 
-                        builder.scheme("https")
-                                .encodedAuthority(Flavor.baseUrl.replaceAll("https://", ""))
-                                .appendPath("v1")
-                                .appendPath("payment")
-                                .appendQueryParameter("route", Constants.VERIFY_PAYMENT_ROUTE)
-                                .appendQueryParameter("Merchant-Code", NPayLibrary.getInstance().sdkConfig.getMerchantCode())
-                                .appendQueryParameter("Merchant-Uid", NPayLibrary.getInstance().sdkConfig.getUid())
-                                .appendQueryParameter("brand_color", NPayLibrary.getInstance().sdkConfig.getBrandColor())
-                                .appendQueryParameter("platform", "android")
-                                .appendQueryParameter("order_id", Utils.convertUrlToOrderId(url))
-                                .appendQueryParameter("device", DeviceUtils.getDeviceName());
+                        builder.scheme("https").encodedAuthority(Flavor.baseUrl.replaceAll("https://", "")).appendPath("v1").appendPath("payment").appendQueryParameter("route", Constants.VERIFY_PAYMENT_ROUTE).appendQueryParameter("Merchant-Code", NPayLibrary.getInstance().sdkConfig.getMerchantCode()).appendQueryParameter("Merchant-Uid", NPayLibrary.getInstance().sdkConfig.getUid()).appendQueryParameter("brand_color", NPayLibrary.getInstance().sdkConfig.getBrandColor()).appendQueryParameter("platform", "android").appendQueryParameter("order_id", Utils.convertUrlToOrderId(url)).appendQueryParameter("device", DeviceUtils.getDeviceName());
                         clearWebview2NonToolbar();
                         webView2.setVisibility(View.GONE);
                         webView.setVisibility(View.VISIBLE);
@@ -232,6 +302,20 @@ public class NPayActivity extends AppCompatActivity {
                 super.onPageStarted(view, url, favicon);
             }
 
+        });
+    }
+
+    private void downloadWebview(WebView webView) {
+        webView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
+            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+            request.setMimeType(mimetype);
+            request.setTitle(URLUtil.guessFileName(url, contentDisposition, mimetype));
+            request.allowScanningByMediaScanner();
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, URLUtil.guessFileName(url, contentDisposition, mimetype));
+            DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+            dm.enqueue(request);
+            Toast.makeText(this, "Đang tải xuống...", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -333,6 +417,7 @@ public class NPayActivity extends AppCompatActivity {
                 openFileChooser();
                 return true;
             }
+
             @Override
             public void onPermissionRequest(PermissionRequest request) {
                 request.grant(request.getResources());
@@ -450,6 +535,7 @@ public class NPayActivity extends AppCompatActivity {
         }
         clearWebview2NonToolbar();
         closeCamera();
+        if (fileObserver != null) fileObserver.stopWatching();
         super.onDestroy();
     }
 
