@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         String url = edtUrlPaygate.getText().toString();
         if (url.isEmpty() && NPayLibrary.getInstance().sdkConfig.getEnv().contains("staging"))
-            url = "https://stg-api.pgw.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6IlZNNzE0RyIsInRpbWUiOjE2NzcxMjM3ODcsImludm9pY2Vfbm8iOiJCb29raW5nZWo1S083dFAiLCJhbW91bnQiOjIwMDAwLCJkZXNjcmlwdGlvbiI6IlRoYW5oIHRvYW4gZG9uIGhhbmcgQm9va2luZ2VqNUtPN3RQIiwicmV0dXJuX3VybCI6Imh0dHBzOi8vcXAuc3Bob3Rvbi5jb20vYXBpL3YxL3BheW1lbnQvY29tcGxldGUtdHJhbnNhY3Rpb24iLCJiYWNrX3VybCI6Imh0dHA6Ly9xcC50ZXN0L2FwaS92My9jdXN0b21lci9ib29raW5nIiwibGFuZyI6ImVuIiwic2F2ZV90b2tlbiI6MCwiaXNfY3VzdG9tZXJfcGF5X2ZlZSI6MX0%3D&signature=%2B5h2rjdPMfxM%2FBwqIsiYTvGWVtRhd9417%2BmOshbywuU%3D";
+            url = "https://stg-api.pgw.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6Ik5yeDl3VyIsInRpbWUiOjE2OTM5ODQ5NjEsImludm9pY2Vfbm8iOiJsYTQ3TWE1TCIsImFtb3VudCI6MTAwMDAwLCJkZXNjcmlwdGlvbiI6Ik11YSBoYW5nIDlQYXkiLCJyZXR1cm5fdXJsIjoiaHR0cDovL2ZjZGNjNDc2N2FjYi5uZ3Jvay5pby8iLCJiYWNrX3VybCI6Imh0dHA6Ly9mY2RjYzQ3NjdhY2Iubmdyb2suaW8vIiwibWV0aG9kIjoiOVBBWSIsImlzX2N1c3RvbWVyX3BheV9mZWUiOjF9&signature=LYYmB9bBDKUIXBk9Wqr5w0sVO07d1UE0n21anQrVMcY%3D";
         switch (v.getId()) {
             case R.id.ll_quet_ma:
                 Log.d(TAG, "onClick: ll_rut_tien");
