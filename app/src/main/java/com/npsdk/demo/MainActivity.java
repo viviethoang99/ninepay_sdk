@@ -239,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                Intent i = new Intent(this, TestWebviewActivity.class);
 //                startActivity(i);
 
-//                NPayLibrary.getInstance().openSDKWithAction("https://file-examples.com/storage/fe235481fb64f1ca49a92b5/2017/10/file-sample_150kB.pdf");
+//                NPayLibrary.getInstance().openSDKWithAction("https://codepen.io/koseare/pen/NWpMjeP");
                 break;
         }
         edtUrlPaygate.setText("");

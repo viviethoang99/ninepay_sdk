@@ -11,6 +11,7 @@
 
     <uses-feature android:name="android.hardware.camera.autofocus"/>
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.webkit.resource.VIDEO_CAPTURE"/>
     <uses-permission android:name="android.webkit.PermissionRequest"/>
     <uses-permission
@@ -30,6 +31,16 @@
             android:allowBackup="false"
             android:usesCleartextTraffic="true"
             tools:replace="android:allowBackup">
+
+        <provider
+                android:name="androidx.core.content.FileProvider"
+                android:authorities="${applicationId}.provider"
+                android:exported="false"
+                android:grantUriPermissions="true">
+            <meta-data
+                    android:name="android.support.FILE_PROVIDER_PATHS"
+                    android:resource="@xml/provider_paths"/>
+        </provider>
 
         <activity
                 android:name="com.npsdk.module.NPayActivity"
@@ -81,6 +92,9 @@
                 android:theme="@style/Theme.PaymentNinepay"
                 android:windowSoftInputMode="adjustResize"/>
 
+        <receiver
+                android:name=".NotificationCancelReceiver" android:exported="false">
+        </receiver>
     </application>
 
 </manifest>

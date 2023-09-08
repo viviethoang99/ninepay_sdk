@@ -1,8 +1,8 @@
 package com.npsdk.module;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.DownloadManager;
+import android.app.*;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,8 +11,10 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.hardware.Camera;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.*;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -24,14 +26,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.npsdk.NotificationCancelReceiver;
 import com.npsdk.R;
 import com.npsdk.module.utils.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,25 +48,36 @@ import java.util.Map;
 
 public class NPayActivity extends AppCompatActivity {
     public static final String TAG = NPayActivity.class.getName();
+    private static final int FILE_CHOOSER_REQUEST_CODE = 10000;
     @SuppressLint("StaticFieldLeak")
     public static WebView webView, webView2;
     Map<String, String> headerWebView = NPayLibrary.getInstance().getHeader();
+    boolean isProgressDeposit = false;
     private View btnClose;
     private Toolbar toolbar;
     private LinearProgressIndicator progressBar;
     private BroadcastReceiver changeUrlBR;
     private JsHandler jsHandler;
-
-    boolean isProgressDeposit = false;
     private ValueCallback<Uri[]> fileUploadCallback;
-    private static final int FILE_CHOOSER_REQUEST_CODE = 10000;
     private FileObserver fileObserver;
+
+    private static String getMimeType(String url) {
+        String type = null;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+        return type;
+    }
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_npay);
+
+        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().build());
+
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -201,29 +221,6 @@ public class NPayActivity extends AppCompatActivity {
         mainHandler.post(myRunnable);
     }
 
-    private static String getMimeType(String url) {
-        String type = null;
-        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
-        if (extension != null) {
-            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-        }
-        return type;
-    }
-
-    private enum Path {
-        DCIM(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + File.separator + "Screenshots" + File.separator), PICTURES(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + "Screenshots" + File.separator);
-
-        final private String path;
-
-        public String getPath() {
-            return path;
-        }
-
-        Path(String path) {
-            this.path = path;
-        }
-    }
-
     private void setCookieRefreshToken() {
         String accessToken = Preference.getString(this, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
         String refreshToken = Preference.getString(this, Flavor.prefKey + Constants.REFRESH_TOKEN, "");
@@ -307,6 +304,11 @@ public class NPayActivity extends AppCompatActivity {
 
     private void downloadWebview(WebView webView) {
         webView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
+            if (url.startsWith("data:")) {  //when url is base64 encoded data
+                String path = createAndSaveFileFromBase64Url(url);
+                Toast.makeText(this, "Download image saved at " + path, Toast.LENGTH_LONG).show();
+                return;
+            }
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
             request.setMimeType(mimetype);
             request.setTitle(URLUtil.guessFileName(url, contentDisposition, mimetype));
@@ -315,8 +317,68 @@ public class NPayActivity extends AppCompatActivity {
             request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, URLUtil.guessFileName(url, contentDisposition, mimetype));
             DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
             dm.enqueue(request);
-            Toast.makeText(this, "Đang tải xuống...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Đang tải xuống...", Toast.LENGTH_LONG).show();
         });
+    }
+
+    private String createAndSaveFileFromBase64Url(String url) {
+        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        String filetype = url.substring(url.indexOf("/") + 1, url.indexOf(";"));
+        String filename = System.currentTimeMillis() + "." + filetype;
+        File file = new File(path, filename);
+        try {
+            if (!path.exists()) path.mkdirs();
+            if (!file.exists()) file.createNewFile();
+
+            String base64EncodedString = url.substring(url.indexOf(",") + 1);
+            byte[] decodedBytes = Base64.decode(base64EncodedString, Base64.DEFAULT);
+            OutputStream os = new FileOutputStream(file);
+            os.write(decodedBytes);
+            os.close();
+
+            //Tell the media scanner about the new file so that it is immediately available to the user.
+            MediaScannerConnection.scanFile(this, new String[]{file.toString()}, null, new MediaScannerConnection.OnScanCompletedListener() {
+                public void onScanCompleted(String path, Uri uri) {
+                    Log.i("ExternalStorage", "Scanned " + path + ":");
+                    Log.i("ExternalStorage", "-> uri=" + uri);
+                }
+            });
+
+            //Set notification after download complete and add "click to view" action to that
+            String mimetype = url.substring(url.indexOf(":") + 1, url.indexOf("/"));
+            Intent intent = new Intent();
+            intent.setAction(android.content.Intent.ACTION_VIEW);
+            intent.setDataAndType(Uri.fromFile(file), (mimetype + "/*"));
+            int noti_id = 12345;
+            Intent cancel = new Intent(this, NotificationCancelReceiver.class);
+            cancel.putExtra("noti_id", noti_id);
+            cancel.putExtra("path", file.toString());
+            PendingIntent cancelPending = PendingIntent.getBroadcast(this, 0, cancel, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+            @SuppressLint("NotificationTrampoline") NotificationCompat.Builder builderNoti = new NotificationCompat.Builder(this, "CHANNEL_ID").setSmallIcon(android.R.drawable.stat_sys_download_done).setContentTitle("Download image").setContentText("Download success").setPriority(NotificationCompat.PRIORITY_DEFAULT).setContentIntent(cancelPending).setAutoCancel(true);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                int importance = NotificationManager.IMPORTANCE_DEFAULT;
+                NotificationChannel channel = new NotificationChannel("CHANNEL_ID", "Notification", importance);
+                channel.setDescription("Notification download images");
+                // Register the channel with the system; you can't change the importance
+                // or other notification behaviors after this
+                NotificationManager notificationManager = getSystemService(NotificationManager.class);
+                notificationManager.createNotificationChannel(channel);
+            }
+
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                notificationManager.notify(noti_id, builderNoti.build());
+            }
+
+
+        } catch (IOException e) {
+            Log.w("ExternalStorage", "Error writing " + file, e);
+        }
+
+        return file.toString();
     }
 
     private void setUpWeb2Client() {
@@ -352,7 +414,6 @@ public class NPayActivity extends AppCompatActivity {
             }
         });
     }
-
 
     private void listentChangeUrlBroadcast() {
         changeUrlBR = new BroadcastReceiver() {
@@ -459,7 +520,6 @@ public class NPayActivity extends AppCompatActivity {
         webView2.loadUrl("javascript:document.open();document.close();");
     }
 
-
     void closeButtonWebview() {
         btnClose.setOnClickListener(view -> {
             if (isProgressDeposit) {
@@ -492,7 +552,6 @@ public class NPayActivity extends AppCompatActivity {
             System.out.println(e.getMessage());
         }
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -547,5 +606,19 @@ public class NPayActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    private enum Path {
+        DCIM(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + File.separator + "Screenshots" + File.separator), PICTURES(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + "Screenshots" + File.separator);
+
+        final private String path;
+
+        Path(String path) {
+            this.path = path;
+        }
+
+        public String getPath() {
+            return path;
+        }
     }
 }

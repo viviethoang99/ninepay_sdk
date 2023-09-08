@@ -7,15 +7,21 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
+import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ShareCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.jetpack_sdk.OrderActivity;
@@ -25,6 +31,11 @@ import com.npsdk.module.NPayLibrary;
 import com.npsdk.module.PaymentMethod;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
 
@@ -119,12 +130,10 @@ public class JsHandler {
                     activity.startActivity(messageIntent);
                     break;
                 case onLoggedInSuccess:
-                    NPayLibrary.getInstance().callBackToMerchant(
-                            NameCallback.LOGIN, "onSuccess", null);
+                    NPayLibrary.getInstance().callBackToMerchant(NameCallback.LOGIN, "onSuccess", null);
                     break;
                 case onPaymentSuccess:
-                    NPayLibrary.getInstance().callBackToMerchant(
-                            NameCallback.SDK_PAYMENT, true, null);
+                    NPayLibrary.getInstance().callBackToMerchant(NameCallback.SDK_PAYMENT, true, null);
                     break;
                 case onError:
                     int errorCode = paramJson.getInt("error_code");
@@ -153,6 +162,9 @@ public class JsHandler {
                 case requestGallery:
                     requestStorage();
                     break;
+                case checkPermissionStorage:
+                    sendStatusStorage(isHavePermissionStorage());
+                    break;
                 case callbackToApp:
                     getCallbackFromJs(paramJson);
                     break;
@@ -168,10 +180,55 @@ public class JsHandler {
                 case result_payment_token:
                     handleCallbackPaymentToken(paramJson);
                     break;
+                case openAppSettings:
+                    openAppSettings();
+                    break;
+                case shareImage:
+                    if (paramJson.has("data")) {
+                        String dataImageBase64 = paramJson.getString("data");
+                        shareImage(dataImageBase64);
+                    }
+                    break;
                 default:
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void shareImage(String base64Image) {
+        try {
+            // Decode the Base64 string into a bitmap
+            byte[] decodedBytes = android.util.Base64.decode(base64Image, android.util.Base64.DEFAULT);
+            Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+
+            // Save the bitmap to a temporary file
+            File cachePath = new File(activity.getCacheDir(), "images");
+            cachePath.mkdirs();
+            File imageFile = new File(cachePath, "shared_image.png");
+            FileOutputStream fos = new FileOutputStream(imageFile);
+            decodedBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.flush();
+            fos.close();
+
+            // Create an Intent to share the image
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("image/*");
+            Uri uriShare = FileProvider.getUriForFile(activity, activity.getPackageName() + ".provider", imageFile);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, uriShare);
+
+            // Start an activity to allow the user to choose the app to share with
+            Intent chooser = Intent.createChooser(shareIntent, "Share Image");
+            List<ResolveInfo> resInfoList = activity.getPackageManager().queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY);
+
+            for (ResolveInfo resolveInfo : resInfoList) {
+                String packageName = resolveInfo.activityInfo.packageName;
+                activity.grantUriPermission(packageName, uriShare, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            }
+            activity.startActivity(chooser);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(activity, "Error sharing image", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -196,12 +253,18 @@ public class JsHandler {
             activity.startActivity(intentResult);
         } else {
             Boolean isSuccess = status.contains(Constants.SUCCESS);
-            NPayLibrary.getInstance().callBackToMerchant(
-                    NameCallback.SDK_PAYMENT, isSuccess, null);
+            NPayLibrary.getInstance().callBackToMerchant(NameCallback.SDK_PAYMENT, isSuccess, null);
             NPayLibrary.getInstance().listener.onCloseSDK();
             NPayLibrary.getInstance().callbackError(2002, "Lỗi khi thanh toán");
         }
 
+    }
+
+    private void openAppSettings() {
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
+        intent.setData(uri);
+        activity.startActivity(intent);
     }
 
     private void getCallbackFromJs(JSONObject jsonObject) {
@@ -215,8 +278,7 @@ public class JsHandler {
             }
 
             // Send callback
-            NPayLibrary.getInstance().callBackToMerchant(
-                    nameCallback, statusCallback, params);
+            NPayLibrary.getInstance().callBackToMerchant(nameCallback, statusCallback, params);
 
 
             // Back to SDK
@@ -304,12 +366,6 @@ public class JsHandler {
     }
 
     private enum switchCommandJS {
-        open9PayApp, close, logout, openOtherUrl, share, copy,
-        call, message, clearToken, onLoggedInSuccess, onPaymentSuccess,
-        onError, getAllToken, getDeviceID, requestCamera,
-        openSchemaApp, requestGallery,
-        backToApp,
-        callbackToApp, send_email,
-        result_payment_token
+        open9PayApp, close, logout, openOtherUrl, share, copy, call, message, clearToken, onLoggedInSuccess, onPaymentSuccess, onError, getAllToken, getDeviceID, requestCamera, openSchemaApp, requestGallery, checkPermissionStorage, backToApp, callbackToApp, send_email, result_payment_token, openAppSettings, shareImage,
     }
 }
