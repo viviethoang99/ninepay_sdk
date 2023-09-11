@@ -77,14 +77,7 @@ public class JsHandler {
             switch (switchCommandJS.valueOf(command)) {
                 case open9PayApp:
                     String appPackageName = "vn.ninepay.ewallet";
-                    Intent intent = activity.getPackageManager().getLaunchIntentForPackage(appPackageName);
-                    if (intent == null) {
-                        // Bring user to the market or let them choose an app?
-                        intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse("market://details?id=" + appPackageName));
-                    }
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    activity.startActivity(intent);
+                    openSchemaApp(appPackageName);
                     break;
                 case close:
                     activity.finish();
@@ -146,9 +139,12 @@ public class JsHandler {
                     Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PUBLIC_KEY);
                     break;
                 case getAllToken:
-                    Preference.save(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN, paramJson.getString("access_token"));
-                    Preference.save(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.REFRESH_TOKEN, paramJson.getString("refresh_token"));
-                    Preference.save(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PUBLIC_KEY, paramJson.getString("public_key"));
+                    Preference.save(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN,
+                            paramJson.getString("access_token"));
+                    Preference.save(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.REFRESH_TOKEN,
+                            paramJson.getString("refresh_token"));
+                    Preference.save(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PUBLIC_KEY,
+                            paramJson.getString("public_key"));
                     break;
                 case requestCamera:
                     requestCamera(activity);
@@ -207,7 +203,7 @@ public class JsHandler {
             cachePath.mkdirs();
             File imageFile = new File(cachePath, "shared_image.png");
             FileOutputStream fos = new FileOutputStream(imageFile);
-            decodedBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            decodedBitmap.compress(Bitmap.CompressFormat.PNG, 30, fos);
             fos.flush();
             fos.close();
 
@@ -219,11 +215,13 @@ public class JsHandler {
 
             // Start an activity to allow the user to choose the app to share with
             Intent chooser = Intent.createChooser(shareIntent, "Share Image");
-            List<ResolveInfo> resInfoList = activity.getPackageManager().queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY);
+            List<ResolveInfo> resInfoList = activity.getPackageManager().queryIntentActivities(chooser,
+                    PackageManager.MATCH_DEFAULT_ONLY);
 
             for (ResolveInfo resolveInfo : resInfoList) {
                 String packageName = resolveInfo.activityInfo.packageName;
-                activity.grantUriPermission(packageName, uriShare, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                activity.grantUriPermission(packageName, uriShare,
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
             }
             activity.startActivity(chooser);
         } catch (IOException e) {
@@ -284,7 +282,8 @@ public class JsHandler {
             // Back to SDK
             Boolean isResetPassword = nameCallback.equals("RESET_PASSWORD");
             Boolean isDeposit = nameCallback.equals("DEPOSIT");
-            Boolean isLoginSuccess = nameCallback.equals("LOGIN") && (jsonObject.has("status") && jsonObject.getString("status").equals("onSuccess"));
+            Boolean isLoginSuccess =
+                    nameCallback.equals("LOGIN") && (jsonObject.has("status") && jsonObject.getString("status").equals("onSuccess"));
 
 
             if (isResetPassword || isDeposit || isLoginSuccess) {
@@ -320,7 +319,8 @@ public class JsHandler {
             sendStatusCamera(true);
             return;
         }
-        ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA_REQUEST_CODE);
+        ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA},
+                PERMISSION_CAMERA_REQUEST_CODE);
     }
 
     private void requestStorage() {
@@ -329,7 +329,8 @@ public class JsHandler {
             return;
         }
 
-        String[] typePermission = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        String[] typePermission = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE};
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             // Android 13
             typePermission = new String[]{Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO};
@@ -357,7 +358,12 @@ public class JsHandler {
     void openSchemaApp(String schema) {
         if (schema == null || schema.isEmpty()) return;
         try {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(schema));
+            Intent intent = activity.getPackageManager().getLaunchIntentForPackage(schema);
+            if (intent == null) {
+                // Bring user to the market or let them choose an app?
+                intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("market://details?id=" + schema));
+            }
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.startActivity(intent);
         } catch (ActivityNotFoundException ex) {
@@ -366,6 +372,8 @@ public class JsHandler {
     }
 
     private enum switchCommandJS {
-        open9PayApp, close, logout, openOtherUrl, share, copy, call, message, clearToken, onLoggedInSuccess, onPaymentSuccess, onError, getAllToken, getDeviceID, requestCamera, openSchemaApp, requestGallery, checkPermissionStorage, backToApp, callbackToApp, send_email, result_payment_token, openAppSettings, shareImage,
+        open9PayApp, close, logout, openOtherUrl, share, copy, call, message, clearToken, onLoggedInSuccess,
+        onPaymentSuccess, onError, getAllToken, getDeviceID, requestCamera, openSchemaApp, requestGallery,
+        checkPermissionStorage, backToApp, callbackToApp, send_email, result_payment_token, openAppSettings, shareImage,
     }
 }

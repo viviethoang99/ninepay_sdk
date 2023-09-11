@@ -240,6 +240,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                startActivity(i);
 
 //                NPayLibrary.getInstance().openSDKWithAction("https://codepen.io/koseare/pen/NWpMjeP");
+//                NPayLibrary.getInstance().openSDKWithAction("https://stg-sdk.9pay.mobi/v1/viet-qr");
                 break;
         }
         edtUrlPaygate.setText("");

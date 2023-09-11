@@ -314,7 +314,8 @@ public class NPayActivity extends AppCompatActivity {
             request.setTitle(URLUtil.guessFileName(url, contentDisposition, mimetype));
             request.allowScanningByMediaScanner();
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, URLUtil.guessFileName(url, contentDisposition, mimetype));
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, URLUtil.guessFileName(url,
+                    contentDisposition, mimetype));
             DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
             dm.enqueue(request);
             Toast.makeText(this, "Đang tải xuống...", Toast.LENGTH_LONG).show();
@@ -337,7 +338,8 @@ public class NPayActivity extends AppCompatActivity {
             os.close();
 
             //Tell the media scanner about the new file so that it is immediately available to the user.
-            MediaScannerConnection.scanFile(this, new String[]{file.toString()}, null, new MediaScannerConnection.OnScanCompletedListener() {
+            MediaScannerConnection.scanFile(this, new String[]{file.toString()}, null,
+                    new MediaScannerConnection.OnScanCompletedListener() {
                 public void onScanCompleted(String path, Uri uri) {
                     Log.i("ExternalStorage", "Scanned " + path + ":");
                     Log.i("ExternalStorage", "-> uri=" + uri);
@@ -353,9 +355,11 @@ public class NPayActivity extends AppCompatActivity {
             Intent cancel = new Intent(this, NotificationCancelReceiver.class);
             cancel.putExtra("noti_id", noti_id);
             cancel.putExtra("path", file.toString());
-            PendingIntent cancelPending = PendingIntent.getBroadcast(this, 0, cancel, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            PendingIntent cancelPending = PendingIntent.getBroadcast(this, 0, cancel,
+                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-            @SuppressLint("NotificationTrampoline") NotificationCompat.Builder builderNoti = new NotificationCompat.Builder(this, "CHANNEL_ID").setSmallIcon(android.R.drawable.stat_sys_download_done).setContentTitle("Download image").setContentText("Download success").setPriority(NotificationCompat.PRIORITY_DEFAULT).setContentIntent(cancelPending).setAutoCancel(true);
+            @SuppressLint("NotificationTrampoline") NotificationCompat.Builder builderNoti =
+                    new NotificationCompat.Builder(this, "CHANNEL_ID").setSmallIcon(android.R.drawable.stat_sys_download_done).setContentTitle("Download image").setContentText("Download success").setPriority(NotificationCompat.PRIORITY_DEFAULT).setContentIntent(cancelPending).setAutoCancel(true);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 int importance = NotificationManager.IMPORTANCE_DEFAULT;
@@ -473,7 +477,8 @@ public class NPayActivity extends AppCompatActivity {
         webView.setWebChromeClient(new WebChromeClient() {
 
             @Override
-            public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
+            public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback,
+                                             FileChooserParams fileChooserParams) {
                 fileUploadCallback = filePathCallback;
                 openFileChooser();
                 return true;
@@ -554,7 +559,8 @@ public class NPayActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         if (requestCode == JsHandler.PERMISSION_CAMERA_REQUEST_CODE) {
             JsHandler.sendStatusCamera(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
         } else if (requestCode == JsHandler.PERMISSION_STORAGE_REQUEST_CODE) {
@@ -564,7 +570,8 @@ public class NPayActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode,
+                                    @Nullable @org.jetbrains.annotations.Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == FILE_CHOOSER_REQUEST_CODE) {
             if (fileUploadCallback == null) return;
@@ -609,7 +616,10 @@ public class NPayActivity extends AppCompatActivity {
     }
 
     private enum Path {
-        DCIM(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + File.separator + "Screenshots" + File.separator), PICTURES(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + "Screenshots" + File.separator);
+        DCIM(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + File.separator +
+                "Screenshots" + File.separator),
+        PICTURES(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator +
+                "Screenshots" + File.separator);
 
         final private String path;
 

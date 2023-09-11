@@ -338,6 +338,12 @@ class OrderActivity : ComponentActivity() {
                         })
                         return@Footer
                     }
+
+                    if (DataOrder.selectedItemMethod == PaymentMethod.TRANSFER) {
+                        val urlTransfer = "${Flavor.baseUrl}/v1/viet-qr?data=${DataOrder.urlData}&from=merchant"
+                        NPayLibrary.getInstance().openSDKWithAction(urlTransfer)
+                        return@Footer
+                    }
                     val intent = Intent(context, InputCardActivity::class.java)
                     intent.putExtra("method", DataOrder.selectedItemMethod)
                     context.startActivity(intent)
