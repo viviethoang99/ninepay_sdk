@@ -1,7 +1,9 @@
 package com.npsdk.jetpack_sdk.base
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import com.npsdk.module.NPayLibrary
 import com.npsdk.module.utils.Constants
 import com.npsdk.module.utils.Preference
@@ -51,13 +53,11 @@ object AppUtils {
 
     fun isLogged(): Boolean {
         val publicKey = Preference.getString(
-            NPayLibrary.getInstance().activity,
-            NPayLibrary.getInstance().sdkConfig.env + Constants.PUBLIC_KEY, ""
+            NPayLibrary.getInstance().activity, NPayLibrary.getInstance().sdkConfig.env + Constants.PUBLIC_KEY, ""
         )
 
         val accessToken = Preference.getString(
-            NPayLibrary.getInstance().activity,
-            NPayLibrary.getInstance().sdkConfig.env + Constants.ACCESS_TOKEN, ""
+            NPayLibrary.getInstance().activity, NPayLibrary.getInstance().sdkConfig.env + Constants.ACCESS_TOKEN, ""
         )
 
         return publicKey.isNotBlank() && accessToken.isNotBlank()
@@ -71,6 +71,20 @@ object AppUtils {
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
             -1
+        }
+    }
+
+    fun openBrowser(context: Context, url: String) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+        // Set the package name for Chrome explicitly to ensure it opens in Chrome.
+        intent.`package` = "com.android.chrome"
+        try {
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            // If Chrome is not installed or the intent fails, you can handle the exception here.
+            e.printStackTrace()
         }
     }
 }

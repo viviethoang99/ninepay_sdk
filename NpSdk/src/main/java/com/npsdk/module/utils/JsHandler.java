@@ -26,6 +26,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.jetpack_sdk.OrderActivity;
 import com.npsdk.jetpack_sdk.ResultPayment;
+import com.npsdk.jetpack_sdk.base.AppUtils;
 import com.npsdk.module.NPayActivity;
 import com.npsdk.module.NPayLibrary;
 import com.npsdk.module.PaymentMethod;
@@ -185,10 +186,37 @@ public class JsHandler {
                         shareImage(dataImageBase64);
                     }
                     break;
+                case openBrowser:
+                    if (paramJson.has("url")) {
+                        AppUtils.INSTANCE.openBrowser(activity, paramJson.getString("url"));
+                    }
+                    break;
+                case openGoogleAuthen:
+                    openSchemaApp("com.google.android.apps.authenticator2");
+                    break;
+                case paste:
+                    getClipboardData();
+                    break;
                 default:
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void getClipboardData() {
+        try {
+            ClipboardManager clipboard = (ClipboardManager) activity.getSystemService(CLIPBOARD_SERVICE);
+            String data = clipboard.getPrimaryClip().getItemAt(0).getText().toString();
+            String jsExcute = "javascript: window.pasteData('" + data + "')";
+            Handler mainHandler = new Handler(Looper.getMainLooper());
+            Runnable myRunnable = () -> {
+                if (NPayActivity.webView == null) return;
+                NPayActivity.webView.loadUrl(jsExcute);
+            };
+            mainHandler.post(myRunnable);
+        } catch (Exception e) {
+            Toast.makeText(activity, "Error when paste", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -355,7 +383,7 @@ public class JsHandler {
         return result == PackageManager.PERMISSION_GRANTED;
     }
 
-    void openSchemaApp(String schema) {
+    private void openSchemaApp(String schema) {
         if (schema == null || schema.isEmpty()) return;
         try {
             Intent intent = activity.getPackageManager().getLaunchIntentForPackage(schema);
@@ -374,6 +402,7 @@ public class JsHandler {
     private enum switchCommandJS {
         open9PayApp, close, logout, openOtherUrl, share, copy, call, message, clearToken, onLoggedInSuccess,
         onPaymentSuccess, onError, getAllToken, getDeviceID, requestCamera, openSchemaApp, requestGallery,
-        checkPermissionStorage, backToApp, callbackToApp, send_email, result_payment_token, openAppSettings, shareImage,
+        checkPermissionStorage, backToApp, callbackToApp, send_email, result_payment_token, openAppSettings,
+        shareImage, openBrowser, openGoogleAuthen, paste
     }
 }

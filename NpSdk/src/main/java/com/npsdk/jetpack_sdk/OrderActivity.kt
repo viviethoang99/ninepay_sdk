@@ -59,6 +59,7 @@ import com.npsdk.module.PaymentMethod
 import com.npsdk.module.model.Bank
 import com.npsdk.module.model.UserInfoModel
 import com.npsdk.module.utils.*
+import java.net.URLEncoder
 
 class DataOrder {
     companion object {
@@ -340,7 +341,7 @@ class OrderActivity : ComponentActivity() {
                     }
 
                     if (DataOrder.selectedItemMethod == PaymentMethod.TRANSFER) {
-                        val urlTransfer = "${Flavor.baseUrl}/v1/viet-qr?data=${DataOrder.urlData}&from=merchant"
+                        val urlTransfer = "${Flavor.baseUrl}/v1/viet-qr?data=${URLEncoder.encode(DataOrder.urlData)}&from=merchant"
                         NPayLibrary.getInstance().openSDKWithAction(urlTransfer)
                         return@Footer
                     }
