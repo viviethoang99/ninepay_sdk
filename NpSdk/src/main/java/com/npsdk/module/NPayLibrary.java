@@ -47,6 +47,11 @@ public class NPayLibrary {
         this.sdkConfig = sdkConfig;
         this.listener = listener;
         Flavor.configFlavor(sdkConfig.getEnv());
+        if (sdkConfig.getSecretKey() == null || sdkConfig.getSecretKey().isEmpty()) {
+            Toast.makeText(activity, "Secret key not found!", Toast.LENGTH_SHORT).show();
+            activity.finish();
+            return;
+        }
         new GetInfoMerchant().get();
         if (!AppUtils.INSTANCE.isLogged()) {
             GetPublickeyTask getPublickeyTask = new GetPublickeyTask(activity);
@@ -228,6 +233,7 @@ public class NPayLibrary {
     public Map<String, String> getHeader() {
         Map<String, String> header = new HashMap<>();
         header.put("Merchant-Code", sdkConfig.getMerchantCode());
+        header.put("Secret-Key", sdkConfig.getSecretKey());
         header.put("Merchant-Uid", sdkConfig.getUid());
         header.put("env", sdkConfig.getEnv());
         header.put("App-Type", "SDK");

@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -255,6 +256,16 @@ public class NPayActivity extends AppCompatActivity {
 
 
             @Override
+            public void onReceivedHttpError(WebView view, WebResourceRequest request,
+                                            WebResourceResponse errorResponse) {
+                if (Arrays.asList(404, 500).contains(errorResponse.getStatusCode())) {
+                    Toast.makeText(view.getContext(), "Đã có lỗi " + errorResponse.getStatusCode() + " xảy ra!",
+                            Toast.LENGTH_LONG).show();
+                }
+                super.onReceivedHttpError(view, request, errorResponse);
+            }
+
+            @Override
             public void onPageFinished(WebView view, String url) {
                 CookieManager.getInstance().flush();
                 super.onPageFinished(view, url);
@@ -392,6 +403,16 @@ public class NPayActivity extends AppCompatActivity {
 //            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
 //                handler.proceed();
 //            }
+
+            @Override
+            public void onReceivedHttpError(WebView view, WebResourceRequest request,
+                                            WebResourceResponse errorResponse) {
+                if (Arrays.asList(404, 500).contains(errorResponse.getStatusCode())) {
+                    Toast.makeText(view.getContext(), "Đã có lỗi " + errorResponse.getStatusCode() + " xảy ra!",
+                            Toast.LENGTH_LONG).show();
+                }
+                super.onReceivedHttpError(view, request, errorResponse);
+            }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {

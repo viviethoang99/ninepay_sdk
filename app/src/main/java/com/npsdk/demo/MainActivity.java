@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             colorCode = bundle.getString("color_code");
             mcCode = bundle.getString("merchant_code");
         }
-        SdkConfig sdkConfig = new SdkConfig.Builder(this).merchantCode(mcCode).uid(null).env(flavorEnv).brandColor(colorCode).build();
+        SdkConfig sdkConfig = new SdkConfig.Builder(this).merchantCode(mcCode).secretKey("secret_key").uid(null).env(flavorEnv).brandColor(colorCode).build();
         initSdk(sdkConfig);
     }
 
@@ -242,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 //                new JsHandler(this).getClipboardData();
 //                NPayLibrary.getInstance().openSDKWithAction("https://stg-sdk.9pay.mobi/v1/viet-qr");
+                NPayLibrary.getInstance().openSDKWithAction(Actions.WITHDRAW);
                 break;
         }
         edtUrlPaygate.setText("");

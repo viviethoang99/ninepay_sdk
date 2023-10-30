@@ -62,7 +62,9 @@ public class ApiClient {
                         Request.Builder builder = chain.request()
                                 .newBuilder()
                                 .addHeader("Merchant-Code", NPayLibrary.getInstance().sdkConfig.getMerchantCode())
-                                .addHeader("App-Type", "SDK");
+                                .addHeader("App-Type", "SDK")
+                                .addHeader("platform", "android")
+                                .addHeader("Secret-Key", NPayLibrary.getInstance().sdkConfig.getSecretKey());
                         String Rke = EncryptServiceHelper.INSTANCE.getRandomkeyEncrypt();
                         if (getToken() != null && Rke != null) {
                             builder.addHeader("Authorization", getToken())

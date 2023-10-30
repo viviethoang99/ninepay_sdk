@@ -310,7 +310,7 @@ class OrderActivity : ComponentActivity() {
                         val paramsCreateOrder = CreateOrderParamsWallet(
                             url = DataOrder.urlData, method = typeMethod,
                             amount = DataOrder.totalAmount.toString(),
-                            cardToken = if (typeMethod == PaymentMethod.CREDIT_CARD) bankTokenSelected!!.getbToken() else null
+                            cardToken = bankTokenSelected?.getbToken()
                         )
                         appViewModel.isShowLoading = true
                         CreateOrderWalletRepo().create(context, paramsCreateOrder, CallbackCreateOrder {
@@ -325,14 +325,15 @@ class OrderActivity : ComponentActivity() {
                                     inputViewModel.stringDialog.value = it1
                                     NPayLibrary.getInstance().callbackError(2002, it1)
                                 } else if (it.errorCode == 0) {
-                                    if (typeMethod == PaymentMethod.WALLET) {
-                                        val orderId =
-                                            Utils.convertUrlToOrderId(it.data!!.redirectUrl!!)
-                                        val url = generateLinkWeb(orderId)
-                                        NPayLibrary.getInstance().openSDKWithAction(url)
-                                    } else {
-                                        openWebviewOTP(context, it.data!!.redirectUrl!!)
-                                    }
+//                                    if (typeMethod == PaymentMethod.WALLET) {
+//                                        val orderId =
+//                                            Utils.convertUrlToOrderId(it.data!!.redirectUrl!!)
+//                                        val url = generateLinkWeb(orderId)
+//                                        NPayLibrary.getInstance().openSDKWithAction(url)
+//                                    } else {
+//                                        openWebviewOTP(context, it.data!!.redirectUrl!!)
+//                                    }
+                                    openWebviewOTP(context, it.data!!.redirectUrl!!)
                                     finish()
                                 }
                             }
@@ -354,6 +355,7 @@ class OrderActivity : ComponentActivity() {
 
     private fun convertTypeToMethod(): String {
         when (bankTokenSelected!!.getbType()) {
+            2 -> return  PaymentMethod.ATM_CARD
             3 -> return PaymentMethod.CREDIT_CARD
             else -> return PaymentMethod.WALLET
         }
