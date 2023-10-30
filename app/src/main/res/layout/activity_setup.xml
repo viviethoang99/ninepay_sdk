@@ -31,7 +31,7 @@
     />
     <EditText
             android:id="@+id/merchantCode"
-            android:text="livwell"
+            android:text="sdk_test"
             android:textColor="@color/black"
             android:hint="Merchant code"
             android:layout_width="match_parent"
