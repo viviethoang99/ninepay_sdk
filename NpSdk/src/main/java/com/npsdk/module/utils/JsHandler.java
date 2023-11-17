@@ -134,11 +134,6 @@ public class JsHandler {
                     String message = paramJson.getString("message");
                     NPayLibrary.getInstance().listener.onError(errorCode, message);
                     break;
-                case clearToken:
-                    Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN);
-                    Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.REFRESH_TOKEN);
-                    Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PUBLIC_KEY);
-                    break;
                 case getAllToken:
                     Preference.save(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN,
                             paramJson.getString("access_token"));
@@ -154,6 +149,7 @@ public class JsHandler {
                     openSchemaApp(paramJson.getString("schema"));
                     break;
                 case logout:
+                case clearToken:
                     NPayLibrary.getInstance().logout();
                     break;
                 case requestGallery:
