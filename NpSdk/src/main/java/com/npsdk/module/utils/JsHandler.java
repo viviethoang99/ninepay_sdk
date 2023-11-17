@@ -174,8 +174,9 @@ public class JsHandler {
                     } catch (Exception e) {
                     }
                     break;
-                case result_payment_token:
-                    handleCallbackPaymentToken(paramJson);
+//                case result_payment_token:
+                case result_payment_js:
+                    handleCallbackPaymentJs(paramJson);
                     break;
                 case openAppSettings:
                     openAppSettings();
@@ -258,7 +259,7 @@ public class JsHandler {
         }
     }
 
-    private void handleCallbackPaymentToken(JSONObject jsonObject) {
+    private void handleCallbackPaymentJs(JSONObject jsonObject) {
         activity.finish();
 
         Intent intentResult = new Intent(activity, ResultPayment.class);
@@ -275,14 +276,15 @@ public class JsHandler {
         }
 
         intentResult.putExtra("status", status);
-        if (DataOrder.Companion.isShowResultScreen()) {
-            activity.startActivity(intentResult);
-        } else {
-            Boolean isSuccess = status.contains(Constants.SUCCESS);
-            NPayLibrary.getInstance().callBackToMerchant(NameCallback.SDK_PAYMENT, isSuccess, null);
-            NPayLibrary.getInstance().listener.onCloseSDK();
-            NPayLibrary.getInstance().callbackError(2002, "Lỗi khi thanh toán");
-        }
+        activity.startActivity(intentResult); // Luôn hiển thị kết quả.
+//        if (DataOrder.Companion.isShowResultScreen()) {
+//            activity.startActivity(intentResult);
+//        } else {
+//            Boolean isSuccess = status.contains(Constants.SUCCESS);
+//            NPayLibrary.getInstance().callBackToMerchant(NameCallback.SDK_PAYMENT, isSuccess, null);
+//            NPayLibrary.getInstance().listener.onCloseSDK();
+//            NPayLibrary.getInstance().callbackError(2002, "Lỗi khi thanh toán");
+//        }
 
     }
 
@@ -402,7 +404,7 @@ public class JsHandler {
     private enum switchCommandJS {
         open9PayApp, close, logout, openOtherUrl, share, copy, call, message, clearToken, onLoggedInSuccess,
         onPaymentSuccess, onError, getAllToken, getDeviceID, requestCamera, openSchemaApp, requestGallery,
-        checkPermissionStorage, backToApp, callbackToApp, send_email, result_payment_token, openAppSettings,
+        checkPermissionStorage, backToApp, callbackToApp, send_email, result_payment_js, openAppSettings,
         shareImage, openBrowser, openGoogleAuthen, paste
     }
 }

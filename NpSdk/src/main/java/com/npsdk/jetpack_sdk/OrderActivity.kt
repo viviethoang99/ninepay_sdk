@@ -334,6 +334,7 @@ class OrderActivity : ComponentActivity() {
                     }
 
                     if (DataOrder.selectedItemMethod == PaymentMethod.TRANSFER) {
+                        finish()
                         val urlTransfer = "${Flavor.baseUrl}/v1/viet-qr?data=${URLEncoder.encode(DataOrder.urlData)}&from=merchant"
                         NPayLibrary.getInstance().openSDKWithAction(urlTransfer)
                         return@Footer
