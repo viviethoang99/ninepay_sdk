@@ -91,13 +91,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Create flavor by packagen name test
         String flavorEnv = Flavor.setEnvTest(this);
         Bundle bundle = getIntent().getExtras();
-        String mcCode = ""; // sdk_test
+        String mcCode = ""; // uymvnd
         String colorCode = ""; // 15AE62
+        String secretKey = "vIPldW/y/VJuy8qKEQUoH9ypHTTt9W/8ufvn3BFFTBU="; // vIPldW/y/VJuy8qKEQUoH9ypHTTt9W/8ufvn3BFFTBU=
         if (bundle != null) {
             colorCode = bundle.getString("color_code");
             mcCode = bundle.getString("merchant_code");
         }
-        SdkConfig sdkConfig = new SdkConfig.Builder(this).merchantCode(mcCode).secretKey("secret_key").uid(null).env(flavorEnv).brandColor(colorCode).build();
+        SdkConfig sdkConfig = new SdkConfig.Builder(this).merchantCode(mcCode).secretKey(secretKey).uid(null).env(flavorEnv).brandColor(colorCode).build();
         initSdk(sdkConfig);
     }
 

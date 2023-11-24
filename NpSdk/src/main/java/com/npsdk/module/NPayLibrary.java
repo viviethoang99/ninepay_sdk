@@ -237,6 +237,7 @@ public class NPayLibrary {
         header.put("Merchant-Uid", sdkConfig.getUid());
         header.put("env", sdkConfig.getEnv());
         header.put("App-Type", "SDK");
+        header.put("is-new-sdk", "true");
         header.put("Access-Control-Allow-Origin", "*");
         header.put("brand_color", sdkConfig.getBrandColor());
         header.put("platform", "android");

@@ -26,4 +26,5 @@ public class Constants {
     public static final String SUCCESS = "SUCCESS";
     public static final String FAIL = "FAIL";
     public static final int NOT_LOGIN = 403;
+    public static final int NOT_VERIFY = 401;
 }

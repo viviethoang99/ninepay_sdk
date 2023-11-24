@@ -1,6 +1,7 @@
 package com.npsdk.module.api;
 
 import android.content.Context;
+import com.npsdk.jetpack_sdk.base.api.CustomInterceptor;
 import com.npsdk.jetpack_sdk.base.api.EncryptServiceHelper;
 import com.npsdk.jetpack_sdk.repository.model.PublickeyModel;
 import com.npsdk.module.NPayLibrary;
@@ -54,6 +55,7 @@ public class RestfulApi {
                                 .newBuilder()
                                 .addHeader("Secret-Key", NPayLibrary.getInstance().sdkConfig.getSecretKey())
                                 .addHeader("platform", "android")
+                                .addHeader("is-new-sdk", "true")
                                 .addHeader("Merchant-Code", NPayLibrary.getInstance().sdkConfig.getMerchantCode());
 
                         Request request = builder.build();
@@ -63,6 +65,7 @@ public class RestfulApi {
                     .writeTimeout(30, TimeUnit.SECONDS)
                     .readTimeout(30, TimeUnit.SECONDS)
                     .addInterceptor(logging)
+                    .addInterceptor(new CustomInterceptor())
                     .build();
         } catch (Exception e) {
             e.printStackTrace();
