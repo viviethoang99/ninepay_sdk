@@ -27,27 +27,38 @@ public class CustomInterceptor implements Interceptor {
         if (listError.contains(response.code()) && !DataOrder.Companion.isProgressing()) {
             DataOrder.Companion.setProgressing(true);
             new Handler(Looper.getMainLooper()).post(() -> {
-                Toast.makeText(NPayLibrary.getInstance().activity, "Xác thực thất bại, vui lòng thử lại!", Toast.LENGTH_SHORT).show();
 
-                boolean isInitMerchant = request.url().toString().contains("/func/list");
-                boolean isRefreshToken = request.url().toString().contains("/login/refresh_token");
-                boolean isValidateOrder = request.url().toString().contains("/validate-order");
+                String urlRequest = request.url().toString();
+
+                boolean isInitMerchant = urlRequest.contains("/func/list");
+                boolean isRefreshToken = urlRequest.contains("/login/refresh_token");
+                boolean isValidateOrder = urlRequest.contains("/validate-order");
+                boolean isGetUser = urlRequest.contains("/user/info");
+
                 if (isInitMerchant || isRefreshToken || isValidateOrder) {
+                    showAuthenFailure();
                     // Đóng màn hình do token merchant sai.
                     NPayLibrary.getInstance().close();
                     return;
                 }
                 // Api khác danh sách bên trên.
                 // Gọi sang webview login
+                if (isGetUser) return;
                 if (DataOrder.Companion.getMerchantInfo() != null) {
                     // Trường hợp đăng nhập khi chưa đăng nhập user
                     NPayLibrary.getInstance().openSDKWithAction(Actions.LOGIN);
                 } else {
+                    showAuthenFailure();
                     // Đóng màn hình do token merchant sai.
                     NPayLibrary.getInstance().close();
                 }
             });
         }
         return response;
+    }
+
+    void showAuthenFailure() {
+        Toast.makeText(NPayLibrary.getInstance().activity, "Authentication failed, please try again!",
+                Toast.LENGTH_LONG).show();
     }
 }

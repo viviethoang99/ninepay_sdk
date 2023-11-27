@@ -77,6 +77,7 @@ class DataOrder {
 
         var totalAmount by mutableStateOf<Int?>(null)
         var bankTokenSelected by mutableStateOf<Bank?>(null)
+        // Có đang tiếp tục tiến trình thanh toán hay không?
         var isProgressing = false
         var isStartScreen = false
 

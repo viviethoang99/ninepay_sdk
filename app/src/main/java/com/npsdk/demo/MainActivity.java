@@ -118,12 +118,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onLogoutSuccessful() {
-                Toast.makeText(MainActivity.this, "Logout success!", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "Logout success!", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCloseSDK() {
-                Toast.makeText(MainActivity.this, "onCloseSDK", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "onCloseSDK", Toast.LENGTH_SHORT).show();
             }
 
             @Override
