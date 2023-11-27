@@ -3,6 +3,7 @@ package com.npsdk.module.api;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.npsdk.module.NPayLibrary;
@@ -44,15 +45,22 @@ public class RefreshTokenTask extends AsyncTask<Void, Void, Void> {
                     try {
                         if (response.body() != null) {
                             RefreshTokenModel model = response.body().getData();
-                            if(model != null) {
-                                Preference.save(context, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN, model.getAccessToken());
-                                Preference.save(context, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.REFRESH_TOKEN, model.getRefreshToken());
-                                Preference.save(context, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PUBLIC_KEY, model.getPublicKey());
+                            if (model != null) {
+                                Preference.save(context,
+                                        NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN,
+                                        model.getAccessToken());
+                                Preference.save(context,
+                                        NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.REFRESH_TOKEN,
+                                        model.getRefreshToken());
+                                Preference.save(context,
+                                        NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PUBLIC_KEY,
+                                        model.getPublicKey());
                                 callback.onRefreshSuccess();
                             } else {
-                                Preference.remove(context, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN);
-                                Preference.remove(context, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.REFRESH_TOKEN);
-                                Preference.remove(context, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PUBLIC_KEY);
+                                NPayLibrary.getInstance().logout();
+                                NPayLibrary.getInstance().close();
+                                Toast.makeText(NPayLibrary.getInstance().activity, "Authentication failed, please try" +
+                                        " again!", Toast.LENGTH_LONG).show();
                             }
 
                         } else {
