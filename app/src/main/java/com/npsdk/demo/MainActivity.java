@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (bundle != null) {
             colorCode = bundle.getString("color_code");
             mcCode = bundle.getString("merchant_code");
+            secretKey = bundle.getString("secret_key");
         }
         SdkConfig sdkConfig = new SdkConfig.Builder(this).merchantCode(mcCode).secretKey(secretKey).uid(null).env(flavorEnv).brandColor(colorCode).build();
         initSdk(sdkConfig);

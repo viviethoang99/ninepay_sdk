@@ -36,6 +36,20 @@
             android:hint="Merchant code"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
+
+    <TextView
+            android:layout_marginTop="16dp"
+            android:textColor="@color/black"
+            android:text="Secret key"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+    />
+    <EditText
+            android:id="@+id/secretKey"
+            android:text="vIPldW/y/VJuy8qKEQUoH9ypHTTt9W/8ufvn3BFFTBU="
+            android:textColor="@color/black"
+            android:hint="Secret key"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
     <Button
             android:id="@+id/btn_open_sdk"
             android:text="Go to SDK"
