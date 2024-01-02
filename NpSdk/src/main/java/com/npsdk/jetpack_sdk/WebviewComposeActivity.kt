@@ -184,6 +184,7 @@ class WebviewComposeActivity : ComponentActivity() {
                         }
                     }
                     this.loadUrl(urlLoad)
+                    println("my url init: ${urlLoad}")
                 }
             })
 

@@ -47,6 +47,11 @@ public class NPayLibrary {
         this.sdkConfig = sdkConfig;
         this.listener = listener;
         Flavor.configFlavor(sdkConfig.getEnv());
+        if (sdkConfig.getSecretKey() == null || sdkConfig.getSecretKey().isEmpty()) {
+            Toast.makeText(activity, "Secret key not found!", Toast.LENGTH_SHORT).show();
+            activity.finish();
+            return;
+        }
         new GetInfoMerchant().get();
         if (!AppUtils.INSTANCE.isLogged()) {
             GetPublickeyTask getPublickeyTask = new GetPublickeyTask(activity);
@@ -121,7 +126,6 @@ public class NPayLibrary {
                 userInfoMap.put("balance", userInfo.getBalance().toString());
                 userInfoMap.put("statusKyc", userInfo.getStatus().toString());
                 userInfoMap.put("name", userInfo.getName());
-                userInfoMap.put("banks", userInfo.getBanks());
                 String json = gson.toJson(userInfoMap);
                 listener.getInfoSuccess(json);
                 if (afterSuccess != null) {
@@ -165,7 +169,7 @@ public class NPayLibrary {
                 userInfoMap.put("balance", userInfo.getBalance().toString());
                 userInfoMap.put("statusKyc", userInfo.getStatus().toString());
                 userInfoMap.put("name", userInfo.getName());
-                userInfoMap.put("banks", userInfo.getBanks());
+//                userInfoMap.put("banks", userInfo.getBanks());
                 String json = gson.toJson(userInfoMap);
                 listener.getInfoSuccess(json);
             }
@@ -228,9 +232,11 @@ public class NPayLibrary {
     public Map<String, String> getHeader() {
         Map<String, String> header = new HashMap<>();
         header.put("Merchant-Code", sdkConfig.getMerchantCode());
+        header.put("Secret-Key", sdkConfig.getSecretKey());
         header.put("Merchant-Uid", sdkConfig.getUid());
         header.put("env", sdkConfig.getEnv());
         header.put("App-Type", "SDK");
+        header.put("is-new-sdk", "true");
         header.put("Access-Control-Allow-Origin", "*");
         header.put("brand_color", sdkConfig.getBrandColor());
         header.put("platform", "android");

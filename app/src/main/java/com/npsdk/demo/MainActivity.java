@@ -18,6 +18,7 @@ import com.npsdk.module.PaymentMethod;
 import com.npsdk.module.model.SdkConfig;
 import com.npsdk.module.utils.Actions;
 import com.npsdk.module.utils.Flavor;
+import com.npsdk.module.utils.JsHandler;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String TAG = "MainActivityLOG";
@@ -90,13 +91,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Create flavor by packagen name test
         String flavorEnv = Flavor.setEnvTest(this);
         Bundle bundle = getIntent().getExtras();
-        String mcCode = ""; // sdk_test
+        String mcCode = ""; // uymvnd
         String colorCode = ""; // 15AE62
+        String secretKey = "vIPldW/y/VJuy8qKEQUoH9ypHTTt9W/8ufvn3BFFTBU="; // vIPldW/y/VJuy8qKEQUoH9ypHTTt9W/8ufvn3BFFTBU=
         if (bundle != null) {
             colorCode = bundle.getString("color_code");
             mcCode = bundle.getString("merchant_code");
+            secretKey = bundle.getString("secret_key");
         }
-        SdkConfig sdkConfig = new SdkConfig.Builder(this).merchantCode(mcCode).uid(null).env(flavorEnv).brandColor(colorCode).build();
+        SdkConfig sdkConfig = new SdkConfig.Builder(this).merchantCode(mcCode).secretKey(secretKey).uid(null).env(flavorEnv).brandColor(colorCode).build();
         initSdk(sdkConfig);
     }
 
@@ -116,12 +119,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onLogoutSuccessful() {
-                Toast.makeText(MainActivity.this, "Logout success!", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "Logout success!", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCloseSDK() {
-                Toast.makeText(MainActivity.this, "onCloseSDK", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "onCloseSDK", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -142,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         String url = edtUrlPaygate.getText().toString();
         if (url.isEmpty() && NPayLibrary.getInstance().sdkConfig.getEnv().contains("staging"))
-            url = "https://stg-api.pgw.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6IlZNNzE0RyIsInRpbWUiOjE2NzcxMjM3ODcsImludm9pY2Vfbm8iOiJCb29raW5nQzNnSmdhek0iLCJhbW91bnQiOjIwMDAwLCJkZXNjcmlwdGlvbiI6IlRoYW5oIHRvYW4gZG9uIGhhbmcgQm9va2luZ0MzZ0pnYXpNIiwicmV0dXJuX3VybCI6Imh0dHBzOi8vcXAuc3Bob3Rvbi5jb20vYXBpL3YxL3BheW1lbnQvY29tcGxldGUtdHJhbnNhY3Rpb24iLCJiYWNrX3VybCI6Imh0dHA6Ly9xcC50ZXN0L2FwaS92My9jdXN0b21lci9ib29raW5nIiwibGFuZyI6ImVuIiwic2F2ZV90b2tlbiI6MCwiaXNfY3VzdG9tZXJfcGF5X2ZlZSI6MX0%3D&signature=PLIh7f20j30q5WoxzKimjRYH8C%2FQggkFB%2BTzhNcBPpA%3D";
+            url = "https://stg-api.pgw.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6IlZNNzE0RyIsInRpbWUiOjE2NzcxMjM3ODcsImludm9pY2Vfbm8iOiJCb29raW5nTHZ5cmpScnQiLCJhbW91bnQiOjIwMDAwLCJkZXNjcmlwdGlvbiI6IlRoYW5oIHRvYW4gZG9uIGhhbmcgQm9va2luZ0x2eXJqUnJ0IiwicmV0dXJuX3VybCI6Imh0dHBzOi8vcXAuc3Bob3Rvbi5jb20vYXBpL3YxL3BheW1lbnQvY29tcGxldGUtdHJhbnNhY3Rpb24iLCJiYWNrX3VybCI6Imh0dHA6Ly9xcC50ZXN0L2FwaS92My9jdXN0b21lci9ib29raW5nIiwibGFuZyI6ImVuIiwic2F2ZV90b2tlbiI6MCwiaXNfY3VzdG9tZXJfcGF5X2ZlZSI6MX0%3D&signature=eUtKetwGRFgoIJ5zwADzU7KjuIwlPK4RKq9IO5fL6so%3D";
         switch (v.getId()) {
             case R.id.ll_quet_ma:
                 Log.d(TAG, "onClick: ll_rut_tien");
@@ -239,7 +242,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                Intent i = new Intent(this, TestWebviewActivity.class);
 //                startActivity(i);
 
-//                NPayLibrary.getInstance().openWallet("https://stg-sdk.9pay.mobi/v1/cookie");
+//                new JsHandler(this).getClipboardData();
+//                NPayLibrary.getInstance().openSDKWithAction("https://stg-sdk.9pay.mobi/v1/viet-qr");
+                NPayLibrary.getInstance().openSDKWithAction(Actions.WITHDRAW);
                 break;
         }
         edtUrlPaygate.setText("");

@@ -10,6 +10,7 @@ public class Actions {
     public static final String LOGIN = "LOGIN";
     public static final String HISTORY = "HISTORY";
     public static final String TRANSFER = "TRANSFER";
+    public static final String WITHDRAW = "WITHDRAW";
     public static final String DEPOSIT = "DEPOSIT";
     public static final String QR = "QR";
 
@@ -52,7 +53,7 @@ public class Actions {
 
         ArrayList<String> listTemp = new ArrayList<String>();
         listTemp.addAll(Arrays.asList(
-                OPEN_WALLET, LOGIN, HISTORY, TRANSFER, DEPOSIT, QR));
+                OPEN_WALLET, LOGIN, HISTORY, TRANSFER, DEPOSIT, QR, WITHDRAW));
         return listTemp;
     }
 

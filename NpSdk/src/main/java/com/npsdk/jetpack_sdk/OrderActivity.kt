@@ -59,6 +59,7 @@ import com.npsdk.module.PaymentMethod
 import com.npsdk.module.model.Bank
 import com.npsdk.module.model.UserInfoModel
 import com.npsdk.module.utils.*
+import java.net.URLEncoder
 
 class DataOrder {
     companion object {
@@ -76,6 +77,7 @@ class DataOrder {
 
         var totalAmount by mutableStateOf<Int?>(null)
         var bankTokenSelected by mutableStateOf<Bank?>(null)
+        // Có đang tiếp tục tiến trình thanh toán hay không?
         var isProgressing = false
         var isStartScreen = false
 
@@ -309,7 +311,7 @@ class OrderActivity : ComponentActivity() {
                         val paramsCreateOrder = CreateOrderParamsWallet(
                             url = DataOrder.urlData, method = typeMethod,
                             amount = DataOrder.totalAmount.toString(),
-                            cardToken = if (typeMethod == PaymentMethod.CREDIT_CARD) bankTokenSelected!!.getbToken() else null
+                            cardToken = bankTokenSelected?.getbToken()
                         )
                         appViewModel.isShowLoading = true
                         CreateOrderWalletRepo().create(context, paramsCreateOrder, CallbackCreateOrder {
@@ -324,15 +326,18 @@ class OrderActivity : ComponentActivity() {
                                     inputViewModel.stringDialog.value = it1
                                     NPayLibrary.getInstance().callbackError(2002, it1)
                                 } else if (it.errorCode == 0) {
-                                    val orderId =
-                                        Utils.convertUrlToOrderId(it.data!!.redirectUrl!!)
-                                    val url = generateLinkWeb(orderId)
-
-                                    NPayLibrary.getInstance().openSDKWithAction(url)
+                                    openWebviewOTP(context, it.data!!.redirectUrl!!)
                                     finish()
                                 }
                             }
                         })
+                        return@Footer
+                    }
+
+                    if (DataOrder.selectedItemMethod == PaymentMethod.TRANSFER) {
+                        finish()
+                        val urlTransfer = "${Flavor.baseUrl}/v1/viet-qr?data=${URLEncoder.encode(DataOrder.urlData)}&from=merchant"
+                        NPayLibrary.getInstance().openSDKWithAction(urlTransfer)
                         return@Footer
                     }
                     val intent = Intent(context, InputCardActivity::class.java)
@@ -344,6 +349,7 @@ class OrderActivity : ComponentActivity() {
 
     private fun convertTypeToMethod(): String {
         when (bankTokenSelected!!.getbType()) {
+            2 -> return  PaymentMethod.ATM_CARD
             3 -> return PaymentMethod.CREDIT_CARD
             else -> return PaymentMethod.WALLET
         }
