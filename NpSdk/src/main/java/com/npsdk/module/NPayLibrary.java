@@ -126,7 +126,6 @@ public class NPayLibrary {
                 userInfoMap.put("balance", userInfo.getBalance().toString());
                 userInfoMap.put("statusKyc", userInfo.getStatus().toString());
                 userInfoMap.put("name", userInfo.getName());
-                userInfoMap.put("banks", userInfo.getBanks());
                 String json = gson.toJson(userInfoMap);
                 listener.getInfoSuccess(json);
                 if (afterSuccess != null) {
@@ -170,7 +169,7 @@ public class NPayLibrary {
                 userInfoMap.put("balance", userInfo.getBalance().toString());
                 userInfoMap.put("statusKyc", userInfo.getStatus().toString());
                 userInfoMap.put("name", userInfo.getName());
-                userInfoMap.put("banks", userInfo.getBanks());
+//                userInfoMap.put("banks", userInfo.getBanks());
                 String json = gson.toJson(userInfoMap);
                 listener.getInfoSuccess(json);
             }
