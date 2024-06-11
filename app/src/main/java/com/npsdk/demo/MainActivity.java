@@ -8,10 +8,13 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.*;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import com.npsdk.LibListener;
+import com.npsdk.demo.databinding.ActivityMainBinding;
 import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.module.NPayLibrary;
 import com.npsdk.module.PaymentMethod;
@@ -22,73 +25,21 @@ import com.npsdk.module.utils.JsHandler;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String TAG = "MainActivityLOG";
-    TextView userInfo;
-    TextView txtMoney;
-    WebView webViewGate;
-    LinearLayout layoutGate;
     boolean isShow = false;
-    Toolbar toolbar;
-    EditText edtUrlPaygate;
+
+    ActivityMainBinding binding;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        LinearLayout llRutTien = findViewById(R.id.ll_quet_ma);
-        LinearLayout llNapTien = findViewById(R.id.ll_nap_tien);
-        LinearLayout llChuyenTien = findViewById(R.id.ll_chuyen_tien);
-        LinearLayout llTienIch = findViewById(R.id.ll_lich_su);
-        LinearLayout llMuaTheDt = findViewById(R.id.ll_thanh_toan_hoa_don);
-        LinearLayout llNapTheDT = findViewById(R.id.ll_nap_tien_dt);
-        LinearLayout llNapData = findViewById(R.id.ll_mua_the_game);
-        LinearLayout ll_mua_the_dich_vu = findViewById(R.id.ll_mua_the_dich_vu);
-        LinearLayout ll_mua_the_dt = findViewById(R.id.ll_mua_the_dt);
-        LinearLayout ll_nap_data = findViewById(R.id.ll_nap_data);
-        LinearLayout testClick = findViewById(R.id.test_click);
-        LinearLayout layout_sdv = findViewById(R.id.layout_sdv);
-        RelativeLayout rlInfo = findViewById(R.id.rl_info);
-        ImageView btn_eyes = findViewById(R.id.btn_eyes);
-        Button btn_bank_link_manage = findViewById(R.id.btn_bank_link_manage);
-        Button btn_bank_link_add = findViewById(R.id.btn_bank_link_add);
-        edtUrlPaygate = findViewById(R.id.edt_url_paygate);
-        Button btnThanhToan = findViewById(R.id.btn_thanh_toan);
-        Button btnThanhToan2 = findViewById(R.id.btn_thanh_toan2);
-        Button btnThanhToan3 = findViewById(R.id.btn_thanh_toan3);
-        Button btnThanhToan4 = findViewById(R.id.btn_thanh_toan4);
-        View btnClose = findViewById(R.id.btnClose);
-        txtMoney = findViewById(R.id.txt_money);
-        userInfo = findViewById(R.id.txt_name);
-        webViewGate = findViewById(R.id.webView_gate);
-        layoutGate = findViewById(R.id.layout_web_gate);
-        toolbar = findViewById(R.id.toolbar);
-        btnClose = findViewById(R.id.btnClose);
+        binding.txtMoney.setTransformationMethod(new AsteriskPasswordTransformationMethod());
 
-        txtMoney.setTransformationMethod(new AsteriskPasswordTransformationMethod());
-
-        llRutTien.setOnClickListener(this);
-        llNapTien.setOnClickListener(this);
-        llChuyenTien.setOnClickListener(this);
-        llTienIch.setOnClickListener(this);
-        llMuaTheDt.setOnClickListener(this);
-        llNapTheDT.setOnClickListener(this);
-        llNapData.setOnClickListener(this);
-        ll_mua_the_dich_vu.setOnClickListener(this);
-        ll_mua_the_dt.setOnClickListener(this);
-        ll_nap_data.setOnClickListener(this);
-        btn_bank_link_manage.setOnClickListener(this);
-        btn_bank_link_add.setOnClickListener(this);
-        layout_sdv.setOnClickListener(this);
-        btn_eyes.setOnClickListener(this);
-        rlInfo.setOnClickListener(this);
-        btnClose.setOnClickListener(this);
-        btnThanhToan.setOnClickListener(this);
-        btnThanhToan2.setOnClickListener(this);
-        btnThanhToan3.setOnClickListener(this);
-        btnThanhToan4.setOnClickListener(this);
-        testClick.setOnClickListener(this);
-        // Create flavor by packagen name test
+        listener();
+        // Create flavor by package name test
         String flavorEnv = Flavor.setEnvTest(this);
         Bundle bundle = getIntent().getExtras();
         String mcCode = ""; // uymvnd
@@ -101,6 +52,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         SdkConfig sdkConfig = new SdkConfig.Builder(this).merchantCode(mcCode).secretKey(secretKey).uid(null).env(flavorEnv).brandColor(colorCode).build();
         initSdk(sdkConfig);
+    }
+
+    private void listener() {
+        binding.llQuetMa.setOnClickListener(this);
+        binding.llNapTien.setOnClickListener(this);
+        binding.llChuyenTien.setOnClickListener(this);
+        binding.llLichSu.setOnClickListener(this);
+        binding.llMuaTheDt.setOnClickListener(this);
+        binding.llNapTienDt.setOnClickListener(this);
+        binding.llNapData.setOnClickListener(this);
+        binding.llMuaTheDichVu.setOnClickListener(this);
+        binding.llMuaTheDt.setOnClickListener(this);
+        binding.llNapData.setOnClickListener(this);
+        binding.btnBankLinkManage.setOnClickListener(this);
+        binding.btnBankLinkAdd.setOnClickListener(this);
+        binding.layoutSdv.setOnClickListener(this);
+        binding.btnEyes.setOnClickListener(this);
+        binding.rlInfo.setOnClickListener(this);
+        binding.btnClose.setOnClickListener(this);
+        binding.btnThanhToan.setOnClickListener(this);
+        binding.btnThanhToan2.setOnClickListener(this);
+        binding.btnThanhToan3.setOnClickListener(this);
+        binding.btnThanhToan4.setOnClickListener(this);
+        binding.testClick.setOnClickListener(this);
     }
 
 
@@ -143,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
-        String url = edtUrlPaygate.getText().toString();
+        String url = binding.edtUrlPaygate.getText().toString();
         if (url.isEmpty() && NPayLibrary.getInstance().sdkConfig.getEnv().contains("staging"))
             url = "https://stg-api.pgw.9pay.mobi/portal?baseEncode=eyJtZXJjaGFudEtleSI6IlZNNzE0RyIsInRpbWUiOjE2NzcxMjM3ODcsImludm9pY2Vfbm8iOiJCb29raW5nTHZ5cmpScnQiLCJhbW91bnQiOjIwMDAwLCJkZXNjcmlwdGlvbiI6IlRoYW5oIHRvYW4gZG9uIGhhbmcgQm9va2luZ0x2eXJqUnJ0IiwicmV0dXJuX3VybCI6Imh0dHBzOi8vcXAuc3Bob3Rvbi5jb20vYXBpL3YxL3BheW1lbnQvY29tcGxldGUtdHJhbnNhY3Rpb24iLCJiYWNrX3VybCI6Imh0dHA6Ly9xcC50ZXN0L2FwaS92My9jdXN0b21lci9ib29raW5nIiwibGFuZyI6ImVuIiwic2F2ZV90b2tlbiI6MCwiaXNfY3VzdG9tZXJfcGF5X2ZlZSI6MX0%3D&signature=eUtKetwGRFgoIJ5zwADzU7KjuIwlPK4RKq9IO5fL6so%3D";
         switch (v.getId()) {
@@ -197,11 +172,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_eyes:
                 Log.d(TAG, "onClick: btn_eyes");
-                if (isShow) {
-                    txtMoney.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                } else {
-                    txtMoney.setTransformationMethod(new AsteriskPasswordTransformationMethod());
-                }
+                binding.txtMoney.setTransformationMethod(isShow ? HideReturnsTransformationMethod.getInstance() : new AsteriskPasswordTransformationMethod());
                 isShow = !isShow;
                 break;
             case R.id.layout_sdv:
@@ -210,17 +181,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 NPayLibrary.getInstance().openSDKWithAction(Actions.OPEN_WALLET);
                 break;
             case R.id.btnClose:
-                layoutGate.setVisibility(View.GONE);
+                binding.layoutWebGate.setVisibility(View.GONE);
                 break;
             case R.id.btn_thanh_toan:
                 //paste url thanh toán vào hàm pay
 
                 NPayLibrary.getInstance().openPaymentOnSDK(url, PaymentMethod.WALLET, DataOrder.Companion.isShowResultScreen());
-                edtUrlPaygate.setText("");
+                binding.edtUrlPaygate.setText("");
                 break;
             case R.id.btn_thanh_toan2:
                 NPayLibrary.getInstance().openPaymentOnSDK(url, PaymentMethod.ATM_CARD, DataOrder.Companion.isShowResultScreen());
-                edtUrlPaygate.setText("");
+                binding.edtUrlPaygate.setText("");
                 break;
             case R.id.btn_thanh_toan3:
                 //paste url thanh toán vào hàm pay
@@ -247,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 NPayLibrary.getInstance().openSDKWithAction(Actions.WITHDRAW);
                 break;
         }
-        edtUrlPaygate.setText("");
+        binding.edtUrlPaygate.setText("");
 
     }
 

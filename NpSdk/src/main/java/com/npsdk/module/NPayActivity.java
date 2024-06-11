@@ -495,6 +495,8 @@ public class NPayActivity extends AppCompatActivity {
         webSettings.setMediaPlaybackRequiresUserGesture(false);
         webSettings.setPluginState(WebSettings.PluginState.ON);
 
+        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+
         webView.setWebChromeClient(new WebChromeClient() {
 
             @Override

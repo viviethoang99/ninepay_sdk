@@ -1,101 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
-    <uses-feature android:name="android.hardware.camera"/>
+    <uses-feature android:name="android.hardware.camera" />
 
-    <uses-permission android:name="android.hardware.camera.flash"/>
+    <uses-permission android:name="android.hardware.camera.flash" />
 
-    <uses-feature android:name="android.hardware.camera.autofocus"/>
+    <uses-feature android:name="android.hardware.camera.autofocus" />
 
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <uses-permission android:name="android.webkit.resource.VIDEO_CAPTURE"/>
-    <uses-permission android:name="android.webkit.PermissionRequest"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.webkit.resource.VIDEO_CAPTURE" />
+    <uses-permission android:name="android.webkit.PermissionRequest" />
     <uses-permission
-            android:name="android.permission.READ_EXTERNAL_STORAGE"
-            android:maxSdkVersion="32"/>
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
     <uses-permission
-            android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-            android:maxSdkVersion="32"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="QueryAllPackagesPermission"/>
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission
+        android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
 
     <queries>
-        <package android:name="vn.ninepay.ewallet"/>
+        <package android:name="vn.ninepay.ewallet" />
     </queries>
 
     <application
-            android:allowBackup="false"
-            android:usesCleartextTraffic="true"
-            tools:replace="android:allowBackup">
+        android:allowBackup="false"
+        android:hardwareAccelerated="true"
+        android:usesCleartextTraffic="true"
+        tools:replace="android:allowBackup">
 
         <provider
-                android:name="androidx.core.content.FileProvider"
-                android:authorities="${applicationId}.provider"
-                android:exported="false"
-                android:grantUriPermissions="true">
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
-                    android:name="android.support.FILE_PROVIDER_PATHS"
-                    android:resource="@xml/provider_paths"/>
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
         </provider>
 
         <activity
-                android:name="com.npsdk.module.NPayActivity"
-                android:exported="true"
-                android:screenOrientation="portrait"
-                android:windowSoftInputMode="adjustResize"
-                android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+            android:name="com.npsdk.module.NPayActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
         <activity
-                android:name="com.npsdk.jetpack_sdk.InputCardActivity"
-                android:exported="false"
-                android:label="@string/title_activity_input_card"
-                android:screenOrientation="portrait"
-                android:theme="@style/Theme.PaymentNinepay"
-                android:windowSoftInputMode="adjustResize"/>
+            android:name="com.npsdk.jetpack_sdk.InputCardActivity"
+            android:exported="false"
+            android:label="@string/title_activity_input_card"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.PaymentNinepay"
+            android:windowSoftInputMode="adjustResize" />
         <activity
-                android:name="com.npsdk.jetpack_sdk.OrderActivity"
-                android:exported="false"
-                android:label="@string/title_activity_order"
-                android:screenOrientation="portrait"
-                android:theme="@style/Theme.PaymentNinepay"
-                android:windowSoftInputMode="adjustResize"/>
+            android:name="com.npsdk.jetpack_sdk.OrderActivity"
+            android:exported="false"
+            android:label="@string/title_activity_order"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.PaymentNinepay"
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
-                android:name="com.npsdk.jetpack_sdk.PasswordActivity"
-                android:exported="false"
-                android:label="@string/title_activity_password"
-                android:screenOrientation="portrait"
-                android:theme="@style/Theme.PaymentNinepay"
-                android:windowSoftInputMode="adjustResize"/>
+            android:name="com.npsdk.jetpack_sdk.PasswordActivity"
+            android:exported="false"
+            android:label="@string/title_activity_password"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.PaymentNinepay"
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
-                android:name="com.npsdk.jetpack_sdk.PolicyActivity"
-                android:exported="false"
-                android:screenOrientation="portrait"
-                android:theme="@style/Theme.PaymentNinepay"
-                android:windowSoftInputMode="adjustResize"/>
+            android:name="com.npsdk.jetpack_sdk.PolicyActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.PaymentNinepay"
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
-                android:name="com.npsdk.jetpack_sdk.WebviewComposeActivity"
-                android:exported="false"
-                android:screenOrientation="portrait"
-                android:theme="@style/Theme.PaymentNinepay"
-                android:windowSoftInputMode="adjustResize"/>
+            android:name="com.npsdk.jetpack_sdk.WebviewComposeActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.PaymentNinepay"
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
-                android:name="com.npsdk.jetpack_sdk.ResultPayment"
-                android:exported="false"
-                android:screenOrientation="portrait"
-                android:theme="@style/Theme.PaymentNinepay"
-                android:windowSoftInputMode="adjustResize"/>
+            android:name="com.npsdk.jetpack_sdk.ResultPayment"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.PaymentNinepay"
+            android:windowSoftInputMode="adjustResize" />
 
         <receiver
-                android:name=".NotificationCancelReceiver" android:exported="false">
-        </receiver>
+            android:name=".NotificationCancelReceiver"
+            android:exported="false"></receiver>
     </application>
 
 </manifest>
