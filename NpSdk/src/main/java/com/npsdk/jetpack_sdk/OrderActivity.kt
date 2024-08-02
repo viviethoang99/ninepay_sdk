@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -269,7 +270,6 @@ class OrderActivity : ComponentActivity() {
                 }
             }
             Footer(modifier = Modifier.padding(horizontal = 16.dp),
-
                 clickContinue = { ->
                     if (methodDefault == PaymentMethod.WALLET || DataOrder.selectedItemMethod == PaymentMethod.WALLET) {
                         if (userInfo == null) {

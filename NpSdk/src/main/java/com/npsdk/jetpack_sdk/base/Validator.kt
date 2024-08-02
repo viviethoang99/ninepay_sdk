@@ -8,7 +8,11 @@ import java.math.BigInteger
 
 object Validator {
 
-    fun validateNumberCardInter(input: String, inputViewModel: InputViewModel, showError: Boolean? = true): String {
+    fun validateNumberCardInter(
+        input: String,
+        inputViewModel: InputViewModel,
+        showError: Boolean? = true
+    ): String {
         var stringError = ""
 
         if (input.isBlank()) {
@@ -24,7 +28,11 @@ object Validator {
         DataOrder.listBankModel?.data?.INTERNATIONAL?.isNotEmpty().let {
             if (input.isNotBlank()) {
                 val isMatchPrefix =
-                    checkMatchPrefixInter(DataOrder.listBankModel!!.data!!.INTERNATIONAL, input, inputViewModel)
+                    checkMatchPrefixInter(
+                        DataOrder.listBankModel!!.data!!.INTERNATIONAL,
+                        input,
+                        inputViewModel
+                    )
 
                 // Cả 2 điệu kiện điều không thỏa mãn
                 if (!isMatchPrefix) {
@@ -35,7 +43,7 @@ object Validator {
                             inputViewModel
                         )
                     if (showError!!) {
-                        if (!isMatchDistance && input.length >=6 ) stringError =
+                        if (!isMatchDistance && input.length >= 6) stringError =
                             "Thẻ này chưa được hỗ trợ thanh toán. Vui lòng thanh toán thẻ khác."
                     }
                 }
@@ -44,7 +52,11 @@ object Validator {
         return stringError
     }
 
-    fun validateNumberCardATM(input: String, inputViewModel: InputViewModel, showError: Boolean? = true): String {
+    fun validateNumberCardATM(
+        input: String,
+        inputViewModel: InputViewModel,
+        showError: Boolean? = true
+    ): String {
         var stringError = ""
 
         if (showError!!) {
@@ -66,7 +78,8 @@ object Validator {
                     inputViewModel.inlandBankDetect = INLAND(isValidDate = 1)
                 }
             }
-            if (showError!!) if (!isSupport) stringError = "Số thẻ ATM không hợp lệ. Vui lòng kiểm tra lại."
+            if (showError!!) if (!isSupport) stringError =
+                "Số thẻ ATM không hợp lệ. Vui lòng kiểm tra lại."
         }
 
         return stringError
@@ -77,7 +90,8 @@ object Validator {
 
         when {
             input.isBlank() -> stringError = "Vui lòng nhập Họ và tên."
-            input.length < 6 || input.endsWith(" ") -> stringError = "Họ và tên chủ thẻ không hợp lệ. Vui lòng kiểm tra lại."
+            input.length < 6 || input.endsWith(" ") -> stringError =
+                "Họ và tên chủ thẻ không hợp lệ. Vui lòng kiểm tra lại."
         }
 
         return stringError
@@ -94,7 +108,12 @@ object Validator {
         return stringError
     }
 
-    fun validateDateCardInland(input: String, month: Int?, year: Int?, inputViewModel: InputViewModel): String {
+    fun validateDateCardInland(
+        input: String,
+        month: Int?,
+        year: Int?,
+        inputViewModel: InputViewModel
+    ): String {
 
         // 1 Ngay hieu luc, 0 ngay het han
         val isEffectiveCard: Boolean = inputViewModel.inlandBankDetect?.isValidDate == 1
@@ -103,7 +122,8 @@ object Validator {
 
         when {
             input.isBlank() -> stringError = "Vui lòng nhập ngày $typeString."
-            input.length != 5 -> stringError = "Ngày $typeString không hợp lệ. Vui lòng kiểm tra lại."
+            input.length != 5 -> stringError =
+                "Ngày $typeString không hợp lệ. Vui lòng kiểm tra lại."
 
         }
 
@@ -174,7 +194,8 @@ object Validator {
             val listCreateCard = DataOrder.dataOrderSaved?.data?.feeData?.creditCard
             val binLocaleAllow = DataOrder.dataOrderSaved!!.data!!.merchantInfo!!.binLocaleAllow
             // value = 99 thì cả IN và OUTLAND, = 1 thì INLAND, = 2 OUTLAND
-            val splitPrefix: String = if (prefixString.length > 6) prefixString.substring(0, 6) else prefixString
+            val splitPrefix: String =
+                if (prefixString.length > 6) prefixString.substring(0, 6) else prefixString
             val createCard = listCreateCard?.single { it.cardBrand == nameCard }
 
 //            val x = listFeeBank.contains(splitPrefix)
@@ -205,7 +226,8 @@ object Validator {
                 // Chỉ so sánh trong 1 khoảng đủ số ký tự đầu mà model có.
                 if (prefixNumber.toString().length >= start.toString().length) {
                     var numberSplit: BigInteger =
-                        (prefixNumber.toString().substring(0, start.toString().length)).toBigInteger()
+                        (prefixNumber.toString()
+                            .substring(0, start.toString().length)).toBigInteger()
                     if (numberSplit in start..end) {
                         currentCardMatch = element
                         return@forEach
