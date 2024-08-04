@@ -15,9 +15,9 @@ public class Utils {
         services.add(new Pair<>("Nạp tiền", R.drawable.ic_deposit));
         services.add(new Pair<>("Chuyển tiền", R.drawable.ic_transfer));
         services.add(new Pair<>("Rút tiền", R.drawable.ic_withdraw));
-        services.add(new Pair<>("Nạp tiền điện thoại", R.drawable.ic_deposit_phone));
-        services.add(new Pair<>("Thanh toán hóa đơn", R.drawable.ic_payment_bill));
-        services.add(new Pair<>("Thanh toán qua cổng", R.drawable.ic_payment_gate));
+        services.add(new Pair<>("Nạp tiền \n điện thoại", R.drawable.ic_deposit_phone));
+        services.add(new Pair<>("Thanh toán \n hóa đơn", R.drawable.ic_payment_bill));
+        services.add(new Pair<>("Thanh toán \n qua cổng", R.drawable.ic_payment_gate));
         return services;
     }
 

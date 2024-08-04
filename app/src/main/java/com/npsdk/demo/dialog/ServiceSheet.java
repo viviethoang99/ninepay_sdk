@@ -33,11 +33,9 @@ public class ServiceSheet extends BottomSheetDialogFragment implements ServiceAd
         super.onViewCreated(view, savedInstanceState);
 
         List<Pair<String, Integer>> services = Utils.getServices();
-        binding.rcService.setHasFixedSize(true);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 4);
-        binding.rcService.setLayoutManager(gridLayoutManager);
         ServiceAdapter serviceAdapter = new ServiceAdapter(getContext(), services, this);
-        binding.rcService.setAdapter(serviceAdapter);
+        binding.gridView.setAdapter(serviceAdapter);
+
     }
 
     @Override

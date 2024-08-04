@@ -263,4 +263,8 @@ public class NPayLibrary {
     public void callbackError(int errorCode, String message) {
         listener.onError(errorCode, message);
     }
+
+    public boolean isLogin(){
+        return !Preference.getString(activity, sdkConfig.getEnv() + Constants.ACCESS_TOKEN, "").isEmpty();
+    }
 }

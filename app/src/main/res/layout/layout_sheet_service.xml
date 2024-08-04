@@ -24,16 +24,20 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"/>
 
-    <androidx.recyclerview.widget.RecyclerView
+    <View
         android:background="@color/background"
-        android:layout_marginBottom="24dp"
-        android:id="@+id/rc_service"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="20dp"/>
 
-    <TextView
-        android:layout_marginBottom="24dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+
+    <GridView
+        android:background="@color/background"
+        android:gravity="center"
+        android:id="@+id/grid_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:numColumns="4"
+        android:verticalSpacing="25dp"/>
 
 </LinearLayout>

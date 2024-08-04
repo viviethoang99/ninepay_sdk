@@ -5,10 +5,12 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,12 +19,13 @@ import com.npsdk.demo.R;
 
 import java.util.List;
 
-public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ServiceHolder> {
+public class ServiceAdapter extends ArrayAdapter<Pair<String, Integer>> {
     private Context context;
     private List<Pair<String, Integer>> services;
     private IServiceClicked callback;
 
     public ServiceAdapter(Context context, List<Pair<String, Integer>> services, IServiceClicked callback) {
+        super(context, 0, services);
         this.context = context;
         this.services = services;
         this.callback = callback;
@@ -30,33 +33,18 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ServiceH
 
     @NonNull
     @Override
-    public ServiceHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View view = layoutInflater.inflate(R.layout.layout_item_service, parent, false);
-        return new ServiceHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull ServiceHolder holder, int position) {
-        Pair<String, Integer> service = services.get(position);
-        holder.imgService.setBackground(ContextCompat.getDrawable(context, service.second));
-        holder.tvServiceName.setText(service.first);
-        holder.tvServiceName.setOnClickListener(v -> callback.onItemServiceClicked(position));
-    }
-
-    @Override
-    public int getItemCount() {
-        return services.size();
-    }
-
-    public class ServiceHolder extends RecyclerView.ViewHolder {
-        ImageView imgService;
-        TextView tvServiceName;
-        public ServiceHolder(@NonNull View itemView) {
-            super(itemView);
-            imgService = itemView.findViewById(R.id.img_service);
-            tvServiceName = itemView.findViewById(R.id.txt_service);
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        View listitemView = convertView;
+        if (listitemView == null) {
+            listitemView = LayoutInflater.from(getContext()).inflate(R.layout.layout_item_service, parent, false);
         }
+        Pair<String, Integer> service = services.get(position);
+        ImageView imgService = listitemView.findViewById(R.id.img_service);
+        TextView tvServiceName = listitemView.findViewById(R.id.txt_service);
+        imgService.setBackground(ContextCompat.getDrawable(context, service.second));
+        tvServiceName.setText(service.first);
+        tvServiceName.setOnClickListener(v -> callback.onItemServiceClicked(position));
+        return listitemView;
     }
 
     public interface IServiceClicked {
