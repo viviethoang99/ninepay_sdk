@@ -9,14 +9,16 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.npsdk.demo.adapter.ServiceAdapter;
 import com.npsdk.demo.databinding.LayoutSheetServiceBinding;
 import com.npsdk.demo.util.Utils;
 
 import java.util.List;
 
-public class ServiceSheet extends BottomSheetDialogFragment {
+public class ServiceSheet extends BottomSheetDialogFragment implements ServiceAdapter.IServiceClicked {
 
     private LayoutSheetServiceBinding binding;
 
@@ -31,10 +33,15 @@ public class ServiceSheet extends BottomSheetDialogFragment {
         super.onViewCreated(view, savedInstanceState);
 
         List<Pair<String, Integer>> services = Utils.getServices();
-//        binding.rcQuality.setHasFixedSize(true);
-//        binding.rcQuality.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-//        QualityAdapter qualityAdapter = new QualityAdapter(getContext(), qualityList, this);
-//        binding.rcQuality.setAdapter(qualityAdapter);
+        binding.rcService.setHasFixedSize(true);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 4);
+        binding.rcService.setLayoutManager(gridLayoutManager);
+        ServiceAdapter serviceAdapter = new ServiceAdapter(getContext(), services, this);
+        binding.rcService.setAdapter(serviceAdapter);
     }
 
+    @Override
+    public void onItemServiceClicked(int position) {
+
+    }
 }

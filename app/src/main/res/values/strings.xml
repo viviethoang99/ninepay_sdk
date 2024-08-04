@@ -22,4 +22,5 @@
     <string name="login">Đăng nhập</string>
     <string name="hello">Xin chào</string>
     <string name="ninepay">9PAY</string>
+    <string name="ninepay_service">Dịch vụ của 9Pay</string>
 </resources>

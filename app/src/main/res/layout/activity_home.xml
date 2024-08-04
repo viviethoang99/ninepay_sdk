@@ -17,6 +17,7 @@
             android:src="@drawable/bg" />
 
         <RelativeLayout
+            android:id="@+id/rl_contain_info_user"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="70dp"
@@ -72,9 +73,11 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:layout_below="@+id/rl_contain_info_user"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="300dp"
+            android:layout_marginTop="160dp"
+            android:layout_marginBottom="68dp"
             android:background="@drawable/round_dialog"
             android:orientation="vertical">
 
@@ -148,21 +151,15 @@
                 android:adjustViewBounds="true"
                 android:src="@drawable/ic_flag" />
 
-
         </RelativeLayout>
 
-        <RelativeLayout
-            android:id="@+id/rl_bottom"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        <ImageView
             android:layout_alignParentBottom="true"
-            android:background="@drawable/round_dialog"
+            android:src="@drawable/ic_navi_bottom"
+            android:adjustViewBounds="true"
+            android:layout_width="match_parent"
             android:elevation="30dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="18dp">
-
-
-        </RelativeLayout>
+            android:layout_height="wrap_content"/>
 
     </RelativeLayout>
 
