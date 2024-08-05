@@ -69,9 +69,10 @@ public class HomeActivity extends AppCompatActivity {
 
     private void setView() {
         boolean isLogin = NPayLibrary.getInstance().isLogin();
+        Log.d(TAG, "isLogin ==   " +isLogin);
         binding.btnLogin.setVisibility(isLogin ? View.GONE : View.VISIBLE);
         binding.btnEyes.setVisibility(isLogin ? View.VISIBLE : View.GONE);
-        binding.txtBalance.setText(isLogin ? "******" : getString(R.string.hello));
+        binding.txtBalance.setText(isLogin ? "******" : getString(R.string.ninepay));
     }
 
     private void getUserInfo() {
@@ -87,41 +88,46 @@ public class HomeActivity extends AppCompatActivity {
         NPayLibrary.getInstance().init(HomeActivity.this, sdkConfig, new NineLibListener() {
             @SuppressLint("SetTextI18n")
             public void getInfoSuccess(UserInfo userInfo) {
-                Log.d(TAG, "getInfoSuccess: " + userInfo.toString());
                 String name = userInfo.getName();
                 if (name.isEmpty()) {
                     name = userInfo.getPhone();
                 }
+
+                setView();
+
                 binding.btnEyes.setImageResource(R.drawable.ic_eye_enable);
                 binding.txtBalance.setTransformationMethod(new AsteriskPasswordTransformationMethod());
                 binding.txtUserName.setText(name);
                 binding.txtBalance.setText(userInfo.getBalance().toString());
+
+
             }
 
-            //@Override
-//            public void onError(int errorCode, String message) {
+            @Override
+            public void onError(int errorCode, String message) {
 //                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
-//            }
-//
-//            @Override
-//            public void onLogoutSuccessful() {
+            }
+
+            @Override
+            public void onLogoutSuccessful() {
 //                Toast.makeText(getApplicationContext(), "Logout success!", Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void onCloseSDK() {
+            }
+
+            @Override
+            public void onCloseSDK() {
 //                Toast.makeText(getApplicationContext(), "onCloseSDK", Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void sdkDidComplete(String name, Object status, @Nullable Object params) {
+            }
+
+            @Override
+            public void sdkDidComplete(String name, Object status, @Nullable Object params) {
 //                Toast.makeText(getApplicationContext(), name + " " + status, Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void backToAppFrom(String screen) {
-//                System.out.println(screen);
-//            }
+                getUserInfo();
+            }
+
+            @Override
+            public void backToAppFrom(String screen) {
+                System.out.println(screen);
+            }
 
 
         });
