@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.npsdk.LibListener;
+import com.npsdk.NineLibListener;
 import com.npsdk.demo.databinding.ActivityHomeBinding;
 import com.npsdk.demo.dialog.ServiceSheet;
 import com.npsdk.demo.event.UserInfoEvent;
@@ -82,11 +83,11 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void initSdk(SdkConfig sdkConfig) {
-        NPayLibrary.getInstance().init(HomeActivity.this, sdkConfig, new LibListener() {
 
+        NPayLibrary.getInstance().init(HomeActivity.this, sdkConfig, new NineLibListener() {
             @SuppressLint("SetTextI18n")
-            @Override
             public void getInfoSuccess(UserInfo userInfo) {
+                Log.d(TAG, "getInfoSuccess: " + userInfo.toString());
                 String name = userInfo.getName();
                 if (name.isEmpty()) {
                     name = userInfo.getPhone();
@@ -95,33 +96,34 @@ public class HomeActivity extends AppCompatActivity {
                 binding.txtBalance.setTransformationMethod(new AsteriskPasswordTransformationMethod());
                 binding.txtUserName.setText(name);
                 binding.txtBalance.setText(userInfo.getBalance().toString());
-
             }
 
-            @Override
-            public void onError(int errorCode, String message) {
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
-            }
+            //@Override
+//            public void onError(int errorCode, String message) {
+//                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+//            }
+//
+//            @Override
+//            public void onLogoutSuccessful() {
+//                Toast.makeText(getApplicationContext(), "Logout success!", Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void onCloseSDK() {
+//                Toast.makeText(getApplicationContext(), "onCloseSDK", Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void sdkDidComplete(String name, Object status, @Nullable Object params) {
+//                Toast.makeText(getApplicationContext(), name + " " + status, Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void backToAppFrom(String screen) {
+//                System.out.println(screen);
+//            }
 
-            @Override
-            public void onLogoutSuccessful() {
-                Toast.makeText(getApplicationContext(), "Logout success!", Toast.LENGTH_SHORT).show();
-            }
 
-            @Override
-            public void onCloseSDK() {
-                Toast.makeText(getApplicationContext(), "onCloseSDK", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void sdkDidComplete(String name, Object status, @Nullable Object params) {
-                Toast.makeText(getApplicationContext(), name + " " + status, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void backToAppFrom(String screen) {
-                System.out.println(screen);
-            }
         });
     }
 
