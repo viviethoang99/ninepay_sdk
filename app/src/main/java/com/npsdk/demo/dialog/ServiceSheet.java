@@ -12,13 +12,15 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import com.npsdk.demo.adapter.ServiceAdapter;
+import com.npsdk.demo.R;
+import com.npsdk.demo.adapter.ServiceAdapter2;
 import com.npsdk.demo.databinding.LayoutSheetServiceBinding;
+import com.npsdk.demo.util.GridSpacingItemDecoration;
 import com.npsdk.demo.util.Utils;
 
 import java.util.List;
 
-public class ServiceSheet extends BottomSheetDialogFragment implements ServiceAdapter.IServiceClicked {
+public class ServiceSheet extends BottomSheetDialogFragment implements ServiceAdapter2.IServiceClicked {
 
     private LayoutSheetServiceBinding binding;
 
@@ -29,12 +31,26 @@ public class ServiceSheet extends BottomSheetDialogFragment implements ServiceAd
     }
 
     @Override
+    public int getTheme() {
+        return R.style.BottomSheetDialog;
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         List<Pair<String, Integer>> services = Utils.getServices();
-        ServiceAdapter serviceAdapter = new ServiceAdapter(getContext(), services, this);
-        binding.gridView.setAdapter(serviceAdapter);
+
+        binding.rcService.setHasFixedSize(true);
+        binding.rcService.setLayoutManager(new GridLayoutManager(getContext(), 4));
+
+        int spanCount = 4;
+        int spacing = 50;
+        boolean includeEdge = true;
+        binding.rcService.addItemDecoration(new GridSpacingItemDecoration(spanCount, spacing, includeEdge));
+
+        ServiceAdapter2 serviceAdapter2 = new ServiceAdapter2(getContext(), services, this);
+        binding.rcService.setAdapter(serviceAdapter2);
 
     }
 

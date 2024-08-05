@@ -24,20 +24,12 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"/>
 
-    <View
-        android:background="@color/background"
+    <androidx.recyclerview.widget.RecyclerView
+        android:paddingTop="20dp"
+        android:paddingBottom="40dp"
+        android:id="@+id/rc_service"
         android:layout_width="match_parent"
-        android:layout_height="20dp"/>
-
-
-    <GridView
         android:background="@color/background"
-        android:gravity="center"
-        android:id="@+id/grid_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:numColumns="4"
-        android:verticalSpacing="25dp"/>
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>
