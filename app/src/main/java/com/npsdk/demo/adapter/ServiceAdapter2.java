@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,15 +14,17 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.npsdk.demo.R;
+import com.npsdk.demo.util.ServiceEnum;
+import com.npsdk.demo.util.ServiceModel;
 
 import java.util.List;
 
 public class ServiceAdapter2 extends RecyclerView.Adapter<ServiceAdapter2.Service2Holder> {
     private Context context;
-    private List<Pair<String, Integer>> services;
+    private List<ServiceModel> services;
     private IServiceClicked callback;
 
-    public ServiceAdapter2(Context context, List<Pair<String, Integer>> services, IServiceClicked callback) {
+    public ServiceAdapter2(Context context, List<ServiceModel> services, IServiceClicked callback) {
         this.context = context;
         this.services = services;
         this.callback = callback;
@@ -37,10 +40,10 @@ public class ServiceAdapter2 extends RecyclerView.Adapter<ServiceAdapter2.Servic
 
     @Override
     public void onBindViewHolder(@NonNull Service2Holder holder, int position) {
-        Pair<String, Integer> service = services.get(position);
-        holder.imgService.setBackground(ContextCompat.getDrawable(context, service.second));
-        holder.tvServiceName.setText(service.first);
-        holder.tvServiceName.setOnClickListener(v -> callback.onItemServiceClicked(position));
+        ServiceModel service = services.get(position);
+        holder.imgService.setBackground(ContextCompat.getDrawable(context, service.getId()));
+        holder.tvServiceName.setText(service.getTitle());
+        holder.parent.setOnClickListener(v -> callback.onItemServiceClicked(service.getServiceType()));
 
     }
 
@@ -52,16 +55,18 @@ public class ServiceAdapter2 extends RecyclerView.Adapter<ServiceAdapter2.Servic
     public class Service2Holder extends RecyclerView.ViewHolder {
         private ImageView imgService;
         private TextView tvServiceName;
+        private LinearLayout parent;
 
         public Service2Holder(@NonNull View itemView) {
             super(itemView);
             imgService = itemView.findViewById(R.id.img_service);
             tvServiceName = itemView.findViewById(R.id.txt_service);
+            parent = itemView.findViewById(R.id.parent);
         }
     }
 
     public interface IServiceClicked {
-        void onItemServiceClicked(int position);
+        void onItemServiceClicked(ServiceEnum type);
     }
 
 }

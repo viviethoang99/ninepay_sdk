@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import com.npsdk.jetpack_sdk.DataOrder;
-import com.npsdk.module.model.UserInfoModel;
+import com.npsdk.module.model.UserInfo;
 import com.npsdk.module.model.UserInfoResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -68,7 +68,7 @@ public class GetInfoTask extends AsyncTask<Void, Void, Void> {
     }
 
     public interface OnGetInfoListener {
-        void onGetInfoSuccess(UserInfoModel userInfoModel);
+        void onGetInfoSuccess(UserInfo userInfo);
 
         void onError(int errorCode, String message);
     }

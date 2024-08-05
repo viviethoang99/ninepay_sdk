@@ -2,6 +2,7 @@ package com.npsdk.module;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.webkit.CookieManager;
@@ -9,7 +10,7 @@ import android.webkit.WebStorage;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import com.google.gson.Gson;
+
 import com.npsdk.LibListener;
 import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.jetpack_sdk.InputCardActivity;
@@ -20,7 +21,7 @@ import com.npsdk.module.api.GetInfoTask;
 import com.npsdk.module.api.GetPublickeyTask;
 import com.npsdk.module.api.RefreshTokenTask;
 import com.npsdk.module.model.SdkConfig;
-import com.npsdk.module.model.UserInfoModel;
+import com.npsdk.module.model.UserInfo;
 import com.npsdk.module.utils.*;
 import org.json.JSONObject;
 
@@ -117,17 +118,17 @@ public class NPayLibrary {
         // Get user info
         GetInfoTask getInfoTask = new GetInfoTask(activity, "Bearer " + token, new GetInfoTask.OnGetInfoListener() {
             @Override
-            public void onGetInfoSuccess(UserInfoModel userInfo) {
-                Gson gson = new Gson();
+            public void onGetInfoSuccess(UserInfo userInfo) {
+//                Gson gson = new Gson();
                 Preference.save(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PHONE, userInfo.getPhone());
                 DataOrder.Companion.setUserInfo(userInfo);
-                Map<String, Object> userInfoMap = new HashMap<>();
-                userInfoMap.put("phone", userInfo.getPhone());
-                userInfoMap.put("balance", userInfo.getBalance().toString());
-                userInfoMap.put("statusKyc", userInfo.getStatus().toString());
-                userInfoMap.put("name", userInfo.getName());
-                String json = gson.toJson(userInfoMap);
-                listener.getInfoSuccess(json);
+//                Map<String, Object> userInfoMap = new HashMap<>();
+//                userInfoMap.put("phone", userInfo.getPhone());
+//                userInfoMap.put("balance", userInfo.getBalance().toString());
+//                userInfoMap.put("statusKyc", userInfo.getStatus().toString());
+//                userInfoMap.put("name", userInfo.getName());
+//                String json = gson.toJson(userInfoMap);
+                listener.getInfoSuccess(userInfo);
                 if (afterSuccess != null) {
                     afterSuccess.run();
                 }
@@ -161,17 +162,17 @@ public class NPayLibrary {
         Log.d(TAG, "device id : " + deviceId + " , UID : " + UID);
         GetInfoTask getInfoTask = new GetInfoTask(activity, "Bearer " + token, new GetInfoTask.OnGetInfoListener() {
             @Override
-            public void onGetInfoSuccess(UserInfoModel userInfo) {
-                Gson gson = new Gson();
+            public void onGetInfoSuccess(UserInfo userInfo) {
+//                Gson gson = new Gson();
                 DataOrder.Companion.setUserInfo(userInfo);
-                Map<String, Object> userInfoMap = new HashMap<>();
-                userInfoMap.put("phone", userInfo.getPhone());
-                userInfoMap.put("balance", userInfo.getBalance().toString());
-                userInfoMap.put("statusKyc", userInfo.getStatus().toString());
-                userInfoMap.put("name", userInfo.getName());
+//                Map<String, Object> userInfoMap = new HashMap<>();
+//                userInfoMap.put("phone", userInfo.getPhone());
+//                userInfoMap.put("balance", userInfo.getBalance().toString());
+//                userInfoMap.put("statusKyc", userInfo.getStatus().toString());
+//                userInfoMap.put("name", userInfo.getName());
 //                userInfoMap.put("banks", userInfo.getBanks());
-                String json = gson.toJson(userInfoMap);
-                listener.getInfoSuccess(json);
+//                String json = gson.toJson(userInfoMap);
+                listener.getInfoSuccess(userInfo);
             }
 
             @Override

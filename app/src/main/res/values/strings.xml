@@ -23,4 +23,5 @@
     <string name="hello">Xin chào</string>
     <string name="ninepay">9PAY</string>
     <string name="ninepay_service">Dịch vụ của 9Pay</string>
+    <string name="payment_gate">Thanh toán qua cổng 9pay</string>
 </resources>

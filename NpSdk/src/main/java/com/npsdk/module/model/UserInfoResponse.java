@@ -21,7 +21,7 @@ public class UserInfoResponse {
     private Integer errorCode;
     @SerializedName("data")
     @Expose
-    private UserInfoModel data;
+    private UserInfo data;
 
     /**
      * No args constructor for use in serialization
@@ -36,7 +36,7 @@ public class UserInfoResponse {
      * @param message
      * @param status
      */
-    public UserInfoResponse(Integer serverTime, Integer status, String message, Integer errorCode, UserInfoModel data) {
+    public UserInfoResponse(Integer serverTime, Integer status, String message, Integer errorCode, UserInfo data) {
         super();
         this.serverTime = serverTime;
         this.status = status;
@@ -77,11 +77,11 @@ public class UserInfoResponse {
         this.errorCode = errorCode;
     }
 
-    public UserInfoModel getData() {
+    public UserInfo getData() {
         return data;
     }
 
-    public void setData(UserInfoModel data) {
+    public void setData(UserInfo data) {
         this.data = data;
     }
 

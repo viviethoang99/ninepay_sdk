@@ -15,10 +15,12 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.npsdk.LibListener;
 import com.npsdk.demo.databinding.ActivityMainBinding;
+import com.npsdk.demo.util.AsteriskPasswordTransformationMethod;
 import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.module.NPayLibrary;
 import com.npsdk.module.PaymentMethod;
 import com.npsdk.module.model.SdkConfig;
+import com.npsdk.module.model.UserInfo;
 import com.npsdk.module.utils.Actions;
 import com.npsdk.module.utils.Flavor;
 import com.npsdk.module.utils.JsHandler;
@@ -83,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         NPayLibrary.getInstance().init(MainActivity.this, sdkConfig, new LibListener() {
 
             @Override
-            public void getInfoSuccess(String jsonData) {
+            public void getInfoSuccess(UserInfo jsonData) {
                 System.out.println(jsonData);
             }
 
@@ -229,29 +231,3 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 }
 
-class AsteriskPasswordTransformationMethod extends PasswordTransformationMethod {
-    @Override
-    public CharSequence getTransformation(CharSequence source, View view) {
-        return new PasswordCharSequence(source);
-    }
-
-    private class PasswordCharSequence implements CharSequence {
-        private final CharSequence mSource;
-
-        public PasswordCharSequence(CharSequence source) {
-            mSource = source; // Store char sequence
-        }
-
-        public char charAt(int index) {
-            return '*'; // This is the important part
-        }
-
-        public int length() {
-            return mSource.length(); // Return default
-        }
-
-        public CharSequence subSequence(int start, int end) {
-            return mSource.subSequence(start, end); // Return default
-        }
-    }
-}

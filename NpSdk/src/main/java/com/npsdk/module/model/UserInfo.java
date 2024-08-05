@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class UserInfoModel {
+public class UserInfo {
 
     @SerializedName("phone")
     @Expose
@@ -27,10 +27,10 @@ public class UserInfoModel {
     /**
      * No args constructor for use in serialization
      */
-    public UserInfoModel() {
+    public UserInfo() {
     }
 
-    public UserInfoModel(String phone, @Nullable String name, Integer status, Integer balance) {
+    public UserInfo(String phone, @Nullable String name, Integer status, Integer balance) {
         super();
         this.phone = phone;
         this.name = name;

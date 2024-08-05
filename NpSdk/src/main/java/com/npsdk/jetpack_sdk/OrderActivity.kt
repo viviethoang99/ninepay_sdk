@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -58,7 +57,7 @@ import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.npsdk.module.NPayLibrary
 import com.npsdk.module.PaymentMethod
 import com.npsdk.module.model.Bank
-import com.npsdk.module.model.UserInfoModel
+import com.npsdk.module.model.UserInfo
 import com.npsdk.module.utils.*
 import java.net.URLEncoder
 
@@ -73,7 +72,7 @@ class DataOrder {
         @SuppressLint("StaticFieldLeak")
         var activityOrder: Activity? = null
         var selectedItemMethod by mutableStateOf<String?>(null)
-        var userInfo by mutableStateOf<UserInfoModel?>(null)
+        var userInfo by mutableStateOf<UserInfo?>(null)
         var merchantInfo: MerchantInfo? = null
 
         var totalAmount by mutableStateOf<Int?>(null)
