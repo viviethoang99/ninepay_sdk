@@ -481,7 +481,7 @@ class OrderActivity : ComponentActivity() {
 
             // Info bank list
             userInfo?.banks?.let { banks ->
-                banks.forEachIndexed { index, item ->
+                banks.forEachIndexed { _, item ->
                     Row(
                         modifier = Modifier.background(colorResource(R.color.background))
                             .padding(horizontal = 12.dp, vertical = 10.dp).clickableWithoutRipple {
@@ -536,7 +536,6 @@ class OrderActivity : ComponentActivity() {
 
     @Composable
     private fun ItemRow(item: Methods, isChecked: Boolean, onItemClick: () -> Unit) {
-        val context = LocalContext.current
 
         if (item.code == PaymentMethod.LINK_BANK && (userInfo?.banks ?: arrayListOf()).isEmpty()) {
             return

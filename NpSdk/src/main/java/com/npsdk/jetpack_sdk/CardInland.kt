@@ -94,8 +94,8 @@ fun CardInland(viewModel: InputViewModel) {
                     viewModel.yearNonParseInLand = year
                     var monthStr = "$month"
                     if (monthStr.length == 1) monthStr = "0$month"
-                    val year = year.toString().substring(2)
-                    viewModel.dateCardInLand.value = "$monthStr/${year}"
+                    val formatYear = year.toString().substring(2)
+                    viewModel.dateCardInLand.value = "$monthStr/${formatYear}"
                     viewModel.dateCardErrorInLand.value = Validator.validateDateCardInland(
                         viewModel.dateCardInLand.value, viewModel.monthNonParseInLand, viewModel.yearNonParseInLand,
                         inputViewModel = viewModel

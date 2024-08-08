@@ -124,6 +124,7 @@ class WebviewComposeActivity : ComponentActivity() {
                         ViewGroup.LayoutParams.MATCH_PARENT
                     )
                     webViewClient = object : WebViewClient() {
+                        @Deprecated("Deprecated in Java")
                         override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                             println("my url $url")
                             if (url!!.contains("payment_result?status")) {
@@ -151,7 +152,9 @@ class WebviewComposeActivity : ComponentActivity() {
                                         }
                                     } else {
                                         // Move to error page
-                                        moveToErrorPage(view!!.context, message)
+                                        if (message != null) {
+                                            moveToErrorPage(view!!.context, message)
+                                        }
                                     }
                                 }
                                 return false

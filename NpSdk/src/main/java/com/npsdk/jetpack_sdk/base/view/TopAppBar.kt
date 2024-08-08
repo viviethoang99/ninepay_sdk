@@ -26,7 +26,6 @@ import com.npsdk.jetpack_sdk.theme.fontAppBold
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBarApp(title: String = "Thanh toán", isShowBack: Boolean? = true, onBack: () -> Unit = {}, isCloseButton: Boolean? = false) {
-    var context = LocalContext.current
     Row(modifier = Modifier.height(50.dp).fillMaxWidth()) {
         CenterAlignedTopAppBar(
             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.White),
