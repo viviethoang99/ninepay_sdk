@@ -62,6 +62,8 @@ public class HomeActivity extends AppCompatActivity {
 
         });
 
+        binding.btnLogout.setOnClickListener(v -> NPayLibrary.getInstance().logout());
+
         setView();
         getUserInfo();
 
@@ -69,8 +71,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private void setView() {
         boolean isLogin = NPayLibrary.getInstance().isLogin();
-        Log.d(TAG, "isLogin ==   " +isLogin);
         binding.btnLogin.setVisibility(isLogin ? View.GONE : View.VISIBLE);
+        binding.btnLogout.setVisibility(isLogin ? View.VISIBLE : View.GONE);
         binding.btnEyes.setVisibility(isLogin ? View.VISIBLE : View.GONE);
         binding.txtBalance.setText(isLogin ? "******" : getString(R.string.ninepay));
     }
@@ -84,7 +86,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void initSdk(SdkConfig sdkConfig) {
-
         NPayLibrary.getInstance().init(HomeActivity.this, sdkConfig, new NineLibListener() {
             @SuppressLint("SetTextI18n")
             public void getInfoSuccess(UserInfo userInfo) {
@@ -100,35 +101,20 @@ public class HomeActivity extends AppCompatActivity {
                 binding.txtUserName.setText(name);
                 binding.txtBalance.setText(userInfo.getBalance().toString());
 
-
-            }
-
-            @Override
-            public void onError(int errorCode, String message) {
-//                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onLogoutSuccessful() {
-//                Toast.makeText(getApplicationContext(), "Logout success!", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onCloseSDK() {
-//                Toast.makeText(getApplicationContext(), "onCloseSDK", Toast.LENGTH_SHORT).show();
+                binding.txtUserName.setText(getString(R.string.hello));
+                setView();
+                binding.txtBalance.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                binding.txtBalance.setText(getString(R.string.ninepay));
             }
 
             @Override
             public void sdkDidComplete(String name, Object status, @Nullable Object params) {
-//                Toast.makeText(getApplicationContext(), name + " " + status, Toast.LENGTH_SHORT).show();
                 getUserInfo();
             }
-
-            @Override
-            public void backToAppFrom(String screen) {
-                System.out.println(screen);
-            }
-
 
         });
     }

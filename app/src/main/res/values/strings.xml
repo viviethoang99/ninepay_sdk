@@ -24,4 +24,5 @@
     <string name="ninepay">9PAY</string>
     <string name="ninepay_service">Dịch vụ của 9Pay</string>
     <string name="payment_gate">Thanh toán qua cổng 9pay</string>
+    <string name="logout">Đăng xuất</string>
 </resources>
