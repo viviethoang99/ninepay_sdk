@@ -16,12 +16,12 @@ repositories {
 }
 
 android {
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.npsdk.demo"
         minSdk 23
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -80,6 +80,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
+    namespace 'com.npsdk.demo'
 }
 
 dependencies {
@@ -88,7 +89,7 @@ dependencies {
     implementation project(path: ':NpSdk')
     implementation 'androidx.webkit:webkit:1.6.0'
     implementation 'commons-codec:commons-codec:1.15'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation("org.greenrobot:eventbus:3.3.1")
 
