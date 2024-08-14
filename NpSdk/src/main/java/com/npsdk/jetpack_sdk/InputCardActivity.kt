@@ -132,6 +132,16 @@ class InputCardActivity : ComponentActivity() {
                 if (method == PaymentMethod.ATM_CARD) {
                     DataOrder.totalAmount = data.data.feeData.atmCard
                 }
+
+                if (method == PaymentMethod.CREDIT_CARD) {
+                    var creditCard = DataOrder.dataOrderSaved!!.data.feeData.creditCard;
+                    for (card in creditCard){
+                        if (card.cardBrand == CreditCardEnum.VISA.name){
+                            DataOrder.totalAmount = card.inLand
+                        }
+                    }
+                }
+
             })
 
             if (AppUtils.isLogged()) {
