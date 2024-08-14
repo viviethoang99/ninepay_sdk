@@ -47,6 +47,7 @@ import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamsWallet
 import com.npsdk.jetpack_sdk.repository.model.ListBankModel
 import com.npsdk.jetpack_sdk.repository.model.MerchantInfo
 import com.npsdk.jetpack_sdk.repository.model.ValidatePaymentModel
+import com.npsdk.jetpack_sdk.repository.model.validate_payment.CreditCard
 import com.npsdk.jetpack_sdk.repository.model.validate_payment.Methods
 import com.npsdk.jetpack_sdk.theme.PaymentNinepayTheme
 import com.npsdk.jetpack_sdk.theme.fontAppBold
@@ -86,6 +87,9 @@ class DataOrder {
     }
 }
 
+enum class CreditCardEnum {
+    VISA, MASTER, JCB, AMEX
+}
 class OrderActivity : ComponentActivity() {
 
     private var methodDefault: String? = null
@@ -217,6 +221,23 @@ class OrderActivity : ComponentActivity() {
                                     if (DataOrder.selectedItemMethod == PaymentMethod.ATM_CARD) {
                                         DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.atmCard
                                         return@ShowMethodPayment
+                                    }
+
+                                    // Phi chuyen khoan ngan hang
+                                    if (DataOrder.selectedItemMethod == PaymentMethod.TRANSFER) {
+                                        DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.collection
+                                        return@ShowMethodPayment
+                                    }
+
+                                    // Phi the quoc te
+                                    if (DataOrder.selectedItemMethod == PaymentMethod.CREDIT_CARD) {
+                                        var creditCard = DataOrder.dataOrderSaved!!.data.feeData.creditCard;
+                                        for (card in creditCard){
+                                            if (card.cardBrand == CreditCardEnum.VISA.name){
+                                                DataOrder.totalAmount = card.inLand
+                                                return@ShowMethodPayment
+                                            }
+                                        }
                                     }
 
                                     if (DataOrder.selectedItemMethod == PaymentMethod.LINK_BANK) {
