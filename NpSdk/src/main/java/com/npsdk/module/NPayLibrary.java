@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.google.gson.Gson;
 import com.npsdk.LibListener;
 import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.jetpack_sdk.InputCardActivity;
@@ -119,16 +120,16 @@ public class NPayLibrary {
         GetInfoTask getInfoTask = new GetInfoTask(activity, "Bearer " + token, new GetInfoTask.OnGetInfoListener() {
             @Override
             public void onGetInfoSuccess(UserInfo userInfo) {
-//                Gson gson = new Gson();
+                Gson gson = new Gson();
                 Preference.save(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PHONE, userInfo.getPhone());
                 DataOrder.Companion.setUserInfo(userInfo);
-//                Map<String, Object> userInfoMap = new HashMap<>();
-//                userInfoMap.put("phone", userInfo.getPhone());
-//                userInfoMap.put("balance", userInfo.getBalance().toString());
-//                userInfoMap.put("statusKyc", userInfo.getStatus().toString());
-//                userInfoMap.put("name", userInfo.getName());
-//                String json = gson.toJson(userInfoMap);
-                listener.getInfoSuccess(userInfo);
+                Map<String, Object> userInfoMap = new HashMap<>();
+                userInfoMap.put("phone", userInfo.getPhone());
+                userInfoMap.put("balance", userInfo.getBalance().toString());
+                userInfoMap.put("statusKyc", userInfo.getStatus().toString());
+                userInfoMap.put("name", userInfo.getName());
+                String json = gson.toJson(userInfoMap);
+                listener.getInfoSuccess(json);
                 if (afterSuccess != null) {
                     afterSuccess.run();
                 }
@@ -163,16 +164,16 @@ public class NPayLibrary {
         GetInfoTask getInfoTask = new GetInfoTask(activity, "Bearer " + token, new GetInfoTask.OnGetInfoListener() {
             @Override
             public void onGetInfoSuccess(UserInfo userInfo) {
-//                Gson gson = new Gson();
+                Gson gson = new Gson();
                 DataOrder.Companion.setUserInfo(userInfo);
-//                Map<String, Object> userInfoMap = new HashMap<>();
-//                userInfoMap.put("phone", userInfo.getPhone());
-//                userInfoMap.put("balance", userInfo.getBalance().toString());
-//                userInfoMap.put("statusKyc", userInfo.getStatus().toString());
-//                userInfoMap.put("name", userInfo.getName());
-//                userInfoMap.put("banks", userInfo.getBanks());
-//                String json = gson.toJson(userInfoMap);
-                listener.getInfoSuccess(userInfo);
+                Map<String, Object> userInfoMap = new HashMap<>();
+                userInfoMap.put("phone", userInfo.getPhone());
+                userInfoMap.put("balance", userInfo.getBalance().toString());
+                userInfoMap.put("statusKyc", userInfo.getStatus().toString());
+                userInfoMap.put("name", userInfo.getName());
+                userInfoMap.put("banks", userInfo.getBanks());
+                String json = gson.toJson(userInfoMap);
+                listener.getInfoSuccess(json);
             }
 
             @Override

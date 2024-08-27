@@ -5,7 +5,7 @@ import androidx.annotation.Nullable;
 import com.npsdk.module.model.UserInfo;
 
 public interface LibListener {
-	public void getInfoSuccess(UserInfo userInfo);
+	public void getInfoSuccess(String jsonData);
 
 	public void onError(int errorCode, String message);
 

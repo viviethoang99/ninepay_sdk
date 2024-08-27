@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         NPayLibrary.getInstance().init(MainActivity.this, sdkConfig, new LibListener() {
 
             @Override
-            public void getInfoSuccess(UserInfo jsonData) {
+            public void getInfoSuccess(String jsonData) {
                 System.out.println(jsonData);
             }
 

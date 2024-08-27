@@ -3,7 +3,7 @@ package com.npsdk;
 import com.npsdk.module.model.UserInfo;
 
 public abstract class NineLibListener implements LibListener {
-    public void getInfoSuccess(UserInfo userInfo) {
+    public void getInfoSuccess(String jsonData) {
     }
 
     public void onError(int errorCode, String message) {

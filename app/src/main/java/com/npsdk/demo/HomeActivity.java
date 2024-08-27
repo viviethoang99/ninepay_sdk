@@ -19,6 +19,7 @@ import com.npsdk.NineLibListener;
 import com.npsdk.demo.databinding.ActivityHomeBinding;
 import com.npsdk.demo.dialog.ServiceSheet;
 import com.npsdk.demo.event.UserInfoEvent;
+import com.npsdk.demo.model.User;
 import com.npsdk.demo.util.AsteriskPasswordTransformationMethod;
 import com.npsdk.module.NPayLibrary;
 import com.npsdk.module.model.SdkConfig;
@@ -91,7 +92,8 @@ public class HomeActivity extends AppCompatActivity {
     private void initSdk(SdkConfig sdkConfig) {
         NPayLibrary.getInstance().init(HomeActivity.this, sdkConfig, new NineLibListener() {
             @SuppressLint("SetTextI18n")
-            public void getInfoSuccess(UserInfo userInfo) {
+            public void getInfoSuccess(String jsonData) {
+                User userInfo = User.fromJson(jsonData);
                 String name = userInfo.getName();
                 if (name.isEmpty()) {
                     name = userInfo.getPhone();
