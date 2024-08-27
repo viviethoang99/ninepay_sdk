@@ -258,7 +258,7 @@ public class NPayActivity extends AppCompatActivity {
             @Override
             public void onReceivedHttpError(WebView view, WebResourceRequest request,
                                             WebResourceResponse errorResponse) {
-                if (Arrays.asList(404, 500).contains(errorResponse.getStatusCode())) {
+                if (Arrays.asList(500).contains(errorResponse.getStatusCode())) {
                     Toast.makeText(view.getContext(), "Đã có lỗi " + errorResponse.getStatusCode() + " xảy ra!",
                             Toast.LENGTH_LONG).show();
                 }
@@ -407,7 +407,7 @@ public class NPayActivity extends AppCompatActivity {
             @Override
             public void onReceivedHttpError(WebView view, WebResourceRequest request,
                                             WebResourceResponse errorResponse) {
-                if (Arrays.asList(404, 500).contains(errorResponse.getStatusCode())) {
+                if (Arrays.asList(500).contains(errorResponse.getStatusCode())) {
                     Toast.makeText(view.getContext(), "Đã có lỗi " + errorResponse.getStatusCode() + " xảy ra!",
                             Toast.LENGTH_LONG).show();
                 }
