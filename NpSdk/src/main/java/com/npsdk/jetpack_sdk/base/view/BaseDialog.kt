@@ -125,7 +125,7 @@ fun ShowConfirmDialog(
             androidx.compose.material3.Text(
                 text = content?: "Giao dịch thanh toán của bạn sẽ bị hủy nếu bạn thực hiện quay lại.",
                 color = colorResource(R.color.titleText),
-                fontSize = 12.sp,
+                fontSize = 14.sp,
                 lineHeight = 18.sp,
                 textAlign = TextAlign.Center,
                 fontFamily = fontAppDefault

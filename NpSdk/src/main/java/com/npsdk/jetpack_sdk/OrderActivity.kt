@@ -587,12 +587,12 @@ class OrderActivity : ComponentActivity() {
                 Column {
                     if (item.code.equals(PaymentMethod.WALLET) && phone == null) Text(
                         getNameMerchant(),
-                        style = TextStyle(fontWeight = FontWeight.W600, fontSize = 13.sp, fontFamily = fontAppDefault)
+                        style = TextStyle(fontWeight = FontWeight.W600, fontSize = 13.sp, fontFamily = fontAppBold)
                     )
 
                     if (item.code.equals(PaymentMethod.WALLET) && phone != null) Text(
                         "${getNameMerchant()}: $phone",
-                        style = TextStyle(fontWeight = FontWeight.W600, fontSize = 13.sp, fontFamily = fontAppDefault)
+                        style = TextStyle(fontWeight = FontWeight.W600, fontSize = 13.sp, fontFamily = fontAppBold)
                     )
 
                     if (!item.code.equals(PaymentMethod.WALLET))
@@ -601,7 +601,7 @@ class OrderActivity : ComponentActivity() {
                             style = TextStyle(
                                 fontWeight = FontWeight.W600,
                                 fontSize = 13.sp,
-                                fontFamily = fontAppDefault
+                                fontFamily = fontAppBold
                             )
                         )
                     userInfo?.balance?.let {
