@@ -25,39 +25,57 @@
     </androidx.appcompat.widget.Toolbar>
 
 
-    <LinearLayout
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <WebView
+            android:id="@+id/webView"
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:layout_below="@+id/toolbar"
-            android:orientation="vertical"
-            tools:ignore="WebViewLayout">
+            android:layout_height="match_parent"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:visibility="gone"
+            tools:ignore="WebViewLayout" />
 
-        <com.google.android.material.progressindicator.LinearProgressIndicator
+        <WebView
+            android:id="@+id/webView2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/progressLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/animation_view"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                app:lottie_rawRes="@raw/msct_loading"
+                app:lottie_loop="true"
+                app:lottie_autoPlay="true"
+                android:layout_marginBottom="10dp"
+                />
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
                 android:id="@+id/progressBar"
-                android:layout_centerVertical="true"
-                android:indeterminate="true"
-                android:layout_width="match_parent"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
-                app:trackThickness="04dp"
-                android:visibility="gone"/>
+                android:visibility="visible"
+                android:progress="40"
+                app:indicatorColor="#4f44ff"
+                app:trackColor="#78c2dc"
+                app:trackCornerRadius="80dp"
+                app:trackThickness="8dp" />
+        </LinearLayout>
 
-        <WebView
-                android:id="@+id/webView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                tools:ignore="WebViewLayout"/>
-
-        <WebView
-                android:id="@+id/webView2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:visibility="gone"/>
-
-    </LinearLayout>
+    </FrameLayout>
 
 </RelativeLayout>

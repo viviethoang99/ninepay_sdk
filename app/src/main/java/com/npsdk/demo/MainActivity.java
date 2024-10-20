@@ -47,12 +47,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String mcCode = ""; // uymvnd
         String colorCode = ""; // 15AE62
         String secretKey = "vIPldW/y/VJuy8qKEQUoH9ypHTTt9W/8ufvn3BFFTBU="; // vIPldW/y/VJuy8qKEQUoH9ypHTTt9W/8ufvn3BFFTBU=
+        String phoneNumber = "0961234567";
+
         if (bundle != null) {
             colorCode = bundle.getString("color_code");
             mcCode = bundle.getString("merchant_code");
             secretKey = bundle.getString("secret_key");
+            phoneNumber = bundle.getString("phone_number");
         }
-        SdkConfig sdkConfig = new SdkConfig.Builder(this).merchantCode(mcCode).secretKey(secretKey).uid(null).env(flavorEnv).brandColor(colorCode).build();
+        SdkConfig sdkConfig = new SdkConfig.Builder(this).merchantCode(mcCode).secretKey(secretKey).uid(null).env(flavorEnv).brandColor(colorCode).phoneNumber(phoneNumber).build();
         initSdk(sdkConfig);
     }
 

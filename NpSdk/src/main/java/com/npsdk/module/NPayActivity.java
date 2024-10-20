@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.*;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.window.OnBackInvokedDispatcher;
 import androidx.activity.OnBackPressedCallback;
@@ -61,6 +62,7 @@ public class NPayActivity extends AppCompatActivity {
     private JsHandler jsHandler;
     private ValueCallback<Uri[]> fileUploadCallback;
     private FileObserver fileObserver;
+    private LinearLayout linearLayout;
 
     private static String getMimeType(String url) {
         String type = null;
@@ -92,10 +94,9 @@ public class NPayActivity extends AppCompatActivity {
             });
         }
 
+
         findView();
         // Set color progress bar webview loading
-        progressBar.getIndeterminateDrawable().setColorFilter(0xFF15AE62, PorterDuff.Mode.SRC_IN);
-        progressBar.getProgressDrawable().setColorFilter(0xFF15AE62, PorterDuff.Mode.SRC_IN);
         closeButtonWebview();
         jsHandler = new JsHandler(this);
         String data = getIntent().getStringExtra("data");
@@ -107,6 +108,7 @@ public class NPayActivity extends AppCompatActivity {
         listentChangeUrlBroadcast();
 
         LocalBroadcastManager.getInstance(this).registerReceiver(changeUrlBR, filter);
+        linearLayout.setVisibility(View.VISIBLE);
 
         settingWebview(webView);
         settingWebview(webView2);
@@ -214,10 +216,10 @@ public class NPayActivity extends AppCompatActivity {
     }
 
     private void sendStatusScreenshot() {
-        String jsExcute = "javascript: window.sendStatusTakeScreenshot()";
+        String jsExecute = "javascript: window.sendStatusTakeScreenshot()";
         Handler mainHandler = new Handler(Looper.getMainLooper());
         Runnable myRunnable = () -> {
-            webView.loadUrl(jsExcute);
+            webView.loadUrl(jsExecute);
         };
         mainHandler.post(myRunnable);
     }
@@ -267,6 +269,8 @@ public class NPayActivity extends AppCompatActivity {
 
             @Override
             public void onPageFinished(WebView view, String url) {
+                linearLayout.setVisibility(View.GONE);
+                webView.setVisibility(View.VISIBLE);
                 CookieManager.getInstance().flush();
                 super.onPageFinished(view, url);
             }
@@ -477,6 +481,7 @@ public class NPayActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         btnClose = findViewById(R.id.btnClose);
         progressBar = findViewById(R.id.progressBar);
+        linearLayout = findViewById(R.id.progressLayout);
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -610,10 +615,6 @@ public class NPayActivity extends AppCompatActivity {
             fileUploadCallback.onReceiveValue(results);
             fileUploadCallback = null;
         }
-    }
-
-    @Override
-    public void onBackPressed() {
     }
 
     @Override

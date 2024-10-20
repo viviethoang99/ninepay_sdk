@@ -244,6 +244,7 @@ public class NPayLibrary {
         header.put("platform", "android");
         header.put("device-name", DeviceUtils.getDeviceName());
         header.put("User-Agent", DeviceUtils.getDeviceName());
+        header.put("phone-number", sdkConfig.getPhoneNumber());
         return header;
     }
 
