@@ -53,7 +53,7 @@ import com.npsdk.module.PaymentMethod
 import com.npsdk.module.utils.*
 
 @Composable
-fun PasswordScreen1(
+fun PasswordBottomSheet(
 ) {
     PaymentNinepayTheme {
         Body()

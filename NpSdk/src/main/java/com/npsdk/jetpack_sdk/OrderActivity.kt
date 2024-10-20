@@ -1,6 +1,6 @@
 package com.npsdk.jetpack_sdk
 
-import PasswordScreen1
+import PasswordBottomSheet
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
@@ -232,7 +232,7 @@ class OrderActivity : ComponentActivity() {
         BottomSheetScaffold(
             scaffoldState = scaffoldState,
             sheetContent = {
-                PasswordScreen1()
+                PasswordBottomSheet()
             },
             sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
             sheetPeekHeight = 0.dp,
@@ -286,38 +286,43 @@ class OrderActivity : ComponentActivity() {
                                             // Lấy phi theo giống hình thức số dư ví, bởi vì thẻ lưu trên ví.
                                             DataOrder.totalAmount =
                                                 DataOrder.dataOrderSaved!!.data.feeData.wallet
-                                    // Phi chuyen khoan ngan hang
-                                    if (DataOrder.selectedItemMethod == PaymentMethod.TRANSFER) {
-                                        DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.collection
-                                        return@ShowMethodPayment
-                                    }
-
-                                    // Phi the quoc te
-                                    if (DataOrder.selectedItemMethod == PaymentMethod.CREDIT_CARD) {
-                                        var creditCard = DataOrder.dataOrderSaved!!.data.feeData.creditCard;
-                                        for (card in creditCard){
-                                            if (card.cardBrand == CreditCardEnum.VISA.name){
-                                                DataOrder.totalAmount = card.inLand
+                                            // Phi chuyen khoan ngan hang
+                                            if (DataOrder.selectedItemMethod == PaymentMethod.TRANSFER) {
+                                                DataOrder.totalAmount =
+                                                    DataOrder.dataOrderSaved!!.data.feeData.collection
                                                 return@ShowMethodPayment
                                             }
-                                        }
-                                    }
 
-                                    if (DataOrder.selectedItemMethod == PaymentMethod.LINK_BANK) {
-                                        // Lấy phi theo giống hình thức số dư ví, bởi vì thẻ lưu trên ví.
-                                        DataOrder.totalAmount = DataOrder.dataOrderSaved!!.data.feeData.wallet
-
-                                            // Set mac dinh item dau tien neu link bank click
-                                            if (bankTokenSelected == null) {
-                                                // Chon mac dinh ngan hang lien ket dau tien neu co
-                                                userInfo?.let {
-                                                    if ((it.banks ?: arrayListOf()).isNotEmpty()) {
-                                                        bankTokenSelected = it.banks.first()
+                                            // Phi the quoc te
+                                            if (DataOrder.selectedItemMethod == PaymentMethod.CREDIT_CARD) {
+                                                var creditCard =
+                                                    DataOrder.dataOrderSaved!!.data.feeData.creditCard;
+                                                for (card in creditCard) {
+                                                    if (card.cardBrand == CreditCardEnum.VISA.name) {
+                                                        DataOrder.totalAmount = card.inLand
+                                                        return@ShowMethodPayment
                                                     }
                                                 }
                                             }
-                                        }
-                                    })
+
+                                            if (DataOrder.selectedItemMethod == PaymentMethod.LINK_BANK) {
+                                                // Lấy phi theo giống hình thức số dư ví, bởi vì thẻ lưu trên ví.
+                                                DataOrder.totalAmount =
+                                                    DataOrder.dataOrderSaved!!.data.feeData.wallet
+
+                                                // Set mac dinh item dau tien neu link bank click
+                                                if (bankTokenSelected == null) {
+                                                    // Chon mac dinh ngan hang lien ket dau tien neu co
+                                                    userInfo?.let {
+                                                        if ((it.banks
+                                                                ?: arrayListOf()).isNotEmpty()
+                                                        ) {
+                                                            bankTokenSelected = it.banks.first()
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }})
                                 }
                             }
                         }
