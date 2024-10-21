@@ -231,6 +231,16 @@ class OrderActivity : ComponentActivity() {
             }
         }
 
+        LaunchedEffect(scaffoldState) {
+            snapshotFlow { scaffoldState.bottomSheetState.isExpanded }.collect { isVisible ->
+                if (!isVisible) {
+                    print("isExpanded")
+                    keyboardController?.hide()
+                    focusRequester.freeFocus()
+                }
+            }
+        }
+
 
         BottomSheetScaffold(
             scaffoldState = scaffoldState,
