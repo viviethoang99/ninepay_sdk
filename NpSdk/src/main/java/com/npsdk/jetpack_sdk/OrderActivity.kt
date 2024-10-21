@@ -26,7 +26,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedButton
-import androidx.compose.material.OutlinedTextField
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.Divider
@@ -98,6 +99,7 @@ import com.npsdk.module.utils.NameCallback
 import java.net.URLEncoder
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import kotlinx.coroutines.launch
 
 class DataOrder {
@@ -183,9 +185,10 @@ class OrderActivity : ComponentActivity() {
         var showDialogDeposit by remember {
             mutableStateOf(false)
         }
+        val keyboardController = LocalSoftwareKeyboardController.current
+        val focusRequester = remember { FocusRequester() }
 
         LaunchedEffect(true) {
-
             // Get detail payment
             CheckValidatePayment().check(context, DataOrder.urlData, CallbackOrder { data ->
                 DataOrder.dataOrderSaved = data
@@ -232,7 +235,10 @@ class OrderActivity : ComponentActivity() {
         BottomSheetScaffold(
             scaffoldState = scaffoldState,
             sheetContent = {
-                PasswordBottomSheet()
+                PasswordBottomSheet(
+                    keyboardController = keyboardController,
+                    focusRequester = focusRequester,
+                )
             },
             sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
             sheetPeekHeight = 0.dp,
@@ -400,7 +406,10 @@ class OrderActivity : ComponentActivity() {
 
                         scope.launch {
                             scaffoldState.bottomSheetState.expand()
+                            focusRequester.requestFocus()
+                            keyboardController?.show()
                         }
+
 //                        val intent = Intent(context, PasswordActivity::class.java)
 //                        context.startActivity(intent)
 

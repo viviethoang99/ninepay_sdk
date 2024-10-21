@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -25,6 +26,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.colorResource
@@ -37,6 +39,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.npsdk.R
 import com.npsdk.jetpack_sdk.DataOrder
@@ -51,17 +55,12 @@ import com.npsdk.jetpack_sdk.viewmodel.InputViewModel
 import com.npsdk.module.NPayLibrary
 import com.npsdk.module.PaymentMethod
 import com.npsdk.module.utils.*
+import kotlinx.coroutines.delay
 
 @Composable
 fun PasswordBottomSheet(
-) {
-    PaymentNinepayTheme {
-        Body()
-    }
-}
-
-@Composable
-private fun Body(
+    focusRequester: FocusRequester = FocusRequester(),
+    keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current
 ) {
     val context = LocalContext.current
     val appViewModel: AppViewModel = viewModel()
@@ -69,114 +68,134 @@ private fun Body(
     var passwordSaved by remember { mutableStateOf("") }
     var errTextPassword by remember { mutableStateOf("") }
 
-    Box(
-        modifier = Modifier
-            .background(colorResource(id = R.color.background))
-    ) {
-        LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
-            item {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.White) // White background for the app bar text
-                            .padding(vertical = 12.dp)
-                    ) {
-                        Text(
-                            text = "Nhập mật khẩu",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp,
-                            color = Color.Black,
-                            fontFamily = fontAppDefault,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
-                    Divider()
-                    Image(
-                        painter = painterResource(id = R.drawable.bts_password),
-                        contentDescription = "logo",
-                        modifier = Modifier
-                            .size(90.dp)
-                            .padding(vertical = 16.dp)
-                    )
-                    FieldPassword(onTextChanged = { password ->
-                        passwordSaved = password
-                        if (passwordSaved.length == 6) {
-                            errTextPassword = ""
-                            // Verify password and create order, payment.
-                            appViewModel.showLoading()
-                            VerifyPassword().check(context, passwordSaved, CallbackVerifyPassword {
-                                // Message khac null tuc la co loi xay ra, show loi ra man hinh
-                                if (it != null) {
-                                    appViewModel.hideLoading()
-                                    errTextPassword = it
-                                    return@CallbackVerifyPassword
-                                } else {
-                                    // Khong co loi gi, tao order
-                                    createOrderWallet(context, inputViewModel, appViewModel, passwordSaved,
-                                        messageError = { callback ->
-                                            inputViewModel.showNotification.value = true
-                                            inputViewModel.stringDialog.value = callback
-                                        })
-                                }
-                            })
+    PaymentNinepayTheme {
+        Box(
+            modifier = Modifier
+                .background(colorResource(id = R.color.background))
+        ) {
+            LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
+                item {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color.White) // White background for the app bar text
+                                .padding(vertical = 12.dp)
+                        ) {
+                            Text(
+                                text = "Nhập mật khẩu",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp,
+                                color = Color.Black,
+                                fontFamily = fontAppDefault,
+                                modifier = Modifier.align(Alignment.Center)
+                            )
                         }
-                    }, errTextPassword)
-                    Footer1(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 12.dp),
-                        clickContinue = {
-                            if (appViewModel.isShowLoading) {
-                                return@Footer1
+                        Divider()
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Image(
+                            painter = painterResource(id = R.drawable.bts_password),
+                            contentDescription = "logo",
+                            modifier = Modifier
+                                .size(85.dp)
+                        )
+                        FieldPassword(onTextChanged = { password ->
+                            passwordSaved = password
+                            if (passwordSaved.length == 6) {
+                                errTextPassword = ""
+                                // Verify password and create order, payment.
+                                appViewModel.showLoading()
+                                VerifyPassword().check(context, passwordSaved, CallbackVerifyPassword {
+                                    // Message khac null tuc la co loi xay ra, show loi ra man hinh
+                                    if (it != null) {
+                                        appViewModel.hideLoading()
+                                        errTextPassword = it
+                                        return@CallbackVerifyPassword
+                                    } else {
+                                        // Khong co loi gi, tao order
+                                        createOrderWallet(context, inputViewModel, appViewModel, passwordSaved,
+                                            messageError = { callback ->
+                                                inputViewModel.showNotification.value = true
+                                                inputViewModel.stringDialog.value = callback
+                                            })
+                                    }
+                                })
                             }
-                            if (passwordSaved.length < 6) {
-                                errTextPassword = "Vui lòng nhập mật khẩu để tiếp tục!"
-                                return@Footer1
-                            }
-                            // Verify password and create order, payment.
-                            appViewModel.showLoading()
-                            VerifyPassword().check(context, passwordSaved, CallbackVerifyPassword {
-                                // Message khac null tuc la co loi xay ra, show loi ra man hinh
-                                if (it != null) {
-                                    appViewModel.hideLoading()
-                                    errTextPassword = it
-                                    return@CallbackVerifyPassword
-                                } else {
-                                    // Khong co loi gi, tao order
-                                    createOrderWallet(context, inputViewModel, appViewModel, passwordSaved,
-                                        messageError = { callback ->
-                                            inputViewModel.showNotification.value = true
-                                            inputViewModel.stringDialog.value = callback
-                                        })
+                        }, errTextPassword, focusRequester, keyboardController)
+                        Footer1(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 12.dp),
+                            clickContinue = {
+                                if (appViewModel.isShowLoading) {
+                                    return@Footer1
                                 }
-                            })
+                                if (passwordSaved.length < 6) {
+                                    errTextPassword = "Vui lòng nhập mật khẩu để tiếp tục!"
+                                    return@Footer1
+                                }
+                                // Verify password and create order, payment.
+                                appViewModel.showLoading()
+                                VerifyPassword().check(context, passwordSaved, CallbackVerifyPassword {
+                                    // Message khac null tuc la co loi xay ra, show loi ra man hinh
+                                    if (it != null) {
+                                        appViewModel.hideLoading()
+                                        errTextPassword = it
+                                        return@CallbackVerifyPassword
+                                    } else {
+                                        // Khong co loi gi, tao order
+                                        createOrderWallet(context, inputViewModel, appViewModel, passwordSaved,
+                                            messageError = { callback ->
+                                                inputViewModel.showNotification.value = true
+                                                inputViewModel.stringDialog.value = callback
+                                            })
+                                    }
+                                })
 
+                            })
+                    }
+                }
+                item {
+                    if (inputViewModel.showNotification.value) {
+                        DialogNotification(contextString = inputViewModel.stringDialog.value, onDismiss = {
+                            inputViewModel.showNotification.value = false
                         })
+                    }
                 }
-            }
-            item {
-                if (inputViewModel.showNotification.value) {
-                    DialogNotification(contextString = inputViewModel.stringDialog.value, onDismiss = {
-                        inputViewModel.showNotification.value = false
-                    })
+                item {
+                    if (appViewModel.isShowLoading) {
+                        LaunchedEffect(Unit) {
+                            delay(30000)
+                            appViewModel.isShowLoading = false
+                        }
+                        Dialog(
+                            onDismissRequest = { appViewModel.isShowLoading = false },
+                            DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+                        ) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .background(White, shape = RoundedCornerShape(8.dp))
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
+                    }
                 }
-            }
-            item {
-                if (appViewModel.isShowLoading) LoadingView()
             }
         }
-
-
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun FieldPassword(onTextChanged: (String) -> Unit = {}, errTextPassword: String) {
+private fun FieldPassword(
+    onTextChanged: (String) -> Unit = {},
+    errTextPassword: String,
+    focusRequester: FocusRequester = FocusRequester(),
+    keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current
+) {
     val context = LocalContext.current
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val focusRequester = remember { FocusRequester() }
     var passwordStr by remember { mutableStateOf("") }
 
     LaunchedEffect(errTextPassword) {
@@ -265,10 +284,6 @@ private fun FieldPassword(onTextChanged: (String) -> Unit = {}, errTextPassword:
             )
 
         }
-    }
-
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
     }
 }
 
@@ -406,4 +421,10 @@ private fun createOrderWallet(
             }
         }
     })
+}
+
+@Preview
+@Composable
+fun PreviewPasswordBottomSheet() {
+    PasswordBottomSheet()
 }
