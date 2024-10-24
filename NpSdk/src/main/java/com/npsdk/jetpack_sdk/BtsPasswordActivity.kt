@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
+import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -57,16 +58,27 @@ import com.npsdk.module.PaymentMethod
 import com.npsdk.module.utils.*
 import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PasswordBottomSheet(
     focusRequester: FocusRequester = FocusRequester(),
-    keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current
+    keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current,
+    bottomSheetState: ModalBottomSheetState
 ) {
     val context = LocalContext.current
     val appViewModel: AppViewModel = viewModel()
     val inputViewModel: InputViewModel = viewModel()
     var passwordSaved by remember { mutableStateOf("") }
     var errTextPassword by remember { mutableStateOf("") }
+
+    DisposableEffect(bottomSheetState.isVisible) {
+        if (!bottomSheetState.isVisible) {
+            passwordSaved = ""
+            errTextPassword = ""
+
+        }
+        onDispose { }
+    }
 
     PaymentNinepayTheme {
         Box(
@@ -121,7 +133,7 @@ fun PasswordBottomSheet(
                                     }
                                 })
                             }
-                        }, errTextPassword, focusRequester, keyboardController)
+                        }, errTextPassword, focusRequester, keyboardController, bottomSheetState)
                         Footer1(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -188,12 +200,14 @@ fun PasswordBottomSheet(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun FieldPassword(
     onTextChanged: (String) -> Unit = {},
     errTextPassword: String,
     focusRequester: FocusRequester = FocusRequester(),
-    keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current
+    keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current,
+    bottomSheetState: ModalBottomSheetState
 ) {
     val context = LocalContext.current
     var passwordStr by remember { mutableStateOf("") }
@@ -204,6 +218,13 @@ private fun FieldPassword(
                 passwordStr = ""
             }
         }
+    }
+
+    DisposableEffect(bottomSheetState.isVisible) {
+        if (!bottomSheetState.isVisible) {
+            passwordStr = ""
+        }
+        onDispose { }
     }
 
     Box(
@@ -421,10 +442,4 @@ private fun createOrderWallet(
             }
         }
     })
-}
-
-@Preview
-@Composable
-fun PreviewPasswordBottomSheet() {
-    PasswordBottomSheet()
 }

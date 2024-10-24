@@ -18,20 +18,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
-import androidx.compose.material.OutlinedButton
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -176,10 +172,6 @@ class OrderActivity : ComponentActivity() {
         val inputViewModel: InputViewModel = viewModel()
         val appViewModel: AppViewModel = viewModel()
         val context = LocalContext.current
-
-        val scaffoldState = rememberBottomSheetScaffoldState(
-            bottomSheetState = rememberBottomSheetState(BottomSheetValue.Collapsed)
-        )
         val scope = rememberCoroutineScope()
 
         var showDialogDeposit by remember {
@@ -231,27 +223,35 @@ class OrderActivity : ComponentActivity() {
             }
         }
 
-        LaunchedEffect(scaffoldState) {
-            snapshotFlow { scaffoldState.bottomSheetState.isExpanded }.collect { isVisible ->
+
+
+        val bottomSheetState = rememberModalBottomSheetState(
+            initialValue = ModalBottomSheetValue.Hidden,
+            skipHalfExpanded = true,
+                    confirmValueChange = {
+                        it !=ModalBottomSheetValue.HalfExpanded
+                    }
+        )
+
+        LaunchedEffect(bottomSheetState) {
+            snapshotFlow { bottomSheetState.isVisible }.collect { isVisible ->
                 if (!isVisible) {
-                    print("isExpanded")
                     keyboardController?.hide()
                     focusRequester.freeFocus()
                 }
             }
         }
 
-
-        BottomSheetScaffold(
-            scaffoldState = scaffoldState,
+        ModalBottomSheetLayout(
+            sheetState = bottomSheetState,
+            sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
             sheetContent = {
                 PasswordBottomSheet(
                     keyboardController = keyboardController,
                     focusRequester = focusRequester,
+                    bottomSheetState = bottomSheetState,
                 )
             },
-            sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-            sheetPeekHeight = 0.dp,
         ) {
             Column {
                 TopAppBarApp(isShowBack = true, onBack = {
@@ -375,18 +375,18 @@ class OrderActivity : ComponentActivity() {
                         LoadingView()
                     }
 
-                    if (scaffoldState.bottomSheetState.isExpanded) {
-                        Box(
-                            Modifier
-                                .fillMaxSize()
-                                .background(Color.Black.copy(alpha = 0.5f))
-                                .clickable {
-                                    scope.launch {
-                                        scaffoldState.bottomSheetState.collapse()
-                                    }
-                                }
-                        )
-                    }
+//                    if (bottomSheetState.is) {
+//                        Box(
+//                            Modifier
+//                                .fillMaxSize()
+//                                .background(Color.Black.copy(alpha = 0.5f))
+//                                .clickable {
+//                                    scope.launch {
+//                                        scaffoldState.bottomSheetState.collapse()
+//                                    }
+//                                }
+//                        )
+//                    }
                 }
 
             Footer(modifier = Modifier.padding(horizontal = 16.dp),
@@ -415,9 +415,9 @@ class OrderActivity : ComponentActivity() {
                         }
 
                         scope.launch {
-                            scaffoldState.bottomSheetState.expand()
                             focusRequester.requestFocus()
                             keyboardController?.show()
+                            bottomSheetState.show()
                         }
 
 //                        val intent = Intent(context, PasswordActivity::class.java)
