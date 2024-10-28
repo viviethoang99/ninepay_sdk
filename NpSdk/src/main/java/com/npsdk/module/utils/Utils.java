@@ -100,8 +100,10 @@ public class Utils {
             case Actions.QR:
                 path = "/v1/scan-qr-code";
                 break;
-            case  Actions.WITHDRAW:
+            case Actions.WITHDRAW:
                 path = "/v1/rut-tien";
+            case Actions.LINK_WALLET:
+                path = "/v1/home";
         }
         return Flavor.baseUrl + path;
     }

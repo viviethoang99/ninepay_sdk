@@ -63,6 +63,7 @@ public class NPayActivity extends AppCompatActivity {
     private ValueCallback<Uri[]> fileUploadCallback;
     private FileObserver fileObserver;
     private LinearLayout linearLayout;
+    private boolean isRedirected;
 
     private static String getMimeType(String url) {
         String type = null;
@@ -269,7 +270,9 @@ public class NPayActivity extends AppCompatActivity {
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                linearLayout.setVisibility(View.GONE);
+                if (!isRedirected) {
+                    linearLayout.setVisibility(View.GONE);
+                }
                 webView.setVisibility(View.VISIBLE);
                 CookieManager.getInstance().flush();
                 super.onPageFinished(view, url);
@@ -279,6 +282,7 @@ public class NPayActivity extends AppCompatActivity {
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
 
                 String url = request.getUrl().toString();
+                isRedirected = true;
 
                 System.out.println("shouldOverrideUrlLoading 1: " + url);
 
@@ -311,6 +315,11 @@ public class NPayActivity extends AppCompatActivity {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 showOrHideToolbar();
+                if(!isRedirected) {
+                    linearLayout.setVisibility(View.VISIBLE);
+                }
+
+                isRedirected = false;
                 super.onPageStarted(view, url, favicon);
             }
 
@@ -519,12 +528,9 @@ public class NPayActivity extends AppCompatActivity {
 
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
-                if (newProgress >= 95) {
-                    progressBar.setVisibility(View.GONE);
-                } else {
-                    progressBar.setVisibility(View.VISIBLE);
+
                     progressBar.setProgress(newProgress);
-                }
+
                 super.onProgressChanged(view, newProgress);
             }
         });
