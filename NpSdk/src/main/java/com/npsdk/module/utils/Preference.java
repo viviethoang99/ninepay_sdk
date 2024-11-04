@@ -3,7 +3,12 @@ package com.npsdk.module.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import androidx.security.crypto.EncryptedSharedPreferences;
+import androidx.security.crypto.MasterKeys;
+import android.os.Build;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,16 +31,32 @@ public final class Preference {
 	 * @return
 	 */
 	public static SharedPreferences getSharedPreferences(Context context) {
-		if(context!=null){
-			return context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
-		}else{
+		if (context != null) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+				try {
+					String masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
+					return EncryptedSharedPreferences.create(
+							PREFERENCE_NAME,
+							masterKeyAlias,
+							context,
+							EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+							EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+					);
+				} catch (GeneralSecurityException | IOException e) {
+					e.printStackTrace();
+					return null;
+				}
+			} else {
+				return context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
+			}
+		} else {
 			return null;
 		}
 	}
 
 	/**
 	 * Save Single String preference
-	 * 
+	 *
 	 * @param context
 	 * @param key
 	 * @param value
@@ -45,7 +66,14 @@ public final class Preference {
 		try {
 			SharedPreferences sharedPreferences = getSharedPreferences(context);
 			Editor editor = sharedPreferences.edit();
-			editor.putString(key, value);
+
+			String trueKey = _generateKey(key, context);
+
+			if(trueKey.isEmpty()){
+				return false;
+			}
+
+			editor.putString(trueKey, value);
 			return editor.commit();
 		}catch (Exception e){
 			return false;
@@ -292,12 +320,19 @@ public final class Preference {
 	public static String getString(Context context, String key , String strDefault) {
 		try {
 			SharedPreferences sharedPreferences = getSharedPreferences(context);
-			return sharedPreferences.getString(key, strDefault);
+			String trueKey = _generateKey(key, context);
+
+			if (trueKey.isEmpty()) {
+				return strDefault;
+			}
+
+			return sharedPreferences.getString(trueKey, strDefault);
 		}catch (Exception e){
 			e.printStackTrace();
 			return strDefault;
 		}
 	}
+
 	public static Set<String> getStringSet(Context context, String key, Set<String> defaultValue) {
 		try {
 			SharedPreferences sharedPreferences = getSharedPreferences(context);
@@ -308,4 +343,31 @@ public final class Preference {
 		}
 	}
 
+	public static String _generateKey(String key, Context context) {
+		if (key.contains(Constants.PHONE) || key.contains(Constants.MERCHANT_CODE)) {
+			return key;
+		}
+
+		String phoneNumber = _getSavedDefault(context, Flavor.prefKey + Constants.PHONE);
+		if (phoneNumber == null || phoneNumber.isEmpty()) {
+			return "";
+		}
+
+		String merchantCode = _getSavedDefault(context, Flavor.prefKey + Constants.MERCHANT_CODE);
+		if (merchantCode == null || merchantCode.isEmpty()) {
+			return "";
+		}
+
+		return phoneNumber + "_" + merchantCode + "_" + key;
+	}
+
+	public static String _getSavedDefault(Context context, String key) {
+		try {
+			SharedPreferences sharedPreferences = getSharedPreferences(context);
+			return sharedPreferences.getString(key, "");
+		}catch (Exception e){
+			e.printStackTrace();
+			return "";
+		}
+	}
 }

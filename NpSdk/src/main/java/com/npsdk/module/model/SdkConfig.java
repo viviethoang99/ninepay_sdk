@@ -2,7 +2,9 @@ package com.npsdk.module.model;
 
 import android.content.Context;
 
+import com.npsdk.module.utils.Constants;
 import com.npsdk.module.utils.DeviceUtils;
+import com.npsdk.module.utils.Preference;
 
 import java.io.Serializable;
 
@@ -22,6 +24,13 @@ public class SdkConfig implements Serializable {
         env = builder.mEnv;
         brandColor = builder.mBrandColor;
         phoneNumber = builder.mPhoneNumber;
+
+        saveSdkConfig(builder.context);
+    }
+
+    public void saveSdkConfig(Context context) {
+        Preference.save(context, env + Constants.MERCHANT_CODE, merchantCode);
+        Preference.save(context,env + Constants.PHONE, phoneNumber);
     }
 
     public String getMerchantCode() {
