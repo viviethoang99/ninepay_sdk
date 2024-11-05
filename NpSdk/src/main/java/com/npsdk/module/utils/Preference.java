@@ -64,8 +64,7 @@ public final class Preference {
 			Editor editor = sharedPreferences.edit();
 
 			String trueKey = _generateKey(key, context);
-
-			if(trueKey.isEmpty()){
+			if (trueKey.isEmpty()){
 				return false;
 			}
 
@@ -86,8 +85,8 @@ public final class Preference {
 	public static String getString(Context context, String key) {
 		try {
 			SharedPreferences sharedPreferences = getSharedPreferences(context);
-			String trueKey = _generateKey(key, context);
 
+			String trueKey = _generateKey(key, context);
 			if(trueKey.isEmpty()){
 				return "";
 			}
@@ -345,6 +344,7 @@ public final class Preference {
 		}
 	}
 
+	// Generate key with phone number and merchant code
 	public static String _generateKey(String key, Context context) {
 		if (key.contains(Constants.PHONE) || key.contains(Constants.MERCHANT_CODE)) {
 			return key;
