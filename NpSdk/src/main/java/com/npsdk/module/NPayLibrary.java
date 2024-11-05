@@ -227,6 +227,7 @@ public class NPayLibrary {
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.REFRESH_TOKEN);
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PUBLIC_KEY);
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.LAST_TIME_PUBLIC_KEY);
+        Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.MERCHANT_CODE);
         listener.onLogoutSuccessful();
     }
 
