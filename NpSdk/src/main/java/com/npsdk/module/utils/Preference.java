@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKeys;
-import android.os.Build;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -32,24 +31,20 @@ public final class Preference {
 	 */
 	public static SharedPreferences getSharedPreferences(Context context) {
 		if (context != null) {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-				try {
-					String masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
-					return EncryptedSharedPreferences.create(
-							PREFERENCE_NAME,
-							masterKeyAlias,
-							context,
-							EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-							EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-					);
-				} catch (GeneralSecurityException | IOException e) {
-					e.printStackTrace();
-					return null;
-				}
-			} else {
-				return context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
-			}
-		} else {
+            try {
+                String masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
+                return EncryptedSharedPreferences.create(
+                        PREFERENCE_NAME,
+                        masterKeyAlias,
+                        context,
+                        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                );
+            } catch (GeneralSecurityException | IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        } else {
 			return null;
 		}
 	}
@@ -82,7 +77,7 @@ public final class Preference {
 
 	/**
 	 * Get string value through key
-	 * 
+	 *
 	 * @param context
 	 * @param key
 	 * @return
@@ -90,7 +85,13 @@ public final class Preference {
 	public static String getString(Context context, String key) {
 		try {
 			SharedPreferences sharedPreferences = getSharedPreferences(context);
-			return sharedPreferences.getString(key, "");
+			String trueKey = _generateKey(key, context);
+
+			if (trueKey.isEmpty()) {
+				return "";
+			}
+
+			return sharedPreferences.getString(trueKey, "");
 		}catch (Exception e){
 			e.printStackTrace();
 			return "";
@@ -213,21 +214,19 @@ public final class Preference {
 
 	/**
 	 * Save long value
-	 * 
+	 *
 	 * @param context
 	 * @param key
 	 * @param value
-	 * @return
 	 */
-	public static boolean save(Context context, String key, long value) {
+	public static void save(Context context, String key, long value) {
 		try {
 			SharedPreferences sharedPreferences = getSharedPreferences(context);
 			Editor editor = sharedPreferences.edit();
 			editor.putLong(key, value);
-			return editor.commit();
+			editor.commit();
 		}catch (Exception e){
 			e.printStackTrace();
-			return false;
 		}
 	}
 	
