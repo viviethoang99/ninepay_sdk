@@ -24,13 +24,6 @@ public class SdkConfig implements Serializable {
         env = builder.mEnv;
         brandColor = builder.mBrandColor;
         phoneNumber = builder.mPhoneNumber;
-
-        saveSdkConfig(builder.context);
-    }
-
-    public void saveSdkConfig(Context context) {
-        Preference.save(context, env + Constants.MERCHANT_CODE, merchantCode);
-        Preference.save(context,env + Constants.PHONE, phoneNumber);
     }
 
     public String getMerchantCode() {

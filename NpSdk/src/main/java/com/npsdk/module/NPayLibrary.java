@@ -49,16 +49,23 @@ public class NPayLibrary {
         this.sdkConfig = sdkConfig;
         this.listener = listener;
         Flavor.configFlavor(sdkConfig.getEnv());
+
         if (sdkConfig.getSecretKey() == null || sdkConfig.getSecretKey().isEmpty()) {
             Toast.makeText(activity, "Secret key not found!", Toast.LENGTH_SHORT).show();
             activity.finish();
             return;
         }
+        saveSdkConfig(sdkConfig);
         new GetInfoMerchant().get();
         if (!AppUtils.INSTANCE.isLogged()) {
             GetPublickeyTask getPublickeyTask = new GetPublickeyTask(activity);
             getPublickeyTask.execute();
         }
+    }
+
+    public void saveSdkConfig(SdkConfig sdkConfig) {
+        Preference.save(activity, sdkConfig.getEnv() + Constants.MERCHANT_CODE, sdkConfig.getMerchantCode());
+        Preference.save(activity,sdkConfig.getEnv() + Constants.PHONE, sdkConfig.getPhoneNumber());
     }
 
     public void openSDKWithAction(String actions) {
