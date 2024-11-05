@@ -65,8 +65,6 @@ public final class Preference {
 			Editor editor = sharedPreferences.edit();
 
 			String trueKey = _generateKey(key, context);
-			Log.d("Preference", "save 1: " + trueKey);
-
 			if (trueKey.isEmpty()){
 				return false;
 			}
@@ -90,9 +88,6 @@ public final class Preference {
 			SharedPreferences sharedPreferences = getSharedPreferences(context);
 
 			String trueKey = _generateKey(key, context);
-
-			Log.d("Preference", "getString 1: " + trueKey);
-
 			if(trueKey.isEmpty()){
 				return "";
 			}
@@ -328,8 +323,6 @@ public final class Preference {
 		try {
 			SharedPreferences sharedPreferences = getSharedPreferences(context);
 			String trueKey = _generateKey(key, context);
-
-			Log.d("Preference", "getString 2: " + trueKey);
 
 			if (trueKey.isEmpty()) {
 				return strDefault;

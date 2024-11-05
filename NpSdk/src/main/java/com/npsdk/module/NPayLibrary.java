@@ -55,6 +55,8 @@ public class NPayLibrary {
             activity.finish();
             return;
         }
+
+        DataOrder.clearData();
         saveSdkConfig(sdkConfig);
         new GetInfoMerchant().get();
         if (!AppUtils.INSTANCE.isLogged()) {
@@ -119,10 +121,10 @@ public class NPayLibrary {
     public void getUserInfoSendToPayment(@Nullable Runnable afterSuccess) {
         DataOrder.Companion.setUserInfo(null);
         String token = Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
-        String publickey = Preference.getString(activity, Flavor.prefKey + Constants.PUBLIC_KEY, "");
+        String publicKey = Preference.getString(activity, Flavor.prefKey + Constants.PUBLIC_KEY, "");
         String deviceId = DeviceUtils.getDeviceID(activity);
         String UID = DeviceUtils.getUniqueID(activity);
-        if (token.isEmpty() || publickey.isEmpty()) return;
+        if (token.isEmpty() || publicKey.isEmpty()) return;
         // Get user info
         GetInfoTask getInfoTask = new GetInfoTask(activity, "Bearer " + token, new GetInfoTask.OnGetInfoListener() {
             @Override

@@ -120,6 +120,26 @@ class DataOrder {
 
         // Limit bank (when linked)
         var isLimitItem by mutableStateOf(true)
+
+        // Hàm này đc gọi trong khởi tạo SDK.
+        // Xoá toàn bộ cache của user cũ
+        @JvmStatic
+        fun clearData() {
+            urlData = ""
+            isShowResultScreen = true
+            dataOrderSaved = null
+            amount = null
+            listBankModel = null
+            activityOrder = null
+            selectedItemMethod = null
+            userInfo = null
+            merchantInfo = null
+            totalAmount = null
+            bankTokenSelected = null
+            isProgressing = false
+            isStartScreen = false
+            isLimitItem = true
+        }
     }
 }
 
