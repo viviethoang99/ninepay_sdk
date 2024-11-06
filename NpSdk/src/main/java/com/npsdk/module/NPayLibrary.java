@@ -55,14 +55,26 @@ public class NPayLibrary {
             activity.finish();
             return;
         }
-
-        DataOrder.clearData();
+        if( isLogOut(sdkConfig)){
+            logout();
+            DataOrder.clearData();
+        }
         saveSdkConfig(sdkConfig);
         new GetInfoMerchant().get();
         if (!AppUtils.INSTANCE.isLogged()) {
             GetPublickeyTask getPublickeyTask = new GetPublickeyTask(activity);
             getPublickeyTask.execute();
         }
+    }
+
+    public boolean isLogOut(SdkConfig sdkConfig) {
+        String phoneCache = Preference.getString(activity, sdkConfig.getEnv() + Constants.PHONE, "");
+        boolean isSamePhone = phoneCache.equals(sdkConfig.getPhoneNumber());
+
+        String merchantCodeCache = Preference.getString(activity, sdkConfig.getEnv() + Constants.MERCHANT_CODE, "");
+        boolean isSameMerchantCode = merchantCodeCache.equals(sdkConfig.getMerchantCode());
+
+        return !isSamePhone || !isSameMerchantCode;
     }
 
     public void saveSdkConfig(SdkConfig sdkConfig) {
