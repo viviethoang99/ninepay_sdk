@@ -241,13 +241,13 @@ public class NPayLibrary {
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PHONE);
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.LAST_TIME_PUBLIC_KEY);
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.MERCHANT_CODE);
-        listener.onLogoutSuccessful();
     }
 
     public void removeToken() {
         Preference.removeEncrypted(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN);
         Preference.removeEncrypted(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.REFRESH_TOKEN);
         Preference.removeEncrypted(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PUBLIC_KEY);
+        listener.onLogoutSuccessful();
     }
 
     public void close() {
