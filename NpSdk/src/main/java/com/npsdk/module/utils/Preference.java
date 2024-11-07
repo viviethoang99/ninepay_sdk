@@ -5,8 +5,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKeys;
-import android.os.Build;
-import android.util.Log;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -147,7 +145,6 @@ public final class Preference {
 	 * 
 	 * @param context
 	 * @param key
-	 * @param defFlag
 	 * @return
 	 */
 	public static boolean getBoolean(Context context, String key, boolean defaultValue) {
@@ -187,6 +184,27 @@ public final class Preference {
 			SharedPreferences sharedPreferences = getSharedPreferences(context);
 			Editor editor = sharedPreferences.edit();
 			editor.remove(key);
+			editor.commit();
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * remove the value by key with encrypted
+	 *
+	 * @param context
+	 * @param key
+	 */
+	public static void removeEncrypted(Context context, String key) {
+		try {
+			SharedPreferences sharedPreferences = getSharedPreferences(context);
+			String trueKey = _generateKey(key, context);
+			if (trueKey.isEmpty()){
+				return;
+			}
+			Editor editor = sharedPreferences.edit();
+			editor.remove(trueKey);
 			editor.commit();
 		}catch (Exception e){
 			e.printStackTrace();

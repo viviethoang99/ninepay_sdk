@@ -230,6 +230,8 @@ public class NPayLibrary {
         refreshTokenTask.execute();
     }
 
+    // Remove cookie, session, phone number and merchant code
+    // If you want to delete the password, call the removeToken function.
     public void logout() {
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.removeAllCookies(null);
@@ -237,12 +239,15 @@ public class NPayLibrary {
         WebStorage.getInstance().deleteAllData();
         cookieManager.flush();
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PHONE);
-        Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN);
-        Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.REFRESH_TOKEN);
-        Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PUBLIC_KEY);
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.LAST_TIME_PUBLIC_KEY);
         Preference.remove(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.MERCHANT_CODE);
         listener.onLogoutSuccessful();
+    }
+
+    public void removeToken() {
+        Preference.removeEncrypted(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.ACCESS_TOKEN);
+        Preference.removeEncrypted(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.REFRESH_TOKEN);
+        Preference.removeEncrypted(activity, NPayLibrary.getInstance().sdkConfig.getEnv() + Constants.PUBLIC_KEY);
     }
 
     public void close() {

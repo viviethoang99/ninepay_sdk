@@ -102,8 +102,7 @@ public class Utils {
                 break;
             case Actions.WITHDRAW:
                 path = "/v1/rut-tien";
-            case Actions.LINK_WALLET:
-                path = "/v1/home";
+                break;
         }
         return Flavor.baseUrl + path;
     }
