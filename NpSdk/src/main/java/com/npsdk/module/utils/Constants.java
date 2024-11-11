@@ -7,6 +7,7 @@ public class Constants {
     public static final String PUBLIC_KEY = "public_key";
     public static final String LAST_TIME_PUBLIC_KEY = "last_time_public_key";
     public static final String MERCHANT_CODE = "merchant_code";
+    public static final String INIT_ENVIRONMENT = "init_environment";
 
     public static final String PROD_URL = "https://sdk.9pay.vn";
     public static final String SANDBOX_URL = "https://sand-sdk.9pay.vn";

@@ -467,11 +467,11 @@ public class NPayActivity extends AppCompatActivity {
                     if (nameAction != null) {
                         isProgressDeposit = nameAction.equals("napas-deposit");
                     }
-                    if (!getURL.startsWith(Flavor.baseUrl) && !getURL.startsWith(Flavor.baseShop)) {
-                        webView.setVisibility(View.GONE);
-                        webView2.setVisibility(View.VISIBLE);
-                        webView2.loadUrl(getURL, headerWebView);
-                    }
+
+                    webView.setVisibility(View.GONE);
+                    webView2.setVisibility(View.VISIBLE);
+                    webView2.loadUrl(getURL, headerWebView);
+
                     showOrHideToolbar();
 
                 }

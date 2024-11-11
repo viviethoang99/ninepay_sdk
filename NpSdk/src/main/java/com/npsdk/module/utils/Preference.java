@@ -365,7 +365,9 @@ public final class Preference {
 
 	// Generate key with phone number and merchant code
 	public static String _generateKey(String key, Context context) {
-		if (key.contains(Constants.PHONE) || key.contains(Constants.MERCHANT_CODE)) {
+		if (key.contains(Constants.PHONE) ||
+						key.contains(Constants.MERCHANT_CODE) ||
+						key.contains(Constants.INIT_ENVIRONMENT)) {
 			return key;
 		}
 

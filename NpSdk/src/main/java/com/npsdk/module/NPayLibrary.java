@@ -55,7 +55,7 @@ public class NPayLibrary {
             activity.finish();
             return;
         }
-        if( isLogOut(sdkConfig)){
+        if(isLogOut(sdkConfig)){
             logout();
             DataOrder.clearData();
         }
@@ -74,10 +74,14 @@ public class NPayLibrary {
         String merchantCodeCache = Preference.getString(activity, sdkConfig.getEnv() + Constants.MERCHANT_CODE, "");
         boolean isSameMerchantCode = merchantCodeCache.equals(sdkConfig.getMerchantCode());
 
-        return !isSamePhone || !isSameMerchantCode;
+        String environment = Preference.getString(activity, Constants.INIT_ENVIRONMENT, "");
+        boolean isSameEnvironment = environment.equals(sdkConfig.getEnv());
+
+        return !isSamePhone || !isSameMerchantCode || !isSameEnvironment;
     }
 
     public void saveSdkConfig(SdkConfig sdkConfig) {
+
         Preference.save(activity, sdkConfig.getEnv() + Constants.MERCHANT_CODE, sdkConfig.getMerchantCode());
         Preference.save(activity,sdkConfig.getEnv() + Constants.PHONE, sdkConfig.getPhoneNumber());
     }
