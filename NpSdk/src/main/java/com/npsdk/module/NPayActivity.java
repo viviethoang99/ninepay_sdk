@@ -468,6 +468,7 @@ public class NPayActivity extends AppCompatActivity {
                         isProgressDeposit = nameAction.equals("napas-deposit");
                     }
 
+                    /// Remove validate by URL
                     webView.setVisibility(View.GONE);
                     webView2.setVisibility(View.VISIBLE);
                     webView2.loadUrl(getURL, headerWebView);
