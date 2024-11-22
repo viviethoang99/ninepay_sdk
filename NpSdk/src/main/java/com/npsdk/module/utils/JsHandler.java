@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
@@ -193,6 +194,11 @@ public class JsHandler {
                     break;
                 case paste:
                     getClipboardData();
+                    break;
+                case webviewLoaded:
+                    Intent intentCloseLoading = new Intent();
+                    intentCloseLoading.setAction("closeLoading");
+                    LocalBroadcastManager.getInstance(activity).sendBroadcast(intentCloseLoading);
                     break;
                 default:
             }
@@ -401,6 +407,6 @@ public class JsHandler {
         open9PayApp, close, logout, openOtherUrl, share, copy, call, message, clearToken, onLoggedInSuccess,
         onPaymentSuccess, onError, getAllToken, getDeviceID, requestCamera, openSchemaApp, requestGallery,
         checkPermissionStorage, backToApp, callbackToApp, send_email, result_payment_js, openAppSettings,
-        shareImage, openBrowser, openGoogleAuthen, paste
+        shareImage, openBrowser, openGoogleAuthen, paste, webviewLoaded,
     }
 }

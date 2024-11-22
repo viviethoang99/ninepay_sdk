@@ -106,6 +106,7 @@ public class NPayActivity extends AppCompatActivity {
         IntentFilter filter = new IntentFilter();
         filter.addAction("webViewBroadcast");
         filter.addAction("nativeBroadcast");
+        filter.addAction("closeLoading");
         listentChangeUrlBroadcast();
 
         LocalBroadcastManager.getInstance(this).registerReceiver(changeUrlBR, filter);
@@ -270,10 +271,10 @@ public class NPayActivity extends AppCompatActivity {
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                if (!isRedirected) {
-                    linearLayout.setVisibility(View.GONE);
-                }
-                webView.setVisibility(View.VISIBLE);
+//                if (!isRedirected) {
+//                    linearLayout.setVisibility(View.GONE);
+//                }
+//                webView.setVisibility(View.VISIBLE);
                 CookieManager.getInstance().flush();
                 super.onPageFinished(view, url);
             }
@@ -480,6 +481,9 @@ public class NPayActivity extends AppCompatActivity {
                     if (intent.getStringExtra("action").equals("close")) {
                         finish();
                     }
+                }
+                if (intent.getAction().equals("closeLoading")) {
+                    linearLayout.setVisibility(View.GONE);
                 }
             }
         };
