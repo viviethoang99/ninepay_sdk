@@ -271,10 +271,10 @@ public class NPayActivity extends AppCompatActivity {
 
             @Override
             public void onPageFinished(WebView view, String url) {
-//                if (!isRedirected) {
-//                    linearLayout.setVisibility(View.GONE);
-//                }
-//                webView.setVisibility(View.VISIBLE);
+                if (!isRedirected) {
+                    linearLayout.setVisibility(View.GONE);
+                }
+                webView.setVisibility(View.VISIBLE);
                 CookieManager.getInstance().flush();
                 super.onPageFinished(view, url);
             }
