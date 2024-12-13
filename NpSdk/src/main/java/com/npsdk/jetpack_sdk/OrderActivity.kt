@@ -257,7 +257,6 @@ class OrderActivity : ComponentActivity() {
             snapshotFlow { bottomSheetState.isVisible }.collect { isVisible ->
                 if (!isVisible) {
                     keyboardController?.hide()
-                    focusRequester.freeFocus()
                 }
             }
         }

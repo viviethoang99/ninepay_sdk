@@ -3,15 +3,12 @@ package com.npsdk.demo;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.*;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import com.npsdk.LibListener;
 import com.npsdk.demo.databinding.ActivityMainBinding;
@@ -20,10 +17,8 @@ import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.module.NPayLibrary;
 import com.npsdk.module.PaymentMethod;
 import com.npsdk.module.model.SdkConfig;
-import com.npsdk.module.model.UserInfo;
 import com.npsdk.module.utils.Actions;
 import com.npsdk.module.utils.Flavor;
-import com.npsdk.module.utils.JsHandler;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String TAG = "MainActivityLOG";
@@ -153,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.ll_mua_the_game:
                 Log.d(TAG, "onClick: ll_mua_the_game");
-                NPayLibrary.getInstance().openSDKWithAction(Actions.GAME);
+                NPayLibrary.getInstance().openSDKWithAction(Actions.GAME_CARD);
                 break;
             case R.id.ll_mua_the_dich_vu:
                 Log.d(TAG, "onClick: ll_mua_the_dich_vu");
