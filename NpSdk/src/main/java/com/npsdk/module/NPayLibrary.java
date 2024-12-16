@@ -178,11 +178,14 @@ public class NPayLibrary {
     }
 
     public void getUserInfo() {
-        if (Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "").isEmpty()) {
+        String token = Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
+
+        NPayLibrary.getInstance().callbackError(1604, "getUserInfo: " + token);
+
+        if (token.isEmpty()) {
             listener.onError(Constants.NOT_LOGIN, "Tài khoản chưa được đăng nhập!");
             return;
         }
-        String token = Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
         String deviceId = DeviceUtils.getDeviceID(activity);
         String UID = DeviceUtils.getUniqueID(activity);
         Log.d(TAG, "device id : " + deviceId + " , UID : " + UID);
