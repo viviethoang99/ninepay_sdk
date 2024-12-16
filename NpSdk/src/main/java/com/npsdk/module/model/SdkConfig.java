@@ -5,6 +5,7 @@ import android.content.Context;
 import com.npsdk.module.utils.Constants;
 import com.npsdk.module.utils.DeviceUtils;
 import com.npsdk.module.utils.Preference;
+import com.npsdk.module.utils.Utils;
 
 import java.io.Serializable;
 
@@ -14,7 +15,7 @@ public class SdkConfig implements Serializable {
     private final String secretKey;
     private final String uid;
     private final String env;
-    private String brandColor;
+    private final String brandColor;
     private final String phoneNumber;
 
     protected SdkConfig(Builder builder) {
