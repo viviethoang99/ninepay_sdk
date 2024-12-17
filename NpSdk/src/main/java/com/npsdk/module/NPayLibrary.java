@@ -85,7 +85,6 @@ public class NPayLibrary {
     }
 
     public void saveSdkConfig(SdkConfig sdkConfig) {
-
         Preference.save(activity, sdkConfig.getEnv() + Constants.MERCHANT_CODE, sdkConfig.getMerchantCode());
         Preference.save(activity,sdkConfig.getEnv() + Constants.PHONE, sdkConfig.getPhoneNumber());
     }
@@ -211,6 +210,7 @@ public class NPayLibrary {
             @Override
             public void onError(int errorCode, String message) {
                 if (errorCode == Constants.NOT_LOGIN || message.contains("đã hết hạn") || message.toLowerCase().contains("không tìm thấy")) {
+                    NPayLibrary.getInstance().callbackError(1604, "getUserInfo: " + errorCode + " - " + message);
                     refreshToken(deviceId, UID, null);
                     return;
                 }
