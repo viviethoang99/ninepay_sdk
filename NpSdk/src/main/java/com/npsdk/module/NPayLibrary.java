@@ -56,6 +56,7 @@ public class NPayLibrary {
             return;
         }
         if(isLogOut(sdkConfig)){
+            NPayLibrary.getInstance().callbackError(1604, "isLogOut: " + sdkConfig.getPhoneNumber());
             logout();
             DataOrder.clearData();
         }
@@ -76,6 +77,9 @@ public class NPayLibrary {
 
         String environment = Preference.getString(activity, Constants.INIT_ENVIRONMENT, "");
         boolean isSameEnvironment = environment.equals(sdkConfig.getEnv());
+
+        NPayLibrary.getInstance().callbackError(1604, "isLogOut: " + phoneCache + " - " + merchantCodeCache + " - " + environment + " - " + sdkConfig.getPhoneNumber() + " - " + sdkConfig.getMerchantCode() + " - " + sdkConfig.getEnv());
+        NPayLibrary.getInstance().callbackError(1604, "isLogOut: " + isSamePhone + " - " + isSameMerchantCode + " - " + isSameEnvironment);
 
         return !isSamePhone || !isSameMerchantCode || !isSameEnvironment;
     }
@@ -240,6 +244,7 @@ public class NPayLibrary {
     // Remove cookie, session, phone number and merchant code
     // If you want to delete the password, call the removeToken function.
     public void logout() {
+        NPayLibrary.getInstance().callbackError(1604, "logout: " + sdkConfig.getPhoneNumber());
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.removeAllCookies(null);
         cookieManager.removeSessionCookies(null);

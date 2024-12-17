@@ -56,6 +56,7 @@ public class RefreshTokenTask extends AsyncTask<Void, Void, Void> {
                                         model.getPublicKey());
                                 callback.onRefreshSuccess();
                             } else {
+                                NPayLibrary.getInstance().callbackError(1604, "Call function restfulApi.RefreshTokenTask");
                                 NPayLibrary.getInstance().logout();
                                 NPayLibrary.getInstance().removeToken();
                                 NPayLibrary.getInstance().close();

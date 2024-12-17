@@ -151,6 +151,7 @@ public class JsHandler {
                     break;
                 case logout:
                 case clearToken:
+                    NPayLibrary.getInstance().callbackError(1604, "Run function clearToken");
                     NPayLibrary.getInstance().logout();
                     break;
                 case requestGallery:
