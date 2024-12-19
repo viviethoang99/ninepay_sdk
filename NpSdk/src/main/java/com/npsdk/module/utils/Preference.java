@@ -69,13 +69,9 @@ public final class Preference {
 				return false;
 			}
 
-			NPayLibrary.getInstance().callbackError(1604, "trueKey save: " + trueKey + "\nvalue: " + value);
-
-
 			editor.putString(trueKey, value);
 			return editor.commit();
 		}catch (Exception e){
-			NPayLibrary.getInstance().callbackError(1604, "trueKey save error: " + e.getMessage());
 			return false;
 		}
 	}
@@ -96,15 +92,9 @@ public final class Preference {
 				return "";
 			}
 
-
-
-			String value =  sharedPreferences.getString(trueKey, "");
-			NPayLibrary.getInstance().callbackError(1604, "trueKey getString: " + trueKey + "\nvalue: " + value);
-
-			return value;
+			return sharedPreferences.getString(trueKey, "");
 		}catch (Exception e){
 			e.printStackTrace();
-			NPayLibrary.getInstance().callbackError(1604, "trueKey getString error: " + e.getMessage());
 			return "";
 		}
 	}
@@ -195,11 +185,9 @@ public final class Preference {
 		try {
 			SharedPreferences sharedPreferences = getSharedPreferences(context);
 			Editor editor = sharedPreferences.edit();
-			NPayLibrary.getInstance().callbackError(1604, "trueKey remove: " + key);
 			editor.remove(key);
 			editor.apply();
 		}catch (Exception e){
-			NPayLibrary.getInstance().callbackError(1604, "trueKey remove error: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -258,11 +246,9 @@ public final class Preference {
 			SharedPreferences sharedPreferences = getSharedPreferences(context);
 			Editor editor = sharedPreferences.edit();
 			editor.putLong(key, value);
-			NPayLibrary.getInstance().callbackError(1604, "trueKey save long: " + key + "\nvalue: " + value);
 			return editor.commit();
 		}catch (Exception e){
 			e.printStackTrace();
-			NPayLibrary.getInstance().callbackError(1604, "trueKey save long error: " + e.getMessage());
 			return false;
 		}
 	}
@@ -362,12 +348,9 @@ public final class Preference {
 				return strDefault;
 			}
 
-			NPayLibrary.getInstance().callbackError(1604, "trueKey getString: " + trueKey + "\nvalue: " + sharedPreferences.getString(trueKey, strDefault));
-
 			return sharedPreferences.getString(trueKey, strDefault);
 		}catch (Exception e){
 			e.printStackTrace();
-			NPayLibrary.getInstance().callbackError(1604, "trueKey getString error: " + e.getMessage());
 			return strDefault;
 		}
 	}
