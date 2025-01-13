@@ -29,4 +29,9 @@ public class Constants {
     public static final String FAIL = "FAIL";
     public static final int NOT_LOGIN = 403;
     public static final int NOT_VERIFY = 401;
+
+    // NFC status
+    public static final int NFC_NOT_FOUND = 0;
+    public static final int NFC_NOT_ENABLE = 1;
+    public static final int NFC_ENABLE = 2;
 }

@@ -46,7 +46,7 @@ public class HomeActivity extends AppCompatActivity {
         String mcCode = "uymvnd";
         String colorCode = "15AE62";
         String secretKey = "vIPldW/y/VJuy8qKEQUoH9ypHTTt9W/8ufvn3BFFTBU="; // vIPldW/y/VJuy8qKEQUoH9ypHTTt9W/8ufvn3BFFTBU=
-        String phoneNumber = "0396469104";
+        String phoneNumber = "0396469133";
         SdkConfig sdkConfig = new SdkConfig.Builder(this).merchantCode(mcCode).secretKey(secretKey).uid(null).env(flavorEnv).brandColor(colorCode).phoneNumber(phoneNumber).build();
         initSdk(sdkConfig);
 

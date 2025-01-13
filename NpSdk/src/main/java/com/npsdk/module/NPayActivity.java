@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.window.OnBackInvokedDispatcher;
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,6 +35,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.npsdk.NotificationCancelReceiver;
 import com.npsdk.R;
+import com.npsdk.module.model.HyperKycParams;
 import com.npsdk.module.utils.*;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,6 +49,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import co.hyperverge.hyperkyc.HyperKyc;
+import co.hyperverge.hyperkyc.data.models.HyperKycConfig;
 
 public class NPayActivity extends AppCompatActivity {
     public static final String TAG = NPayActivity.class.getName();
@@ -107,6 +112,7 @@ public class NPayActivity extends AppCompatActivity {
         filter.addAction("webViewBroadcast");
         filter.addAction("nativeBroadcast");
         filter.addAction("closeLoading");
+        filter.addAction("callEkyc");
         listentChangeUrlBroadcast();
 
         LocalBroadcastManager.getInstance(this).registerReceiver(changeUrlBR, filter);
@@ -485,9 +491,30 @@ public class NPayActivity extends AppCompatActivity {
                 if (intent.getAction().equals("closeLoading")) {
                     linearLayout.setVisibility(View.GONE);
                 }
+
+                if (intent.getAction().equals("callEkyc")) {
+                    String jsonString = intent.getStringExtra("JSON_OBJECT");
+                    HyperKycParams hvParam = KycUtil.createHyperKycParams(jsonString);
+                    if (hvParam == null) {
+                        System.out.println("Param null");
+                        return;
+                    }
+                    KycUtil.startWorkflow( hyperKycLauncher,hvParam);
+                }
             }
         };
     }
+
+    private final ActivityResultLauncher<HyperKycConfig> hyperKycLauncher =
+            registerForActivityResult(new HyperKyc.Contract(), result -> {
+                String jsExecute = "javascript: window.pasteDataNFC('" + result.toString() + "')";
+                Handler mainHandler = new Handler(Looper.getMainLooper());
+                Runnable myRunnable = () -> {
+                    if (NPayActivity.webView == null) return;
+                    NPayActivity.webView.loadUrl(jsExecute);
+                };
+                mainHandler.post(myRunnable);
+            });
 
     private void findView() {
         webView = findViewById(R.id.webView);

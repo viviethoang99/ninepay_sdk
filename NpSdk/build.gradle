@@ -107,6 +107,8 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp")
     implementation("com.squareup.okhttp3:logging-interceptor")
     implementation 'org.bouncycastle:bcprov-jdk15to18:1.72'
+    implementation 'co.hyperverge:hyperkyc:0.35.1'
+
 }
 
 afterEvaluate {

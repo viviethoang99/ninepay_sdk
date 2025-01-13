@@ -200,6 +200,15 @@ public class JsHandler {
                     intentCloseLoading.setAction("closeLoading");
                     LocalBroadcastManager.getInstance(activity).sendBroadcast(intentCloseLoading);
                     break;
+                case call_ekyc:
+                    Intent intentEkyc = new Intent();
+                    intentEkyc.putExtra("JSON_OBJECT", paramJson.toString());
+                    intentEkyc.setAction("callEkyc");
+                    LocalBroadcastManager.getInstance(activity).sendBroadcast(intentEkyc);
+                    break;
+                case request_nfc:
+                    parseNFCStatus();
+                    break;
                 default:
             }
         } catch (Exception e) {
@@ -207,15 +216,26 @@ public class JsHandler {
         }
     }
 
+    private void parseNFCStatus() {
+        int data = NfcUtil.checkNfcStatus(activity.getBaseContext());
+        String jsExecute = "javascript: window.parseNFCStatus('" + data + "')";
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+        Runnable myRunnable = () -> {
+            if (NPayActivity.webView == null) return;
+            NPayActivity.webView.loadUrl(jsExecute);
+        };
+        mainHandler.post(myRunnable);
+    }
+
     private void getClipboardData() {
         try {
             ClipboardManager clipboard = (ClipboardManager) activity.getSystemService(CLIPBOARD_SERVICE);
             String data = clipboard.getPrimaryClip().getItemAt(0).getText().toString();
-            String jsExcute = "javascript: window.pasteData('" + data + "')";
+            String jsExecute = "javascript: window.pasteData('" + data + "')";
             Handler mainHandler = new Handler(Looper.getMainLooper());
             Runnable myRunnable = () -> {
                 if (NPayActivity.webView == null) return;
-                NPayActivity.webView.loadUrl(jsExcute);
+                NPayActivity.webView.loadUrl(jsExecute);
             };
             mainHandler.post(myRunnable);
         } catch (Exception e) {
@@ -407,6 +427,6 @@ public class JsHandler {
         open9PayApp, close, logout, openOtherUrl, share, copy, call, message, clearToken, onLoggedInSuccess,
         onPaymentSuccess, onError, getAllToken, getDeviceID, requestCamera, openSchemaApp, requestGallery,
         checkPermissionStorage, backToApp, callbackToApp, send_email, result_payment_js, openAppSettings,
-        shareImage, openBrowser, openGoogleAuthen, paste, webviewLoaded,
+        shareImage, openBrowser, openGoogleAuthen, paste, webviewLoaded, call_ekyc, request_nfc,
     }
 }
