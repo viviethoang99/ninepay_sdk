@@ -106,9 +106,15 @@ dependencies {
     // define any required OkHttp artifacts without version
     implementation("com.squareup.okhttp3:okhttp")
     implementation("com.squareup.okhttp3:logging-interceptor")
-    implementation 'org.bouncycastle:bcprov-jdk15to18:1.72'
-    implementation 'co.hyperverge:hyperkyc:0.35.1'
-
+    implementation('org.bouncycastle:bcprov-jdk15to18:1.72') {
+        exclude group: 'org.bouncycastle', module: 'bcprov-jdk15on'
+    }
+    // Ensure the older version is not included
+    configurations.all {
+        exclude group: 'org.bouncycastle', module: 'bcprov-jdk15on'
+    } 
+    implementation 'co.hyperverge:hyperkyc:0.33.0'
+    implementation "co.hyperverge:hvnfc-sdk:3.0.0"
 }
 
 afterEvaluate {
