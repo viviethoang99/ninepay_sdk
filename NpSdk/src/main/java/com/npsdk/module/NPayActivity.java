@@ -33,6 +33,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.gson.Gson;
 import com.npsdk.NotificationCancelReceiver;
 import com.npsdk.R;
 import com.npsdk.module.model.HyperKycParams;
@@ -507,7 +508,9 @@ public class NPayActivity extends AppCompatActivity {
 
     private final ActivityResultLauncher<HyperKycConfig> hyperKycLauncher =
             registerForActivityResult(new HyperKyc.Contract(), result -> {
-                String jsExecute = "javascript: window.pasteDataNFC('" + result.toString() + "')";
+                Gson gson = new Gson();
+                String jsonStr = gson.toJson(result);
+                String jsExecute = "javascript: window.pasteDataNFC('" + jsonStr + "')";
                 Handler mainHandler = new Handler(Looper.getMainLooper());
                 Runnable myRunnable = () -> {
                     if (NPayActivity.webView == null) return;
