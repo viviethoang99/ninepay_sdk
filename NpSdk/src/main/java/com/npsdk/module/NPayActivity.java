@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import co.hyperverge.hyperkyc.HyperKyc;
 import co.hyperverge.hyperkyc.data.models.HyperKycConfig;
@@ -126,7 +127,7 @@ public class NPayActivity extends AppCompatActivity {
         setUpWeb2Client();
         setCookieRefreshToken();
 
-        screenshotDetecter();
+//        screenshotDetecter();
         downloadWebview(webView);
         downloadWebview(webView2);
 
@@ -148,6 +149,11 @@ public class NPayActivity extends AppCompatActivity {
                 webView.setVisibility(View.VISIBLE);
                 webView.loadUrl(Utils.getUrlActionShop(route), headerWebView);
                 System.out.println("Webview 1 load url " + Utils.getUrlActionShop(route));
+                showOrHideToolbar();
+            } else if (isValidEndpoint(route)) {
+                webView2.setVisibility(View.GONE);
+                webView.setVisibility(View.VISIBLE);
+                webView.loadUrl(Flavor.baseUrl + "/v1/" + route, headerWebView);
                 showOrHideToolbar();
             } else {
                 if (Actions.listActionSdk().contains(route)) {
@@ -175,6 +181,19 @@ public class NPayActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+    }
+
+    public static boolean isValidEndpoint(String url) {
+        String expectedEndpoint = "payment";
+        Set<String> requiredParams = Set.of("order_id", "b_type", "b_info");
+
+        Uri uri = Uri.parse(url);
+
+        if (!expectedEndpoint.equals(uri.getPath())) {
+            return false;
+        }
+
+        return uri.getQueryParameterNames().containsAll(requiredParams);
     }
 
     private void screenshotDetecter() {

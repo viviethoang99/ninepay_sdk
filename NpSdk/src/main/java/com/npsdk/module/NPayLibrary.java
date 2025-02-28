@@ -2,7 +2,6 @@ package com.npsdk.module;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.webkit.CookieManager;
@@ -12,13 +11,19 @@ import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.npsdk.LibListener;
 import com.npsdk.jetpack_sdk.DataOrder;
 import com.npsdk.jetpack_sdk.InputCardActivity;
 import com.npsdk.jetpack_sdk.OrderActivity;
 import com.npsdk.jetpack_sdk.base.AppUtils;
+import com.npsdk.jetpack_sdk.repository.CallbackCreateOrderPaymentMethod;
+import com.npsdk.jetpack_sdk.repository.CreatePaymentOrderRepo;
 import com.npsdk.jetpack_sdk.repository.GetInfoMerchant;
+import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamWalletMethod;
+import com.npsdk.jetpack_sdk.repository.model.DataCreateOrderPaymentMethod;
 import com.npsdk.module.api.GetInfoTask;
+import com.npsdk.jetpack_sdk.repository.GetListPaymentMethodRepo;
 import com.npsdk.module.api.GetPublickeyTask;
 import com.npsdk.module.api.RefreshTokenTask;
 import com.npsdk.module.model.SdkConfig;
@@ -26,6 +31,9 @@ import com.npsdk.module.model.UserInfo;
 import com.npsdk.module.utils.*;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -300,5 +308,91 @@ public class NPayLibrary {
 
     public boolean isLogin(){
         return !Preference.getString(activity, sdkConfig.getEnv() + Constants.ACCESS_TOKEN, "").isEmpty();
+    }
+
+    public void getListPaymentMethods(ListPaymentMethodCallback callback) {
+        String token = Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
+        String phone = Preference.getString(activity, sdkConfig.getEnv() + Constants.PHONE, "");
+        if (token.isEmpty() || phone.isEmpty()) {
+//            callback.onError([]);
+            return;
+        }
+
+        GetListPaymentMethodRepo getListPaymentMethodTask = new GetListPaymentMethodRepo();
+        getListPaymentMethodTask.check(activity, callback);
+
+    }
+
+    public void createOrder(
+            String amount,
+            String productName,
+            String requestId,
+            String orderType,
+            String bType,
+            String bInfo,
+            FailureCallback onFail
+    ) {
+        CallbackCreateOrderPaymentMethod callback = new CallbackCreateOrderPaymentMethod() {
+            @Override
+            public void onSuccess(DataCreateOrderPaymentMethod result) {
+                Intent intent = new Intent(activity, NPayActivity.class);
+
+                String endpoint = "payment";
+                Map<String, String> params = Map.of(
+                        "order_id", result.getOrderCode(),
+                        "b_type", bType,
+                        "b_info", bInfo
+                );
+
+                String encodedUrl = encodeEndpoint(endpoint, params);
+                String data = NPayLibrary.getInstance().walletData(encodedUrl);
+                intent.putExtra("data", data);
+                activity.startActivity(intent);
+            }
+
+            @Override
+            public void onError(JsonObject error) {
+                onFail.onFailed(error);
+            }
+        };
+        CreatePaymentOrderRepo createPaymentOrderRepo = new CreatePaymentOrderRepo();
+        CreateOrderParamWalletMethod param = new CreateOrderParamWalletMethod(
+                amount,
+                productName,
+                requestId,
+                sdkConfig.getMerchantCode(),
+                orderType
+        );
+        createPaymentOrderRepo.check(activity, param, callback);
+    }
+
+    public static String encodeEndpoint(String endpoint, Map<String, String> params) {
+        StringBuilder encodedUrl = new StringBuilder(endpoint);
+
+        if (!params.isEmpty()) {
+            encodedUrl.append("?");
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                try {
+                    String encodedKey = URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8.toString());
+                    String encodedValue = URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8.toString());
+                    encodedUrl.append(encodedKey).append("=").append(encodedValue).append("&");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+            // Xóa ký tự `&` cuối cùng
+            encodedUrl.setLength(encodedUrl.length() - 1);
+        }
+
+        return encodedUrl.toString();
+    }
+
+    public interface ListPaymentMethodCallback {
+        void onSuccess(JsonObject response);
+        void onError(JsonObject response);
+    }
+
+    public interface FailureCallback {
+        void onFailed(JsonObject error);
     }
 }
