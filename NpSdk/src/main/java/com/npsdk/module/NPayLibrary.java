@@ -314,7 +314,10 @@ public class NPayLibrary {
         String token = Preference.getString(activity, Flavor.prefKey + Constants.ACCESS_TOKEN, "");
         String phone = Preference.getString(activity, sdkConfig.getEnv() + Constants.PHONE, "");
         if (token.isEmpty() || phone.isEmpty()) {
-//            callback.onError([]);
+            JsonObject errorObject = new JsonObject();
+            errorObject.addProperty("code", Constants.NOT_LOGIN);
+            errorObject.addProperty("message", "Tài khoản chưa được đăng nhập!");
+            callback.onError(errorObject);
             return;
         }
 
