@@ -11,6 +11,7 @@ import com.npsdk.jetpack_sdk.base.api.BaseApiClient;
 import com.npsdk.jetpack_sdk.base.api.EncryptServiceHelper;
 import com.npsdk.jetpack_sdk.repository.model.CreateOrderParamWalletMethod;
 import com.npsdk.jetpack_sdk.repository.model.CreateOrderPaymentMethodModel;
+import com.npsdk.module.utils.Flavor;
 
 import org.bouncycastle.util.encoders.DecoderException;
 
@@ -42,7 +43,11 @@ public class CreatePaymentOrderRepo extends BaseApiClient {
         String jsonString = EncryptServiceHelper.INSTANCE.encryptKeyAesBase64(jsonRaw, key);
 
         // Call API
-        Call<String> call = apiService.createOrder(key, jsonString);
+        Call<String> call = apiService.createOrder(
+                Flavor.baseUrlWallet + "/api/v1/merchant/create-order",
+                key,
+                jsonString
+        );
         enqueue(call, new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {

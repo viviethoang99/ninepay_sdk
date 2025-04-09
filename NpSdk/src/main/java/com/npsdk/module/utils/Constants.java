@@ -23,6 +23,11 @@ public class Constants {
     public static final String SANDBOX_SHOP = "https://sand-shop.9pay.vn";
     public static final String STAGING_SHOP = "https://stg-shop.9pay.mobi";
 
+    // WALLET API
+    public static final String PROD_WALLET = "https://wallet.9pay.vn";
+    public static final String SANDBOX_WALLET = "https://stg-sdk-wallet.9pay.mobi";
+    public static final String STAGING_WALLET = "https://stg-sdk-wallet.9pay.mobi";
+
     // Route to payment in SDK Flutter.
     public static final String VERIFY_PAYMENT_ROUTE = "payment_merchant_verify";
     public static final String SUCCESS = "SUCCESS";

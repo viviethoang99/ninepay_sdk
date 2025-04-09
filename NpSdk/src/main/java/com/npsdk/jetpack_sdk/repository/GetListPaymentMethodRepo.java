@@ -12,6 +12,7 @@ import com.npsdk.jetpack_sdk.base.api.BaseApiClient;
 import com.npsdk.jetpack_sdk.base.api.EncryptServiceHelper;
 import com.npsdk.module.NPayLibrary;
 import com.npsdk.module.model.ListPaymentMethodResponse;
+import com.npsdk.module.utils.Flavor;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,7 +27,10 @@ public class GetListPaymentMethodRepo extends BaseApiClient {
 
     public void check(Context context, NPayLibrary.ListPaymentMethodCallback callback) {
         executor.execute(() -> {
-            Call<String> call = apiService.getListPaymentMethod();
+            System.out.println(Flavor.baseUrlWallet + "/api/v1/user/list-banks");
+            Call<String> call = apiService.getListPaymentMethod(
+                    Flavor.baseUrlWallet + "/api/v1/user/list-banks"
+            );
             enqueue(call, new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {

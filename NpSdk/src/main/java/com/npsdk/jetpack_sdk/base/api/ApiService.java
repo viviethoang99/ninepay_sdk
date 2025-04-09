@@ -52,12 +52,13 @@ public interface ApiService {
     @GET("/sdk/v1/func/list")
     Call<MerchantModel> getMerchant();
 
-    @POST("https://stg-sdk-wallet.9pay.mobi/api/v1/user/list-banks")
-    Call<String> getListPaymentMethod();
+    @POST()
+    Call<String> getListPaymentMethod(@Url String baseUrl);
 
     @FormUrlEncoded
-    @POST("https://stg-sdk-wallet.9pay.mobi/api/v1/merchant/create-order")
+    @POST()
     Call<String> createOrder(
+            @Url String baseUrl,
             @Header("Device-Id") String deviceId,
             @Field("data_encrypt") String data
     );

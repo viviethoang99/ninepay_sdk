@@ -39,10 +39,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Create flavor by package name test
         String flavorEnv = Flavor.setEnvTest(this);
         Bundle bundle = getIntent().getExtras();
-        String mcCode = ""; // uymvnd
-        String colorCode = ""; // 15AE62
-        String secretKey = "vIPldW/y/VJuy8qKEQUoH9ypHTTt9W/8ufvn3BFFTBU="; // vIPldW/y/VJuy8qKEQUoH9ypHTTt9W/8ufvn3BFFTBU=
-        String phoneNumber = "0396469104";
+        String mcCode = "";
+        String colorCode = "";
+        String secretKey = "";
+        String phoneNumber = "";
 
         if (bundle != null) {
             colorCode = bundle.getString("color_code");
