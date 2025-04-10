@@ -52,13 +52,12 @@ public interface ApiService {
     @GET("/sdk/v1/func/list")
     Call<MerchantModel> getMerchant();
 
-    @POST()
-    Call<String> getListPaymentMethod(@Url String baseUrl);
+    @POST("/sdk/api/v1/user/list-banks")
+    Call<String> getListPaymentMethod();
 
     @FormUrlEncoded
-    @POST()
+    @POST("/sdk/api/v1/merchant/create-order")
     Call<String> createOrder(
-            @Url String baseUrl,
             @Header("Device-Id") String deviceId,
             @Field("data_encrypt") String data
     );

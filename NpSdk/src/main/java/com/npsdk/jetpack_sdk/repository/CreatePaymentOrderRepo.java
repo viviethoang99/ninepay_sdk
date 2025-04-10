@@ -44,7 +44,6 @@ public class CreatePaymentOrderRepo extends BaseApiClient {
 
         // Call API
         Call<String> call = apiService.createOrder(
-                Flavor.baseUrlWallet + "/api/v1/merchant/create-order",
                 key,
                 jsonString
         );

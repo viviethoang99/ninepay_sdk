@@ -27,9 +27,7 @@ public class GetListPaymentMethodRepo extends BaseApiClient {
 
     public void check(Context context, NPayLibrary.ListPaymentMethodCallback callback) {
         executor.execute(() -> {
-            System.out.println(Flavor.baseUrlWallet + "/api/v1/user/list-banks");
             Call<String> call = apiService.getListPaymentMethod(
-                    Flavor.baseUrlWallet + "/api/v1/user/list-banks"
             );
             enqueue(call, new Callback<String>() {
                 @Override

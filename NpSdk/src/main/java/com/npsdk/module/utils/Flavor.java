@@ -10,8 +10,6 @@ public class Flavor {
     public static String prefKey;
     public static String baseApi;
     public static String baseShop;
-    public static String baseUrlWallet;
-
 
     public static void configFlavor(String env) {
         switch (env) {
@@ -20,21 +18,18 @@ public class Flavor {
                 prefKey = EnvironmentKey.STAGING;
                 baseApi = Constants.STAGING_API;
                 baseShop = Constants.STAGING_SHOP;
-                baseUrlWallet = Constants.STAGING_WALLET;
                 break;
             case EnvironmentKey.SANDBOX:
                 baseUrl = Constants.SANDBOX_URL;
                 prefKey = EnvironmentKey.SANDBOX;
                 baseApi = Constants.SANDBOX_API;
                 baseShop = Constants.SANDBOX_SHOP;
-                baseUrlWallet = Constants.SANDBOX_WALLET;
                 break;
             case EnvironmentKey.PRODUCTION:
                 baseUrl = Constants.PROD_URL;
                 prefKey = EnvironmentKey.PRODUCTION;
                 baseApi = Constants.PROD_API;
                 baseShop = Constants.PROD_SHOP;
-                baseUrlWallet = Constants.PROD_WALLET;
                 break;
         }
     }
