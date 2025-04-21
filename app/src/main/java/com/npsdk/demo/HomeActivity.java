@@ -43,10 +43,10 @@ public class HomeActivity extends AppCompatActivity {
 
         // Create flavor by package name test
         String flavorEnv = Flavor.setEnvTest(this);
-        String mcCode = "";
-        String colorCode = "";
-        String secretKey = "";
-        String phoneNumber = "";
+        String mcCode = "fmarket";
+        String colorCode = "15AE62";
+        String secretKey = "RTmo/2WpU83mkBBXZ4db6IQYJ4KzXAbp8KF+5H3axw0=";
+        String phoneNumber = "0989000101";
         SdkConfig sdkConfig = new SdkConfig.Builder(this).merchantCode(mcCode).secretKey(secretKey).uid(null).env(flavorEnv).brandColor(colorCode).phoneNumber(phoneNumber).build();
         initSdk(sdkConfig);
 
