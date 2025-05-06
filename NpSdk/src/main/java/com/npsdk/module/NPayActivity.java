@@ -127,7 +127,6 @@ public class NPayActivity extends AppCompatActivity {
         setUpWeb2Client();
         setCookieRefreshToken();
 
-//        screenshotDetecter();
         downloadWebview(webView);
         downloadWebview(webView2);
 
