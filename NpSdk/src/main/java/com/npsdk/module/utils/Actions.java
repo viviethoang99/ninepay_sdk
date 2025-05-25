@@ -13,7 +13,9 @@ public class Actions {
     public static final String WITHDRAW = "WITHDRAW";
     public static final String DEPOSIT = "DEPOSIT";
     public static final String QR = "QR";
-    public static final String LINK_WALLET = "LINK_WALLET";
+    public static final String LINK_BANK = "LINK_BANK";
+    public static final String EKYC = "EKYC";
+
 
     // DANH MUC HOA DON
     public static final String SHOP = "SHOP";
