@@ -56,7 +56,7 @@ public class Actions {
 
         ArrayList<String> listTemp = new ArrayList<String>();
         listTemp.addAll(Arrays.asList(
-                OPEN_WALLET, LOGIN, HISTORY, TRANSFER, DEPOSIT, QR, WITHDRAW));
+                OPEN_WALLET, LOGIN, HISTORY, TRANSFER, DEPOSIT, QR, WITHDRAW, LINK_BANK, EKYC));
         return listTemp;
     }
 
