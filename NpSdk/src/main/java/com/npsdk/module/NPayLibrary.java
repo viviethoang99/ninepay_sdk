@@ -371,6 +371,28 @@ public class NPayLibrary {
         createPaymentOrderRepo.check(activity, param, callback);
     }
 
+    public void testOrder(
+            String amount,
+            String productName,
+            String bType,
+            String bInfo,
+            FailureCallback onFail
+    ) {
+        Intent intent = new Intent(activity, NPayActivity.class);
+
+        String endpoint = "payment";
+        Map<String, String> params = Map.of(
+                "order_id", productName,
+                "b_type", bType,
+                "b_info", bInfo
+        );
+
+        String encodedUrl = encodeEndpoint(endpoint, params);
+        String data = NPayLibrary.getInstance().walletData(encodedUrl);
+        intent.putExtra("data", data);
+        activity.startActivity(intent);
+    }
+
     public static String encodeEndpoint(String endpoint, Map<String, String> params) {
         StringBuilder encodedUrl = new StringBuilder(endpoint);
 
