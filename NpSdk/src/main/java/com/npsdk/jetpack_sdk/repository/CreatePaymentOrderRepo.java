@@ -66,9 +66,24 @@ public class CreatePaymentOrderRepo extends BaseApiClient {
                         });
                     }
                 } else {
+                    String errorMessage = response.message();
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorBodyString = response.errorBody().string();
+                            // Attempt to parse error body as JSON and extract message if available
+                            Gson gson = new Gson();
+                            JsonObject errorJson = gson.fromJson(errorBodyString, JsonObject.class);
+                            if (errorJson != null && errorJson.has("message")) {
+                                errorMessage = errorJson.get("message").getAsString();
+                            }
+                        } catch (Exception e) {
+                            // Ignore parsing error, fallback to response.message()
+                        }
+                    }
+                    String finalErrorMessage = errorMessage;
                     mainThread.post(() -> {
                         JsonObject error = new JsonObject();
-                        error.addProperty("message", response.message());
+                        error.addProperty("message", finalErrorMessage);
                         callbackCreateOrder.onError(error);
                     });
                 }
